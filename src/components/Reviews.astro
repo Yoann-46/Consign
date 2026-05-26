@@ -31,7 +31,7 @@ const reviews = [
     date: lang === 'fr' ? 'Il y a 1 mois' : '1 month ago',
   },
   {
-    text: "Excellent service. Open 24/7 meant we could drop our bags after a very late check-out. The whole process took two minutes. Stress-free.",
+    text: "Excellent service. Open until 10pm meant we could drop our bags after a very late check-out. The whole process took two minutes. Stress-free.",
     name: 'Emma R.',
     date: lang === 'fr' ? 'Il y a 2 mois' : '2 months ago',
   },
@@ -400,20 +400,21 @@ const tints = ['coral', 'yellow', 'coral', 'yellow', 'coral'] as const;
       });
     }
 
-    /**
-     * Film-credits effect — tablet+ only.
-     * On mobile the cards swipe horizontally, so no vertical parallax is needed.
-     */
+    // Cards stagger-reveal on tablet+ (no parallax to avoid overflow issues)
     const isTabletPlus = window.matchMedia('(min-width: 640px)').matches;
     if (list && isTabletPlus) {
-      gsap.to(list, {
-        yPercent: -30,
-        ease: 'none',
+      const cards = list.querySelectorAll<HTMLElement>('[data-rev-anim="card"]');
+      gsap.set(cards, { opacity: 0, y: 28 });
+      gsap.to(cards, {
+        opacity: 1,
+        y: 0,
+        duration: 0.85,
+        ease: 'power3.out',
+        stagger: 0.12,
         scrollTrigger: {
-          trigger: '.reviews',
-          start: 'top bottom',
-          end: 'bottom top',
-          scrub: 1,
+          trigger: list,
+          start: 'top 80%',
+          once: true,
         },
       });
     }

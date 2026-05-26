@@ -1,0 +1,11 @@
+---
+import Layout from '../layouts/Layout.astro';
+import PricingPage from '../components/PricingPage.astro';
+import { useTranslations } from '../i18n/ui';
+
+const t = useTranslations(Astro.currentLocale ?? 'en');
+---
+
+<Layout title={t('pricing.meta.title')} description={t('pricing.meta.description')}>
+  <PricingPage />
+</Layout>

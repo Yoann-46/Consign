@@ -1,0 +1,413 @@
+---
+import { useTranslations, localizedPath } from '../i18n/ui';
+
+const lang = Astro.currentLocale ?? 'en';
+const t = useTranslations(lang);
+
+const lockers = [
+  {
+    key: 'm' as const,
+    label: t('pricing.locker.m'),
+    dims: t('pricing.locker.m.dims'),
+    fit: t('pricing.locker.m.fit'),
+    icon: 'bag',
+    rows: [
+      { slot: t('pricing.slot.3h'), price: '€7', popular: false },
+      { slot: t('pricing.slot.4h'), price: '€9', popular: false },
+      { slot: t('pricing.slot.day'), price: '€11', popular: true },
+    ],
+  },
+  {
+    key: 'l' as const,
+    label: t('pricing.locker.l'),
+    dims: t('pricing.locker.l.dims'),
+    fit: t('pricing.locker.l.fit'),
+    icon: 'suitcase',
+    rows: [
+      { slot: t('pricing.slot.3h'), price: '€9', popular: false },
+      { slot: t('pricing.slot.4h'), price: '€11', popular: false },
+      { slot: t('pricing.slot.day'), price: '€13', popular: true },
+    ],
+  },
+] as const;
+---
+
+<section class="pricing-hero" aria-labelledby="pricing-title">
+  <div class="container-x">
+    <header class="pricing-header" data-pricing-anim="header">
+      <span class="eyebrow pricing-eyebrow">{t('pricing.eyebrow')}</span>
+      <h1 id="pricing-title" class="heading-display pricing-title">
+        {t('pricing.title')} <span class="pricing-accent">{t('pricing.title.accent')}</span>
+      </h1>
+      <p class="pricing-subtitle">{t('pricing.subtitle')}</p>
+    </header>
+
+    <!-- Pricing cards grid -->
+    <div class="pricing-grid" data-pricing-anim="grid">
+      {lockers.map((locker) => (
+        <article class={`locker-card locker-${locker.key}`}>
+
+          <!-- Card header -->
+          <div class="locker-head">
+            <div class="locker-icon" aria-hidden="true">
+              {locker.icon === 'bag' && (
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M6 2h12l2 6H4L6 2z" />
+                  <path d="M4 8v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8" />
+                  <path d="M10 12h4" />
+                </svg>
+              )}
+              {locker.icon === 'suitcase' && (
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="2" y="7" width="20" height="15" rx="2.5" />
+                  <path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                  <line x1="12" y1="12" x2="12" y2="16" />
+                  <line x1="10" y1="14" x2="14" y2="14" />
+                </svg>
+              )}
+            </div>
+            <div class="locker-info">
+              <h2 class="locker-name">{locker.label}</h2>
+              <span class="locker-dims">{locker.dims}</span>
+            </div>
+          </div>
+
+          <!-- Locker fit hint -->
+          <p class="locker-fit">
+            <span class="fit-dot" aria-hidden="true"></span>
+            {locker.fit}
+          </p>
+
+          <!-- Price rows -->
+          <div class="price-rows" role="list">
+            {locker.rows.map((row) => (
+              <div class={`price-row${row.popular ? ' price-row-popular' : ''}`} role="listitem">
+                <span class="price-slot">{row.slot}</span>
+                {row.popular && <span class="popular-badge">{t('pricing.popular')}</span>}
+                <span class="price-amount">{row.price}</span>
+              </div>
+            ))}
+          </div>
+        </article>
+      ))}
+    </div>
+
+    <!-- Note + CTA -->
+    <footer class="pricing-foot" data-pricing-anim="foot">
+      <p class="pricing-note">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" width="18" height="18">
+          <rect x="2" y="5" width="20" height="14" rx="2" />
+          <path d="M2 10h20" />
+        </svg>
+        {t('pricing.note')}
+      </p>
+      <div class="pricing-ctas">
+        <a href={localizedPath(lang, '/#locations')} class="btn btn-primary">
+          {t('pricing.cta')}
+          <span aria-hidden="true">→</span>
+        </a>
+        <a href={localizedPath(lang, '/#faq')} class="pricing-faq-link">
+          {t('pricing.faq.link')}
+        </a>
+      </div>
+    </footer>
+  </div>
+</section>
+
+<style>
+  .pricing-hero {
+    padding-block: clamp(4rem, 9vw, 7rem);
+    background: var(--color-bg);
+  }
+
+  /* Header */
+  .pricing-header {
+    max-width: 680px;
+    margin-bottom: clamp(3rem, 6vw, 5rem);
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  .pricing-eyebrow {
+    color: var(--color-coral-dark);
+    display: inline-block;
+    margin-bottom: 1rem;
+  }
+  .pricing-title {
+    font-size: clamp(2.5rem, 7vw, 5rem);
+    margin: 0 0 1.25rem;
+    color: var(--color-ink);
+  }
+  .pricing-accent {
+    color: var(--color-coral);
+    font-style: italic;
+    font-weight: 300;
+  }
+  .pricing-subtitle {
+    margin: 0;
+    font-size: clamp(1rem, 2vw, 1.2rem);
+    color: var(--color-ink-soft);
+    line-height: 1.55;
+    max-width: 52ch;
+  }
+
+  /* Grid */
+  .pricing-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  @media (min-width: 680px) {
+    .pricing-grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 2rem;
+    }
+  }
+
+  /* Card */
+  .locker-card {
+    border: 1.5px solid var(--color-ink);
+    border-radius: 22px;
+    padding: 2rem 1.75rem 1.75rem;
+    background: var(--color-bg);
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+  .locker-l {
+    background: var(--color-ink);
+    color: var(--color-bg);
+  }
+
+  /* Card header */
+  .locker-head {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+  .locker-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .locker-m .locker-icon {
+    background: color-mix(in srgb, var(--color-coral) 12%, var(--color-bg));
+    border: 1.5px solid var(--color-coral);
+    color: var(--color-coral-dark);
+  }
+  .locker-l .locker-icon {
+    background: color-mix(in srgb, var(--color-yellow) 20%, var(--color-ink));
+    border: 1.5px solid var(--color-yellow);
+    color: var(--color-yellow);
+  }
+  .locker-icon svg {
+    width: 24px;
+    height: 24px;
+  }
+  .locker-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+  }
+  .locker-name {
+    margin: 0;
+    font-size: 1.35rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+  }
+  .locker-m .locker-name { color: var(--color-ink); }
+  .locker-l .locker-name { color: var(--color-bg); }
+  .locker-dims {
+    font-size: 0.82rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    font-variant-numeric: tabular-nums;
+  }
+  .locker-m .locker-dims { color: var(--color-ink-faint); }
+  .locker-l .locker-dims { color: color-mix(in srgb, var(--color-bg) 60%, transparent); }
+
+  /* Fit hint */
+  .locker-fit {
+    margin: 0;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    padding: 0.65rem 0.9rem;
+    border-radius: 10px;
+  }
+  .locker-m .locker-fit {
+    background: var(--color-bg-warm);
+    color: var(--color-ink-soft);
+  }
+  .locker-l .locker-fit {
+    background: color-mix(in srgb, var(--color-bg) 10%, transparent);
+    color: color-mix(in srgb, var(--color-bg) 75%, transparent);
+  }
+  .fit-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .locker-m .fit-dot { background: var(--color-coral); }
+  .locker-l .fit-dot { background: var(--color-yellow); }
+
+  /* Price rows */
+  .price-rows {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    border-radius: 14px;
+    overflow: hidden;
+  }
+  .locker-m .price-rows {
+    border: 1.5px solid var(--color-rule);
+  }
+  .locker-l .price-rows {
+    border: 1.5px solid color-mix(in srgb, var(--color-bg) 18%, transparent);
+  }
+
+  .price-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.85rem 1.1rem;
+    position: relative;
+  }
+  .locker-m .price-row {
+    border-bottom: 1.5px solid var(--color-rule);
+  }
+  .locker-l .price-row {
+    border-bottom: 1.5px solid color-mix(in srgb, var(--color-bg) 12%, transparent);
+  }
+  .price-row:last-child { border-bottom: none; }
+
+  .price-row-popular {
+    background: var(--color-coral);
+  }
+  .locker-l .price-row-popular {
+    background: var(--color-yellow);
+  }
+
+  .price-slot {
+    font-weight: 600;
+    font-size: 0.95rem;
+  }
+  .locker-m .price-slot { color: var(--color-ink); }
+  .locker-l .price-slot { color: var(--color-bg); }
+  .price-row-popular .price-slot { color: white; }
+  .locker-l .price-row-popular .price-slot { color: var(--color-ink); }
+
+  .popular-badge {
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 0.2rem 0.55rem;
+    border-radius: 999px;
+    background: rgba(255,255,255,0.25);
+    color: white;
+  }
+  .locker-l .popular-badge {
+    background: rgba(0,0,0,0.15);
+    color: var(--color-ink);
+  }
+
+  .price-amount {
+    font-size: 1.35rem;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    font-variant-numeric: tabular-nums;
+  }
+  .locker-m .price-amount { color: var(--color-ink); }
+  .locker-l .price-amount { color: var(--color-bg); }
+  .price-row-popular .price-amount { color: white; }
+  .locker-l .price-row-popular .price-amount { color: var(--color-ink); }
+
+  /* Footer */
+  .pricing-foot {
+    margin-top: clamp(3rem, 6vw, 4.5rem);
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1.5rem;
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  .pricing-note {
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-size: 0.92rem;
+    color: var(--color-ink-soft);
+  }
+  .pricing-note svg {
+    flex-shrink: 0;
+    color: var(--color-coral);
+  }
+  .pricing-ctas {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1.25rem;
+  }
+  .pricing-faq-link {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--color-ink-soft);
+    text-decoration: none;
+    border-bottom: 1.5px solid var(--color-rule);
+    padding-bottom: 1px;
+    transition: color 160ms ease, border-color 160ms ease;
+  }
+  .pricing-faq-link:hover {
+    color: var(--color-coral);
+    border-color: var(--color-coral);
+  }
+</style>
+
+<script>
+  import { gsap } from 'gsap';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+  gsap.registerPlugin(ScrollTrigger);
+
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  const header = document.querySelector<HTMLElement>('[data-pricing-anim="header"]');
+  const grid = document.querySelector<HTMLElement>('[data-pricing-anim="grid"]');
+  const foot = document.querySelector<HTMLElement>('[data-pricing-anim="foot"]');
+
+  if (reduce) {
+    [header, grid, foot].forEach((el) => {
+      if (el) gsap.set(el, { opacity: 1, y: 0 });
+    });
+  } else {
+    if (header) {
+      gsap.to(header, {
+        opacity: 1, y: 0, duration: 1.1, ease: 'power3.out',
+        scrollTrigger: { trigger: header, start: 'top 75%', once: true },
+      });
+    }
+    if (grid) {
+      gsap.to(grid, {
+        opacity: 1, y: 0, duration: 1.2, ease: 'power3.out',
+        scrollTrigger: { trigger: grid, start: 'top 78%', once: true },
+      });
+    }
+    if (foot) {
+      gsap.to(foot, {
+        opacity: 1, y: 0, duration: 0.9, ease: 'power2.out',
+        scrollTrigger: { trigger: foot, start: 'top 88%', once: true },
+      });
+    }
+  }
+</script>
