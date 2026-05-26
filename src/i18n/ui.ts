@@ -139,7 +139,7 @@ export const ui = {
     'contact.subtitle':
       'Questions, lost items, partnership ideas: we read everything and reply within 24 hours.',
     'contact.method.email.label': 'Email',
-    'contact.method.email.value': 'hello@consign-locker.com',
+    'contact.method.email.value': 'consignlocker@gmail.com',
     'contact.method.email.hint': 'Reply within 24 h',
     'contact.method.whatsapp.label': 'WhatsApp',
     'contact.method.whatsapp.value': '+33 6 14 01 04 48',
@@ -367,7 +367,7 @@ export const ui = {
     'contact.subtitle':
       "Questions, objets oubliés, idées de partenariat : on lit tout et on répond sous 24h.",
     'contact.method.email.label': 'Email',
-    'contact.method.email.value': 'hello@consign-locker.com',
+    'contact.method.email.value': 'consignlocker@gmail.com',
     'contact.method.email.hint': 'Réponse sous 24 h',
     'contact.method.whatsapp.label': 'WhatsApp',
     'contact.method.whatsapp.value': '+33 6 14 01 04 48',
