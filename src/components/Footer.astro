@@ -4,6 +4,7 @@ import { useTranslations, localizedPath } from '../i18n/ui';
 const lang = Astro.currentLocale ?? 'en';
 const t = useTranslations(lang);
 const year = new Date().getFullYear();
+const ha = (hash: string) => (lang === 'fr' ? '/fr' : '') + '/#' + hash;
 ---
 
 <footer class="site-footer">
@@ -18,10 +19,10 @@ const year = new Date().getFullYear();
     <nav class="footer-nav" aria-label="Footer">
       <div class="footer-col">
         <span class="eyebrow">Product</span>
-        <a href="#how">{t('nav.how')}</a>
+        <a href={ha('how')}>{t('nav.how')}</a>
         <a href={localizedPath(lang, '/pricing')}>{t('nav.pricing')}</a>
-        <a href="#locations">{t('nav.locations')}</a>
-        <a href="#faq">{t('nav.faq')}</a>
+        <a href={ha('locations')}>{t('nav.locations')}</a>
+        <a href={ha('faq')}>{t('nav.faq')}</a>
       </div>
       <div class="footer-col">
         <span class="eyebrow">Company</span>

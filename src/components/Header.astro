@@ -13,6 +13,8 @@ const otherLangPath = isFr
 const otherLangLabel = isFr ? 'EN' : 'FR';
 
 const home = localizedPath(lang, '/');
+// Anchor links must include the home path so they work from any page
+const ha = (hash: string) => (lang === 'fr' ? '/fr' : '') + '/#' + hash;
 ---
 
 <header class="site-header" id="site-header">
@@ -22,10 +24,10 @@ const home = localizedPath(lang, '/');
     </a>
 
     <nav class="nav-primary" aria-label="Primary">
-      <a href="#how">{t('nav.how')}</a>
+      <a href={ha('how')}>{t('nav.how')}</a>
       <a href={localizedPath(lang, '/pricing')}>{t('nav.pricing')}</a>
-      <a href="#locations">{t('nav.locations')}</a>
-      <a href="#faq">{t('nav.faq')}</a>
+      <a href={ha('locations')}>{t('nav.locations')}</a>
+      <a href={ha('faq')}>{t('nav.faq')}</a>
       <a href={localizedPath(lang, '/business')}>{t('nav.business')}</a>
     </nav>
 
@@ -33,7 +35,7 @@ const home = localizedPath(lang, '/');
       <a href={otherLangPath} class="lang-switch" aria-label={`Switch to ${otherLangLabel}`}>
         {otherLangLabel}
       </a>
-      <a href="#locations" class="btn btn-primary header-cta">
+      <a href={ha('locations')} class="btn btn-primary header-cta">
         {t('nav.cta')}
         <span aria-hidden="true">→</span>
       </a>
@@ -46,15 +48,15 @@ const home = localizedPath(lang, '/');
   <!-- Mobile sheet -->
   <div class="mobile-sheet" id="mobile-sheet" hidden>
     <nav class="mobile-nav" aria-label="Mobile">
-      <a href="#how">{t('nav.how')}</a>
+      <a href={ha('how')}>{t('nav.how')}</a>
       <a href={localizedPath(lang, '/pricing')}>{t('nav.pricing')}</a>
-      <a href="#locations">{t('nav.locations')}</a>
-      <a href="#faq">{t('nav.faq')}</a>
+      <a href={ha('locations')}>{t('nav.locations')}</a>
+      <a href={ha('faq')}>{t('nav.faq')}</a>
       <a href={localizedPath(lang, '/business')}>{t('nav.business')}</a>
       <a href={localizedPath(lang, '/contact')}>{t('nav.contact')}</a>
       <div class="mobile-cta-row">
         <a href={otherLangPath} class="lang-switch">{otherLangLabel}</a>
-        <a href="#locations" class="btn btn-primary">{t('nav.cta')} →</a>
+        <a href={ha('locations')} class="btn btn-primary">{t('nav.cta')} →</a>
       </div>
     </nav>
   </div>
