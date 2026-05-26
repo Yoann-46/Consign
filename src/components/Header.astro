@@ -18,7 +18,6 @@ const home = localizedPath(lang, '/');
 <header class="site-header" id="site-header">
   <div class="container-x header-inner">
     <a href={home} class="brand" aria-label="Consign — home">
-      <span class="brand-mark" aria-hidden="true"></span>
       <span class="brand-name">Consign</span>
     </a>
 
@@ -85,28 +84,13 @@ const home = localizedPath(lang, '/');
   .brand {
     display: inline-flex;
     align-items: center;
-    gap: 0.6rem;
     text-decoration: none;
-    color: var(--color-ink);
     font-weight: 800;
-    font-size: 1.15rem;
+    font-size: 1.25rem;
     letter-spacing: -0.02em;
   }
-  .brand-mark {
-    width: 28px;
-    height: 28px;
-    border-radius: 8px;
-    background: var(--color-coral);
-    position: relative;
-  }
-  .brand-mark::after {
-    content: '';
-    position: absolute;
-    inset: 6px 6px auto auto;
-    width: 6px;
-    height: 6px;
-    background: var(--color-yellow);
-    border-radius: 50%;
+  .brand-name {
+    color: var(--color-coral);
   }
 
   .nav-primary {

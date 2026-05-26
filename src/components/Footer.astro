@@ -10,7 +10,6 @@ const year = new Date().getFullYear();
   <div class="container-x footer-inner">
     <div class="footer-brand">
       <div class="brand">
-        <span class="brand-mark" aria-hidden="true"></span>
         <span class="brand-name">Consign</span>
       </div>
       <p class="footer-tagline">{t('footer.tagline')}</p>
@@ -62,26 +61,12 @@ const year = new Date().getFullYear();
   .footer-brand .brand {
     display: inline-flex;
     align-items: center;
-    gap: 0.6rem;
-    color: var(--color-bg);
     font-weight: 800;
     font-size: 1.25rem;
+    letter-spacing: -0.02em;
   }
-  .footer-brand .brand-mark {
-    width: 28px;
-    height: 28px;
-    border-radius: 8px;
-    background: var(--color-coral);
-    position: relative;
-  }
-  .footer-brand .brand-mark::after {
-    content: '';
-    position: absolute;
-    inset: 6px 6px auto auto;
-    width: 6px;
-    height: 6px;
-    background: var(--color-yellow);
-    border-radius: 50%;
+  .footer-brand .brand-name {
+    color: var(--color-coral);
   }
   .footer-tagline {
     margin-top: 0.85rem;
