@@ -1,0 +1,254 @@
+---
+import { useTranslations } from '../i18n/ui';
+
+const lang = Astro.currentLocale ?? 'en';
+const t = useTranslations(lang);
+
+const items = [
+  { q: t('faq.q1'), a: t('faq.a1') },
+  { q: t('faq.q2'), a: t('faq.a2') },
+  { q: t('faq.q3'), a: t('faq.a3') },
+  { q: t('faq.q4'), a: t('faq.a4') },
+  { q: t('faq.q5'), a: t('faq.a5') },
+  { q: t('faq.q6'), a: t('faq.a6') },
+  { q: t('faq.q7'), a: t('faq.a7') },
+];
+---
+
+<section class="faq" id="faq" aria-labelledby="faq-title">
+  <div class="container-x faq-wrap">
+    <header class="faq-header" data-faq-anim="header">
+      <span class="eyebrow faq-eyebrow">{t('faq.eyebrow')}</span>
+      <h2 id="faq-title" class="heading-display faq-title">{t('faq.title')}</h2>
+    </header>
+
+    <ul class="faq-list" role="list">
+      {items.map((item, i) => (
+        <li class="faq-item" data-faq-anim="item">
+          <button
+            type="button"
+            class="faq-q"
+            aria-expanded="false"
+            aria-controls={`faq-a-${i}`}
+            id={`faq-q-${i}`}
+          >
+            <span class="faq-q-text">{item.q}</span>
+            <span class="faq-q-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 5v14M5 12h14" />
+              </svg>
+            </span>
+          </button>
+          <div
+            class="faq-a"
+            id={`faq-a-${i}`}
+            role="region"
+            aria-labelledby={`faq-q-${i}`}
+          >
+            <div class="faq-a-inner">
+              <p>{item.a}</p>
+            </div>
+          </div>
+        </li>
+      ))}
+    </ul>
+  </div>
+</section>
+
+<style>
+  .faq {
+    background: var(--color-bg);
+    padding-block: clamp(4.5rem, 9vw, 8rem);
+    position: relative;
+  }
+
+  .faq-wrap {
+    max-width: 920px;
+  }
+
+  .faq-header {
+    margin-bottom: clamp(2.5rem, 5vw, 3.75rem);
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  .faq-eyebrow {
+    color: var(--color-coral-dark);
+    margin-bottom: 0.85rem;
+    display: inline-block;
+  }
+  .faq-title {
+    font-size: clamp(2.25rem, 6vw, 4.25rem);
+    margin: 0;
+    color: var(--color-ink);
+  }
+
+  .faq-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-top: 1.5px solid var(--color-ink);
+  }
+
+  .faq-item {
+    border-bottom: 1.5px solid var(--color-ink);
+    opacity: 0;
+    transform: translateY(16px);
+  }
+
+  .faq-q {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+    width: 100%;
+    padding: 1.5rem 0;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    text-align: left;
+    color: var(--color-ink);
+    font-family: inherit;
+    font-weight: 700;
+    font-size: clamp(1.1rem, 2.4vw, 1.45rem);
+    letter-spacing: -0.01em;
+    line-height: 1.3;
+    transition: color 180ms ease;
+  }
+  .faq-q:hover { color: var(--color-coral); }
+  .faq-q:focus-visible {
+    outline: 2px solid var(--color-coral);
+    outline-offset: 4px;
+    border-radius: 4px;
+  }
+
+  .faq-q-icon {
+    flex-shrink: 0;
+    width: 32px;
+    height: 32px;
+    border: 1.5px solid var(--color-ink);
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-ink);
+    transition: transform 320ms cubic-bezier(0.65, 0, 0.35, 1), background 180ms ease, color 180ms ease;
+  }
+  .faq-q-icon svg {
+    width: 16px;
+    height: 16px;
+  }
+  .faq-item.is-open .faq-q-icon {
+    transform: rotate(45deg);
+    background: var(--color-ink);
+    color: var(--color-bg);
+  }
+  .faq-item.is-open .faq-q {
+    color: var(--color-coral);
+  }
+
+  .faq-a {
+    overflow: hidden;
+    height: 0;
+  }
+  .faq-a-inner {
+    padding-bottom: 1.5rem;
+    padding-right: 3rem;
+    color: var(--color-ink-soft);
+    font-size: 1.05rem;
+    line-height: 1.6;
+    max-width: 70ch;
+  }
+  .faq-a-inner p { margin: 0; }
+
+  @media (min-width: 700px) {
+    .faq-q { padding: 1.85rem 0; }
+    .faq-a-inner {
+      font-size: 1.1rem;
+    }
+  }
+</style>
+
+<script>
+  import { gsap } from 'gsap';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+  gsap.registerPlugin(ScrollTrigger);
+
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  const header = document.querySelector<HTMLElement>('[data-faq-anim="header"]');
+  const items = document.querySelectorAll<HTMLElement>('[data-faq-anim="item"]');
+
+  if (reduce) {
+    if (header) gsap.set(header, { opacity: 1, y: 0 });
+    gsap.set(items, { opacity: 1, y: 0 });
+  } else {
+    if (header) {
+      gsap.to(header, {
+        opacity: 1,
+        y: 0,
+        duration: 1,
+        ease: 'power3.out',
+        scrollTrigger: { trigger: header, start: 'top 80%', once: true },
+      });
+    }
+    gsap.to(items, {
+      opacity: 1,
+      y: 0,
+      duration: 0.75,
+      ease: 'power3.out',
+      stagger: 0.1,
+      scrollTrigger: { trigger: '.faq-list', start: 'top 75%', once: true },
+    });
+  }
+
+  // Accordion behavior — animate height: auto via GSAP
+  items.forEach((item) => {
+    const btn = item.querySelector<HTMLButtonElement>('.faq-q');
+    const panel = item.querySelector<HTMLElement>('.faq-a');
+    const inner = item.querySelector<HTMLElement>('.faq-a-inner');
+    if (!btn || !panel || !inner) return;
+
+    // Init closed state
+    gsap.set(panel, { height: 0 });
+    gsap.set(inner, { opacity: 0, y: -6 });
+
+    btn.addEventListener('click', () => {
+      const isOpening = !item.classList.contains('is-open');
+      item.classList.toggle('is-open', isOpening);
+      btn.setAttribute('aria-expanded', String(isOpening));
+
+      // Kill in-flight tweens so rapid clicks behave
+      gsap.killTweensOf(panel);
+      gsap.killTweensOf(inner);
+
+      if (isOpening) {
+        gsap.to(panel, {
+          height: 'auto',
+          duration: 0.45,
+          ease: 'power3.out',
+        });
+        gsap.to(inner, {
+          opacity: 1,
+          y: 0,
+          duration: 0.4,
+          ease: 'power2.out',
+          delay: 0.08,
+        });
+      } else {
+        gsap.to(inner, {
+          opacity: 0,
+          y: -6,
+          duration: 0.2,
+          ease: 'power2.in',
+        });
+        gsap.to(panel, {
+          height: 0,
+          duration: 0.35,
+          ease: 'power3.in',
+          delay: 0.05,
+        });
+      }
+    });
+  });
+</script>

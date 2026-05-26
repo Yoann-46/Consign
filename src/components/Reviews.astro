@@ -1,0 +1,421 @@
+---
+import { useTranslations } from '../i18n/ui';
+
+const lang = Astro.currentLocale ?? 'en';
+const t = useTranslations(lang);
+
+/**
+ * V1: hardcoded placeholder reviews.
+ * V2: pull from Google Business Profile API.
+ * Reviews stay in their original language by design (mirrors how real Google reviews appear).
+ */
+const reviews = [
+  {
+    text: "Saved my day! I had 4 hours before my flight and couldn't drag my suitcase around. Easy to book, locker was clean, and the location near the metro was perfect.",
+    name: 'Sarah M.',
+    date: lang === 'fr' ? 'Il y a 2 semaines' : '2 weeks ago',
+  },
+  {
+    text: "Super pratique pour notre dernière journée à Paris. Bagages déposés en 5 minutes, on a pu profiter de la ville tranquillement avant le train du soir.",
+    name: 'Marie L.',
+    date: lang === 'fr' ? 'Il y a 1 mois' : '1 month ago',
+  },
+  {
+    text: "Brilliant idea. The app is straightforward, the lockers feel solid and secure. Way better than dragging luggage through Paris. Will use again next trip.",
+    name: 'James K.',
+    date: lang === 'fr' ? 'Il y a 3 semaines' : '3 weeks ago',
+  },
+  {
+    text: "Cleaner and faster than the staffed left-luggage at Gare du Nord. Great spot in the Sentier, easy to find. Highly recommend.",
+    name: 'Alex P.',
+    date: lang === 'fr' ? 'Il y a 1 mois' : '1 month ago',
+  },
+  {
+    text: "Excellent service. Open 24/7 meant we could drop our bags after a very late check-out. The whole process took two minutes. Stress-free.",
+    name: 'Emma R.',
+    date: lang === 'fr' ? 'Il y a 2 mois' : '2 months ago',
+  },
+] as const;
+
+const initials = (name: string) =>
+  name
+    .split(' ')
+    .map((n) => n[0])
+    .join('')
+    .slice(0, 2)
+    .toUpperCase();
+
+// Deterministic background tint per reviewer (no random — stable between SSR + hydration)
+const tints = ['coral', 'yellow', 'coral', 'yellow', 'coral'] as const;
+---
+
+<section class="reviews" id="reviews" aria-labelledby="reviews-title">
+  <div class="container-x">
+    <header class="reviews-header" data-rev-anim="header">
+      <span class="eyebrow reviews-eyebrow">{t('reviews.eyebrow')}</span>
+      <h2 id="reviews-title" class="heading-display reviews-title">{t('reviews.title')}</h2>
+
+      <div class="reviews-rating" aria-label={t('reviews.rating.aria')}>
+        <span class="rating-stars" aria-hidden="true">
+          {Array.from({ length: 5 }).map(() => (
+            <svg viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 2.5l2.95 6.59 7.05.61-5.38 4.69 1.66 6.86L12 17.77l-6.28 3.48 1.66-6.86-5.38-4.69 7.05-.61z" />
+            </svg>
+          ))}
+        </span>
+        <span class="rating-value">5.0</span>
+        <span class="rating-google" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
+            <path fill="#4285F4" d="M23.49 12.27c0-.79-.07-1.54-.19-2.27H12v4.51h6.45c-.28 1.45-1.13 2.68-2.4 3.5v2.91h3.87c2.26-2.08 3.57-5.15 3.57-8.65z" />
+            <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.87-2.91c-1.07.72-2.45 1.16-4.06 1.16-3.12 0-5.77-2.1-6.71-4.94H1.29v3.1C3.26 21.3 7.31 24 12 24z" />
+            <path fill="#FBBC05" d="M5.29 14.4c-.24-.72-.38-1.49-.38-2.4s.14-1.68.38-2.4V6.5H1.29A11.97 11.97 0 0 0 0 12c0 1.94.46 3.77 1.29 5.5l4-3.1z" />
+            <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.59 1.79l3.43-3.43C17.95 1.19 15.24 0 12 0 7.31 0 3.26 2.7 1.29 6.5l4 3.1c.94-2.84 3.59-4.85 6.71-4.85z" />
+          </svg>
+          <span class="sr-only">Google</span>
+        </span>
+        <span class="rating-label">{t('reviews.rating.label')}</span>
+      </div>
+    </header>
+
+    <ul class="reviews-list">
+      {reviews.map((r, i) => (
+        <li class={`review tint-${tints[i]}`} data-rev-anim="card">
+          <div class="review-stars" aria-label={t('reviews.rating.aria')}>
+            {Array.from({ length: 5 }).map(() => (
+              <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <path d="M12 2.5l2.95 6.59 7.05.61-5.38 4.69 1.66 6.86L12 17.77l-6.28 3.48 1.66-6.86-5.38-4.69 7.05-.61z" />
+              </svg>
+            ))}
+          </div>
+
+          <blockquote class="review-text">
+            <p>{r.text}</p>
+          </blockquote>
+
+          <footer class="review-meta">
+            <span class={`review-avatar tint-${tints[i]}`} aria-hidden="true">
+              {initials(r.name)}
+            </span>
+            <span class="review-author">
+              <span class="review-name">{r.name}</span>
+              <span class="review-date">{r.date}</span>
+            </span>
+          </footer>
+        </li>
+      ))}
+    </ul>
+
+    <div class="reviews-foot" data-rev-anim="foot">
+      <a
+        href="https://www.google.com/maps"
+        class="btn btn-ghost reviews-cta"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        {t('reviews.cta')}
+        <span aria-hidden="true">↗</span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<style>
+  .reviews {
+    background: var(--color-bg-warm);
+    padding-block: clamp(4.5rem, 9vw, 8rem);
+    position: relative;
+    /* Clip cards when they rise above during the credits-style scroll */
+    overflow: hidden;
+  }
+
+  /* Decorative dot grid in background */
+  .reviews::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(circle, color-mix(in srgb, var(--color-ink) 8%, transparent) 1px, transparent 1px);
+    background-size: 22px 22px;
+    mask-image: radial-gradient(ellipse at 50% 0%, black 20%, transparent 70%);
+    -webkit-mask-image: radial-gradient(ellipse at 50% 0%, black 20%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container-x {
+    position: relative;
+    z-index: 1;
+  }
+
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  /* Header */
+  .reviews-header {
+    margin-bottom: clamp(2.5rem, 5vw, 4rem);
+    max-width: 720px;
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  .reviews-eyebrow {
+    color: var(--color-coral-dark);
+    margin-bottom: 0.85rem;
+    display: inline-block;
+  }
+  .reviews-title {
+    font-size: clamp(2.25rem, 6.5vw, 4.5rem);
+    margin: 0 0 1.5rem;
+    color: var(--color-ink);
+  }
+
+  /* Big rating block */
+  .reviews-rating {
+    display: inline-flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    padding: 0.75rem 1.1rem;
+    background: var(--color-bg);
+    border: 1.5px solid var(--color-ink);
+    border-radius: 999px;
+  }
+  .rating-stars {
+    display: inline-flex;
+    gap: 0.15rem;
+    color: var(--color-coral);
+  }
+  .rating-stars svg {
+    width: 18px;
+    height: 18px;
+  }
+  .rating-value {
+    font-weight: 800;
+    font-size: 1.05rem;
+    letter-spacing: -0.01em;
+    color: var(--color-ink);
+  }
+  .rating-google {
+    display: inline-flex;
+    align-items: center;
+  }
+  .rating-google svg {
+    display: block;
+  }
+  .rating-label {
+    font-size: 0.95rem;
+    color: var(--color-ink-soft);
+    font-weight: 500;
+  }
+
+  /* Cards: horizontal swipe carousel on mobile, grid on larger screens */
+  .reviews-list {
+    list-style: none;
+    margin: 0;
+    padding: 0 var(--spacing-gutter) 0.5rem;
+    /* Bleed to viewport edges so the swipe feels natural */
+    margin-inline: calc(var(--spacing-gutter) * -1);
+    display: flex;
+    gap: 1rem;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    -webkit-overflow-scrolling: touch;
+  }
+  .reviews-list::-webkit-scrollbar { display: none; }
+
+  .review {
+    background: var(--color-bg);
+    border: 1.5px solid var(--color-ink);
+    border-radius: 18px;
+    padding: 1.5rem 1.5rem 1.35rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    position: relative;
+    /* Mobile carousel: each card is ~85% of viewport, snap on scroll */
+    flex: 0 0 85%;
+    scroll-snap-align: start;
+    min-width: 0;
+  }
+
+  /* Tint accent corner — a small colored mark in the top-right */
+  .review::after {
+    content: '';
+    position: absolute;
+    top: 1.4rem;
+    right: 1.5rem;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--accent);
+    opacity: 0.85;
+  }
+  .review.tint-coral { --accent: var(--color-coral); }
+  .review.tint-yellow { --accent: var(--color-yellow-deep); }
+
+  .review-stars {
+    display: inline-flex;
+    gap: 0.15rem;
+    color: var(--color-coral);
+  }
+  .review-stars svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .review-text {
+    margin: 0;
+    color: var(--color-ink);
+    font-size: 1rem;
+    line-height: 1.55;
+    flex-grow: 1;
+  }
+  .review-text p {
+    margin: 0;
+  }
+
+  .review-meta {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding-top: 0.5rem;
+    border-top: 1px solid var(--color-rule);
+  }
+
+  .review-avatar {
+    flex-shrink: 0;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.85rem;
+    letter-spacing: 0.01em;
+    background: var(--accent);
+    color: var(--color-ink);
+    border: 1.5px solid var(--color-ink);
+  }
+  .review-avatar.tint-coral { color: white; }
+
+  .review-author {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.2;
+  }
+  .review-name {
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: var(--color-ink);
+  }
+  .review-date {
+    font-size: 0.8rem;
+    color: var(--color-ink-faint);
+    margin-top: 0.1rem;
+  }
+
+  /* Footer CTA */
+  .reviews-foot {
+    margin-top: 2.5rem;
+    display: flex;
+    justify-content: center;
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  /* .reviews-cta inherits the new global .btn sizes */
+
+  /* Tablet+: back to a grid layout (no horizontal scroll) */
+  @media (min-width: 640px) {
+    .reviews-list {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1.15rem;
+      padding: 0;
+      margin-inline: 0;
+      overflow: visible;
+      scroll-snap-type: none;
+    }
+    .review {
+      flex: initial;
+      scroll-snap-align: none;
+    }
+  }
+
+  /* Desktop: clean 3-up grid */
+  @media (min-width: 1000px) {
+    .reviews-list {
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+      align-items: start;
+    }
+  }
+</style>
+
+<script>
+  import { gsap } from 'gsap';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+  gsap.registerPlugin(ScrollTrigger);
+
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  const header = document.querySelector<HTMLElement>('[data-rev-anim="header"]');
+  const foot = document.querySelector<HTMLElement>('[data-rev-anim="foot"]');
+  const list = document.querySelector<HTMLElement>('.reviews-list');
+
+  if (reduce) {
+    if (header) gsap.set(header, { opacity: 1, y: 0 });
+    if (foot) gsap.set(foot, { opacity: 1, y: 0 });
+  } else {
+    // Header reveals once when scrolled into view
+    if (header) {
+      gsap.to(header, {
+        opacity: 1,
+        y: 0,
+        duration: 1.1,
+        ease: 'power3.out',
+        scrollTrigger: { trigger: header, start: 'top 75%', once: true },
+      });
+    }
+
+    // Foot CTA reveal
+    if (foot) {
+      gsap.to(foot, {
+        opacity: 1,
+        y: 0,
+        duration: 0.9,
+        ease: 'power2.out',
+        scrollTrigger: { trigger: foot, start: 'top 90%', once: true },
+      });
+    }
+
+    /**
+     * Film-credits effect — tablet+ only.
+     * On mobile the cards swipe horizontally, so no vertical parallax is needed.
+     */
+    const isTabletPlus = window.matchMedia('(min-width: 640px)').matches;
+    if (list && isTabletPlus) {
+      gsap.to(list, {
+        yPercent: -30,
+        ease: 'none',
+        scrollTrigger: {
+          trigger: '.reviews',
+          start: 'top bottom',
+          end: 'bottom top',
+          scrub: 1,
+        },
+      });
+    }
+  }
+</script>

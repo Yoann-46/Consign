@@ -1,0 +1,276 @@
+---
+import { useTranslations, localizedPath } from '../i18n/ui';
+
+const lang = Astro.currentLocale ?? 'en';
+const t = useTranslations(lang);
+
+// Build the "other language" link from the current path.
+const currentPath = Astro.url.pathname;
+const isFr = lang === 'fr';
+const otherLangPath = isFr
+  ? currentPath.replace(/^\/fr/, '') || '/'
+  : `/fr${currentPath === '/' ? '' : currentPath}`;
+const otherLangLabel = isFr ? 'EN' : 'FR';
+
+const home = localizedPath(lang, '/');
+---
+
+<header class="site-header" id="site-header">
+  <div class="container-x header-inner">
+    <a href={home} class="brand" aria-label="Consign — home">
+      <span class="brand-mark" aria-hidden="true"></span>
+      <span class="brand-name">Consign</span>
+    </a>
+
+    <nav class="nav-primary" aria-label="Primary">
+      <a href="#how">{t('nav.how')}</a>
+      <a href="#locations">{t('nav.locations')}</a>
+      <a href="#faq">{t('nav.faq')}</a>
+      <a href={localizedPath(lang, '/business')}>{t('nav.business')}</a>
+    </nav>
+
+    <div class="header-actions">
+      <a href={otherLangPath} class="lang-switch" aria-label={`Switch to ${otherLangLabel}`}>
+        {otherLangLabel}
+      </a>
+      <a href="#locations" class="btn btn-primary header-cta">
+        {t('nav.cta')}
+        <span aria-hidden="true">→</span>
+      </a>
+      <button class="burger" id="burger" aria-label="Open menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Mobile sheet -->
+  <div class="mobile-sheet" id="mobile-sheet" hidden>
+    <nav class="mobile-nav" aria-label="Mobile">
+      <a href="#how">{t('nav.how')}</a>
+      <a href="#locations">{t('nav.locations')}</a>
+      <a href="#faq">{t('nav.faq')}</a>
+      <a href={localizedPath(lang, '/business')}>{t('nav.business')}</a>
+      <a href={localizedPath(lang, '/contact')}>{t('nav.contact')}</a>
+      <div class="mobile-cta-row">
+        <a href={otherLangPath} class="lang-switch">{otherLangLabel}</a>
+        <a href="#locations" class="btn btn-primary">{t('nav.cta')} →</a>
+      </div>
+    </nav>
+  </div>
+</header>
+
+<style>
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: color-mix(in srgb, var(--color-bg) 88%, transparent);
+    backdrop-filter: saturate(140%) blur(14px);
+    -webkit-backdrop-filter: saturate(140%) blur(14px);
+    border-bottom: 1px solid transparent;
+    transition: border-color 200ms ease;
+  }
+  .site-header.scrolled {
+    border-bottom-color: var(--color-rule);
+  }
+
+  .header-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+    height: 72px;
+  }
+
+  .brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    text-decoration: none;
+    color: var(--color-ink);
+    font-weight: 800;
+    font-size: 1.15rem;
+    letter-spacing: -0.02em;
+  }
+  .brand-mark {
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    background: var(--color-coral);
+    position: relative;
+  }
+  .brand-mark::after {
+    content: '';
+    position: absolute;
+    inset: 6px 6px auto auto;
+    width: 6px;
+    height: 6px;
+    background: var(--color-yellow);
+    border-radius: 50%;
+  }
+
+  .nav-primary {
+    display: none;
+    gap: 1.75rem;
+  }
+  .nav-primary a {
+    color: var(--color-ink-soft);
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.95rem;
+    position: relative;
+    transition: color 160ms ease;
+  }
+  .nav-primary a:hover {
+    color: var(--color-ink);
+  }
+  .nav-primary a::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: -4px;
+    width: 100%;
+    height: 2px;
+    background: var(--color-coral);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 220ms cubic-bezier(0.65, 0, 0.35, 1);
+  }
+  .nav-primary a:hover::after {
+    transform: scaleX(1);
+  }
+
+  .header-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .lang-switch {
+    font-weight: 700;
+    font-size: 0.85rem;
+    color: var(--color-ink);
+    text-decoration: none;
+    padding: 0.4rem 0.7rem;
+    border: 2px solid var(--color-ink);
+    border-radius: 999px;
+    transition: background 160ms ease, color 160ms ease;
+  }
+  .lang-switch:hover {
+    background: var(--color-ink);
+    color: var(--color-bg);
+  }
+
+  .header-cta {
+    display: none;
+    padding: 0.65rem 1.15rem;
+    font-size: 0.9rem;
+    min-height: auto;
+  }
+
+  /* Mobile burger */
+  .burger {
+    display: inline-flex;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 32px;
+    height: 26px;
+    padding: 4px 0;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+  }
+  .burger span {
+    display: block;
+    height: 2.5px;
+    width: 100%;
+    background: var(--color-ink);
+    border-radius: 2px;
+    transition: transform 220ms ease, opacity 180ms ease;
+  }
+  .burger[aria-expanded='true'] span:nth-child(1) {
+    transform: translateY(7.5px) rotate(45deg);
+  }
+  .burger[aria-expanded='true'] span:nth-child(2) {
+    opacity: 0;
+  }
+  .burger[aria-expanded='true'] span:nth-child(3) {
+    transform: translateY(-7.5px) rotate(-45deg);
+  }
+
+  .mobile-sheet {
+    border-top: 1px solid var(--color-rule);
+    background: var(--color-bg);
+  }
+  .mobile-sheet[hidden] {
+    display: none;
+  }
+  .mobile-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    padding: 1.25rem var(--spacing-gutter) 2rem;
+  }
+  .mobile-nav a {
+    color: var(--color-ink);
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 1.5rem;
+    letter-spacing: -0.015em;
+    padding: 0.6rem 0;
+    border-bottom: 1px solid var(--color-rule);
+  }
+  .mobile-nav a:last-of-type {
+    border-bottom: none;
+  }
+  .mobile-cta-row {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-top: 1rem;
+  }
+  .mobile-cta-row .btn {
+    flex: 1;
+  }
+
+  @media (min-width: 900px) {
+    .nav-primary { display: flex; }
+    .header-cta { display: inline-flex; }
+    .burger { display: none; }
+    .mobile-sheet { display: none !important; }
+  }
+</style>
+
+<script>
+  // Sticky border on scroll
+  const header = document.getElementById('site-header');
+  const burger = document.getElementById('burger');
+  const sheet = document.getElementById('mobile-sheet');
+
+  const onScroll = () => {
+    if (!header) return;
+    header.classList.toggle('scrolled', window.scrollY > 8);
+  };
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+
+  // Burger toggle
+  burger?.addEventListener('click', () => {
+    if (!sheet || !burger) return;
+    const open = burger.getAttribute('aria-expanded') === 'true';
+    burger.setAttribute('aria-expanded', String(!open));
+    if (open) {
+      sheet.setAttribute('hidden', '');
+    } else {
+      sheet.removeAttribute('hidden');
+    }
+  });
+
+  // Close mobile sheet when clicking a link
+  sheet?.querySelectorAll('a').forEach((a) =>
+    a.addEventListener('click', () => {
+      sheet.setAttribute('hidden', '');
+      burger?.setAttribute('aria-expanded', 'false');
+    }),
+  );
+</script>

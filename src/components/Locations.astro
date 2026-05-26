@@ -1,0 +1,459 @@
+---
+import { useTranslations } from '../i18n/ui';
+
+const lang = Astro.currentLocale ?? 'en';
+const t = useTranslations(lang);
+
+const facts = [
+  { label: t('loc.address.label'), value: t('loc.address.value'), icon: 'pin' },
+  { label: t('loc.hours.label'), value: t('loc.hours.value'), icon: 'clock' },
+  { label: t('loc.metro.label'), value: t('loc.metro.value'), icon: 'metro' },
+  { label: t('loc.access.label'), value: t('loc.access.value'), icon: 'door' },
+] as const;
+
+const comingSoon = [
+  t('loc.coming.1'),
+  t('loc.coming.2'),
+  t('loc.coming.3'),
+  t('loc.coming.4'),
+];
+
+const directionsUrl =
+  'https://www.google.com/maps/dir/?api=1&destination=57+rue+de+Cl%C3%A9ry+75002+Paris';
+---
+
+<section class="locations" id="locations" aria-labelledby="loc-title">
+  <div class="container-x">
+    <header class="loc-header" data-loc-anim="header">
+      <span class="eyebrow loc-eyebrow">{t('loc.eyebrow')}</span>
+      <h2 id="loc-title" class="heading-display loc-title">
+        {t('loc.title')} <span class="loc-title-accent">{t('loc.title.accent')}</span>
+      </h2>
+      <p class="loc-subtitle">{t('loc.subtitle')}</p>
+    </header>
+
+    <div class="loc-main">
+      <!-- Real Google Maps embed, framed -->
+      <div class="loc-map" data-loc-anim="map">
+        <iframe
+          class="map-iframe"
+          title="Consign locker location at 57 rue de Cléry, Paris"
+          src="https://maps.google.com/maps?q=57%20rue%20de%20Cl%C3%A9ry%2075002%20Paris&t=&z=16&ie=UTF8&iwloc=&output=embed"
+          loading="lazy"
+          referrerpolicy="no-referrer-when-downgrade"
+          allowfullscreen
+        ></iframe>
+        <!-- Branded overlay — corner tag pointing to the spot -->
+        <div class="map-tag" aria-hidden="true">
+          <span class="map-tag-dot"></span>
+          Consign · Sentier
+        </div>
+      </div>
+
+      <!-- Address card -->
+      <div class="loc-card" data-loc-anim="card">
+        <span class="loc-card-tag">
+          <span class="loc-card-dot" aria-hidden="true"></span>
+          Live now
+        </span>
+
+        <h3 class="loc-card-title">Consign · Sentier</h3>
+
+        <dl class="loc-facts">
+          {facts.map((f) => (
+            <div class="fact">
+              <dt class="fact-label">
+                <span class="fact-icon" aria-hidden="true">
+                  {f.icon === 'pin' && (
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M20 10c0 7-8 13-8 13s-8-6-8-13a8 8 0 0 1 16 0z" />
+                      <circle cx="12" cy="10" r="3" />
+                    </svg>
+                  )}
+                  {f.icon === 'clock' && (
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                      <circle cx="12" cy="12" r="9" />
+                      <path d="M12 7v5l3.5 2" />
+                    </svg>
+                  )}
+                  {f.icon === 'metro' && (
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                      <rect x="5" y="3" width="14" height="14" rx="4" />
+                      <path d="M9 17l-2 4M15 17l2 4" />
+                      <circle cx="9.5" cy="10" r="1" fill="currentColor" stroke="none" />
+                      <circle cx="14.5" cy="10" r="1" fill="currentColor" stroke="none" />
+                    </svg>
+                  )}
+                  {f.icon === 'door' && (
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18" />
+                      <path d="M4 22h16" />
+                      <circle cx="14.5" cy="12.5" r="0.8" fill="currentColor" stroke="none" />
+                    </svg>
+                  )}
+                </span>
+                {f.label}
+              </dt>
+              <dd class="fact-value">{f.value}</dd>
+            </div>
+          ))}
+        </dl>
+
+        <a href={directionsUrl} class="btn btn-primary loc-cta" target="_blank" rel="noopener noreferrer">
+          {t('loc.cta.directions')}
+          <span aria-hidden="true">↗</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- Coming soon -->
+    <aside class="loc-coming" data-loc-anim="coming" aria-label={t('loc.coming.title')}>
+      <span class="coming-label">{t('loc.coming.title')}</span>
+      <ul class="coming-list">
+        {comingSoon.map((c) => (
+          <li class="coming-pill">
+            <span class="coming-dot" aria-hidden="true"></span>
+            {c}
+          </li>
+        ))}
+      </ul>
+    </aside>
+  </div>
+</section>
+
+<style>
+  .locations {
+    padding-block: clamp(4.5rem, 9vw, 8rem);
+    background: var(--color-bg);
+    position: relative;
+  }
+
+  .loc-header {
+    /* No max-width so the title can stay on one line on desktop */
+    margin-bottom: clamp(2rem, 5vw, 3.5rem);
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  .loc-eyebrow {
+    color: var(--color-coral-dark);
+    margin-bottom: 0.85rem;
+    display: inline-block;
+  }
+  .loc-title {
+    font-size: clamp(2rem, 5.6vw, 4rem);
+    margin: 0 0 1.25rem;
+    color: var(--color-ink);
+  }
+  /* Desktop: enforce single line */
+  @media (min-width: 760px) {
+    .loc-title {
+      white-space: nowrap;
+    }
+  }
+  .loc-title-accent {
+    color: var(--color-coral);
+  }
+  .loc-subtitle {
+    margin: 0;
+    max-width: 50ch;
+    color: var(--color-ink-soft);
+    font-size: clamp(1rem, 2vw, 1.15rem);
+    line-height: 1.55;
+  }
+
+  /* Main grid: map + card */
+  .loc-main {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+    align-items: stretch;
+  }
+
+  /* Map — Google Maps embed framed with our brand border */
+  .loc-map {
+    border: 1.5px solid var(--color-ink);
+    border-radius: 22px;
+    overflow: hidden;
+    position: relative;
+    aspect-ratio: 5 / 4;
+    background: var(--color-bg-warm);
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  .map-iframe {
+    width: 100%;
+    height: 100%;
+    border: 0;
+    display: block;
+    /* Subtle warmth shift to lean toward our palette without breaking readability */
+    filter: contrast(0.97) saturate(0.92) hue-rotate(-4deg);
+  }
+
+  /* Branded tag overlaid on the map (top-left) */
+  .map-tag {
+    position: absolute;
+    top: 1rem;
+    left: 1rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.45rem 0.85rem 0.45rem 0.7rem;
+    background: var(--color-bg);
+    border: 1.5px solid var(--color-ink);
+    border-radius: 999px;
+    font-weight: 700;
+    font-size: 0.85rem;
+    color: var(--color-ink);
+    pointer-events: none;
+    z-index: 2;
+  }
+  .map-tag-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--color-coral);
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--color-coral) 25%, transparent);
+    animation: pinPulse 1.8s ease-in-out infinite;
+  }
+  @keyframes pinPulse {
+    0%, 100% { box-shadow: 0 0 0 4px color-mix(in srgb, var(--color-coral) 25%, transparent); }
+    50% { box-shadow: 0 0 0 8px color-mix(in srgb, var(--color-coral) 0%, transparent); }
+  }
+
+  /* Card */
+  .loc-card {
+    background: var(--color-bg);
+    border: 1.5px solid var(--color-ink);
+    border-radius: 22px;
+    padding: 1.75rem 1.5rem 1.75rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    opacity: 0;
+    transform: translateY(24px);
+  }
+
+  .loc-card-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    align-self: flex-start;
+    padding: 0.3rem 0.7rem 0.3rem 0.55rem;
+    background: color-mix(in srgb, var(--color-coral) 14%, var(--color-bg));
+    border: 1.5px solid var(--color-coral);
+    border-radius: 999px;
+    font-weight: 700;
+    font-size: 0.78rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--color-coral-dark);
+  }
+  .loc-card-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--color-coral);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-coral) 25%, transparent);
+    animation: pulse 1.8s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-coral) 25%, transparent); }
+    50% { box-shadow: 0 0 0 6px color-mix(in srgb, var(--color-coral) 0%, transparent); }
+  }
+
+  .loc-card-title {
+    margin: 0;
+    font-size: clamp(1.5rem, 3vw, 1.85rem);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    color: var(--color-ink);
+  }
+
+  .loc-facts {
+    margin: 0;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  .fact {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.2rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--color-rule);
+  }
+  .fact:last-child {
+    padding-bottom: 0;
+    border-bottom: none;
+  }
+  .fact-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 0;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-ink-faint);
+  }
+  .fact-icon {
+    width: 16px;
+    height: 16px;
+    color: var(--color-coral);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .fact-icon svg {
+    width: 100%;
+    height: 100%;
+  }
+  .fact-value {
+    margin: 0;
+    font-size: 1.05rem;
+    font-weight: 500;
+    color: var(--color-ink);
+    line-height: 1.4;
+  }
+
+  .loc-cta {
+    align-self: flex-start;
+  }
+
+  /* Coming soon */
+  .loc-coming {
+    margin-top: clamp(2.5rem, 5vw, 4rem);
+    padding: 1.5rem 1.5rem 1.65rem;
+    border: 1.5px dashed var(--color-ink);
+    border-radius: 22px;
+    background: color-mix(in srgb, var(--color-yellow) 28%, var(--color-bg));
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  .coming-label {
+    display: block;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--color-ink-soft);
+    margin-bottom: 0.85rem;
+  }
+  .coming-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.55rem;
+  }
+  .coming-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.5rem 0.9rem;
+    background: var(--color-bg);
+    border: 1.5px solid var(--color-ink);
+    border-radius: 999px;
+    font-weight: 600;
+    font-size: 0.92rem;
+    color: var(--color-ink);
+  }
+  .coming-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: transparent;
+    border: 1.5px dashed var(--color-ink);
+  }
+
+  /* Tablet+ */
+  @media (min-width: 760px) {
+    .loc-main {
+      grid-template-columns: 1.15fr 1fr;
+      gap: 1.5rem;
+    }
+    .loc-map {
+      aspect-ratio: auto;
+      min-height: 420px;
+    }
+  }
+
+  @media (min-width: 1000px) {
+    .loc-main {
+      grid-template-columns: 1.3fr 1fr;
+      gap: 2rem;
+    }
+    .loc-card {
+      padding: 2rem 1.85rem;
+    }
+    .fact {
+      grid-template-columns: 110px 1fr;
+      align-items: center;
+      gap: 1rem;
+    }
+    .fact-label { margin-top: 0; }
+  }
+</style>
+
+<script>
+  import { gsap } from 'gsap';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+  gsap.registerPlugin(ScrollTrigger);
+
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  const header = document.querySelector<HTMLElement>('[data-loc-anim="header"]');
+  const map = document.querySelector<HTMLElement>('[data-loc-anim="map"]');
+  const card = document.querySelector<HTMLElement>('[data-loc-anim="card"]');
+  const coming = document.querySelector<HTMLElement>('[data-loc-anim="coming"]');
+
+  if (reduce) {
+    [header, map, card, coming].forEach((el) => {
+      if (el) gsap.set(el, { opacity: 1, y: 0 });
+    });
+  } else {
+    if (header) {
+      gsap.to(header, {
+        opacity: 1,
+        y: 0,
+        duration: 1.1,
+        ease: 'power3.out',
+        scrollTrigger: { trigger: header, start: 'top 75%', once: true },
+      });
+    }
+
+    if (map) {
+      gsap.to(map, {
+        opacity: 1,
+        y: 0,
+        duration: 1.3,
+        ease: 'power3.out',
+        scrollTrigger: { trigger: '.loc-main', start: 'top 70%', once: true },
+      });
+    }
+
+    if (card) {
+      gsap.to(card, {
+        opacity: 1,
+        y: 0,
+        duration: 1.3,
+        ease: 'power3.out',
+        delay: 0.2,
+        scrollTrigger: { trigger: '.loc-main', start: 'top 70%', once: true },
+      });
+    }
+
+    if (coming) {
+      gsap.to(coming, {
+        opacity: 1,
+        y: 0,
+        duration: 1,
+        ease: 'power3.out',
+        scrollTrigger: { trigger: coming, start: 'top 85%', once: true },
+      });
+    }
+  }
+</script>

@@ -1,0 +1,245 @@
+---
+import { useTranslations } from '../i18n/ui';
+
+const lang = Astro.currentLocale ?? 'en';
+const t = useTranslations(lang);
+
+const reasons = Array.from({ length: 10 }, (_, i) => {
+  const n = i + 1;
+  return {
+    num: String(n).padStart(2, '0'),
+    title: t(`reasons.r${n}.title` as any),
+    desc: t(`reasons.r${n}.desc` as any),
+    accent: i % 2 === 0 ? 'coral' : 'yellow',
+  };
+});
+---
+
+<section class="reasons" id="reasons" aria-labelledby="reasons-title">
+  <div class="container-x">
+    <header class="reasons-header" data-reasons-anim="header">
+      <span class="eyebrow reasons-eyebrow">{t('reasons.eyebrow')}</span>
+      <h2 id="reasons-title" class="heading-display reasons-title">
+        {t('reasons.title')} <span class="reasons-title-accent">{t('reasons.title.accent')}</span>
+      </h2>
+    </header>
+
+    <ol class="reasons-list">
+      {reasons.map((r) => (
+        <li class={`reason accent-${r.accent}`} data-reasons-anim="card">
+          <span class="reason-num">{r.num}</span>
+          <h3 class="reason-title">{r.title}</h3>
+          <p class="reason-desc">{r.desc}</p>
+        </li>
+      ))}
+    </ol>
+  </div>
+</section>
+
+<style>
+  .reasons {
+    position: relative;
+    background: var(--color-ink);
+    color: var(--color-bg);
+    padding-block: clamp(4.5rem, 9vw, 8rem);
+    overflow: hidden;
+  }
+
+  /* Soft radial accents */
+  .reasons::before {
+    content: '';
+    position: absolute;
+    inset: -10% -20% auto auto;
+    width: 32rem;
+    height: 32rem;
+    background: radial-gradient(circle at center, color-mix(in srgb, var(--color-yellow) 16%, transparent), transparent 70%);
+    filter: blur(50px);
+    pointer-events: none;
+    z-index: 0;
+  }
+  .reasons::after {
+    content: '';
+    position: absolute;
+    inset: auto auto -10% -20%;
+    width: 28rem;
+    height: 28rem;
+    background: radial-gradient(circle at center, color-mix(in srgb, var(--color-coral) 16%, transparent), transparent 70%);
+    filter: blur(50px);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container-x { position: relative; z-index: 1; }
+
+  .reasons-header {
+    margin-bottom: clamp(3rem, 6vw, 5rem);
+    max-width: 880px;
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  .reasons-eyebrow {
+    color: var(--color-coral);
+    margin-bottom: 1rem;
+    display: inline-block;
+  }
+  .reasons-title {
+    font-size: clamp(2.5rem, 7vw, 5rem);
+    margin: 0;
+    color: var(--color-bg);
+  }
+  .reasons-title-accent {
+    color: var(--color-yellow);
+    font-style: italic;
+    font-weight: 300;
+  }
+
+  .reasons-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0;
+    border-top: 1px solid color-mix(in srgb, var(--color-bg) 14%, transparent);
+  }
+
+  .reason {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    grid-template-areas:
+      'num title'
+      'num desc';
+    column-gap: 1.5rem;
+    row-gap: 0.4rem;
+    align-items: start;
+    padding: 1.5rem 0;
+    border-bottom: 1px solid color-mix(in srgb, var(--color-bg) 14%, transparent);
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  .reason-num {
+    grid-area: num;
+    font-size: 2.25rem;
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: -0.04em;
+    min-width: 2.4ch;
+  }
+  .accent-coral .reason-num { color: var(--color-coral); }
+  .accent-yellow .reason-num { color: var(--color-yellow); }
+
+  .reason-title {
+    grid-area: title;
+    margin: 0;
+    font-size: 1.35rem;
+    font-weight: 800;
+    letter-spacing: -0.015em;
+    color: var(--color-bg);
+    line-height: 1.15;
+  }
+
+  .reason-desc {
+    grid-area: desc;
+    margin: 0;
+    color: color-mix(in srgb, var(--color-bg) 68%, transparent);
+    font-size: 1rem;
+    line-height: 1.5;
+    max-width: 50ch;
+  }
+
+  /* Tablet — 2 columns side-by-side */
+  @media (min-width: 700px) {
+    .reasons-list {
+      grid-template-columns: repeat(2, 1fr);
+      border-top: 1px solid color-mix(in srgb, var(--color-bg) 14%, transparent);
+    }
+    .reason {
+      padding: 1.75rem 2rem 1.75rem 0;
+      border-right: 1px solid color-mix(in srgb, var(--color-bg) 14%, transparent);
+    }
+    .reason:nth-child(2n) {
+      padding-left: 2rem;
+      padding-right: 0;
+      border-right: none;
+    }
+  }
+
+  /* Desktop — 5 columns × 2 rows */
+  @media (min-width: 1100px) {
+    .reasons-list {
+      grid-template-columns: repeat(5, 1fr);
+    }
+    .reason {
+      grid-template-columns: 1fr;
+      grid-template-areas:
+        'num'
+        'title'
+        'desc';
+      row-gap: 1rem;
+      padding: 2rem 1.75rem 2.5rem;
+      border-right: 1px solid color-mix(in srgb, var(--color-bg) 14%, transparent);
+      border-bottom: 1px solid color-mix(in srgb, var(--color-bg) 14%, transparent);
+    }
+    /* Reset the tablet 2-col rules so 5-col layout is clean */
+    .reason:nth-child(2n) {
+      padding-left: 1.75rem;
+      padding-right: 1.75rem;
+      border-right: 1px solid color-mix(in srgb, var(--color-bg) 14%, transparent);
+    }
+    /* First column has no left padding */
+    .reason:nth-child(5n + 1) {
+      padding-left: 0;
+    }
+    /* Last column has no right padding + no right border */
+    .reason:nth-child(5n) {
+      padding-right: 0;
+      border-right: none;
+    }
+    /* Bottom row: no bottom border */
+    .reason:nth-child(n + 6) {
+      border-bottom: none;
+    }
+    .reason-num {
+      font-size: 3rem;
+    }
+    .reason-title {
+      font-size: 1.45rem;
+    }
+  }
+</style>
+
+<script>
+  import { gsap } from 'gsap';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+  gsap.registerPlugin(ScrollTrigger);
+
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  const header = document.querySelector<HTMLElement>('[data-reasons-anim="header"]');
+  const cards = document.querySelectorAll<HTMLElement>('[data-reasons-anim="card"]');
+
+  if (reduce) {
+    if (header) gsap.set(header, { opacity: 1, y: 0 });
+    gsap.set(cards, { opacity: 1, y: 0 });
+  } else {
+    if (header) {
+      gsap.to(header, {
+        opacity: 1,
+        y: 0,
+        duration: 1,
+        ease: 'power3.out',
+        scrollTrigger: { trigger: header, start: 'top 75%', once: true },
+      });
+    }
+    gsap.to(cards, {
+      opacity: 1,
+      y: 0,
+      duration: 1,
+      ease: 'power3.out',
+      stagger: 0.08,
+      scrollTrigger: { trigger: '.reasons-list', start: 'top 75%', once: true },
+    });
+  }
+</script>

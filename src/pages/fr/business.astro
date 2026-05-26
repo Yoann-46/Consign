@@ -1,0 +1,11 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import BusinessPage from '../../components/BusinessPage.astro';
+import { useTranslations } from '../../i18n/ui';
+
+const t = useTranslations(Astro.currentLocale ?? 'fr');
+---
+
+<Layout title={t('business.meta.title')} description={t('business.meta.description')}>
+  <BusinessPage />
+</Layout>
