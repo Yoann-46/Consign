@@ -2,7 +2,7 @@
 // Protected by middleware.ts (Basic Auth). Computes daily occupancy rate
 // and rental count from locker_snapshots.
 
-import { getSql, ensureSchema } from '../../lib/db.ts';
+import { getSql, ensureSchema } from '../../lib/db';
 
 interface VercelRequest {
   query: Record<string, string | string[] | undefined>;

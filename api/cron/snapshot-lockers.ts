@@ -2,8 +2,8 @@
 // the Hobby plan caps cron jobs at 1 run/day), writes one row per locker
 // into locker_snapshots so /api/admin/stats can compute occupancy over time.
 
-import { fetchRawLockers, mapLocker } from '../../lib/bobnet.ts';
-import { getSql, ensureSchema } from '../../lib/db.ts';
+import { fetchRawLockers, mapLocker } from '../../lib/bobnet';
+import { getSql, ensureSchema } from '../../lib/db';
 
 interface VercelRequest {
   headers: Record<string, string | string[] | undefined>;

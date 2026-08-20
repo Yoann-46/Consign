@@ -5,7 +5,7 @@
 // reservation end time. Per-locker detail would let anyone watching the
 // page infer which specific locker holds a bag and when it frees up.
 
-import { fetchRawLockers, mapLocker } from '../lib/bobnet.ts';
+import { fetchRawLockers, mapLocker } from '../lib/bobnet';
 
 interface VercelRequest {
   method?: string;
