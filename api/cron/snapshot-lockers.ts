@@ -1,4 +1,5 @@
-// Vercel Cron — runs hourly (see vercel.json), writes one row per locker
+// Vercel Cron — runs once daily at 19:00 UTC / ~20-21h Paris (see vercel.json;
+// the Hobby plan caps cron jobs at 1 run/day), writes one row per locker
 // into locker_snapshots so /api/admin/stats can compute occupancy over time.
 
 import { fetchRawLockers, mapLocker } from '../../lib/bobnet.ts';
