@@ -1,24 +1,13 @@
 ---
-const lang = Astro.currentLocale ?? 'en';
-const fr = lang === 'fr';
+const fr = (Astro.currentLocale ?? 'en') === 'fr';
 
 const txt = {
-  eyebrow:      fr ? 'En direct'                                     : 'Live',
-  title:        fr ? 'Disponibilité'                                 : 'Availability',
-  titleAccent:  fr ? 'en temps réel.'                                : 'right now.',
-  subtitle:     fr ? 'Vérifiez quels casiers sont libres avant de venir.' : 'Check which lockers are free before heading over.',
-  sectionM:     fr ? 'Casiers Moyens'                                : 'Medium Lockers',
-  sectionMDims: '45 × 55 × 33 cm',
-  sectionMHint: fr ? 'Sacs cabine, sacs à dos, petits bagages'       : 'Cabin bags, backpacks, small bags',
-  sectionL:     fr ? 'Casiers Grands'                                : 'Large Lockers',
-  sectionLDims: '45 × 55 × 85 cm',
-  sectionLHint: fr ? "Valises soute jusqu'à 85 cm"                   : 'Check-in suitcases up to 85 cm',
-  loading:      fr ? 'Chargement…'                                   : 'Loading…',
-  updatedAt:    fr ? 'Mis à jour à'                                  : 'Updated at',
-  statusAvail:  fr ? 'Disponible'                                    : 'Available',
-  statusResv:   fr ? 'Réservé'                                       : 'Reserved',
-  statusOver:   fr ? 'Temps supp.'                                   : 'Overtime',
-  statusBlock:  fr ? 'Bloqué'                                        : 'Blocked',
+  eyebrow:     fr ? 'En direct'                                     : 'Live',
+  title:       fr ? 'Disponibilité'                                 : 'Availability',
+  titleAccent: fr ? 'en temps réel.'                                : 'right now.',
+  subtitle:    fr ? 'Vérifiez le nombre de casiers libres avant de venir.' : 'Check how many lockers are free before heading over.',
+  loading:     fr ? 'Chargement…'                                   : 'Loading…',
+  updatedAt:   fr ? 'Mis à jour à'                                  : 'Updated at',
 };
 ---
 
@@ -43,103 +32,19 @@ const txt = {
     </div>
 
     <!-- ── Summary ─────────────────────────────────────── -->
-    <div id="lk-summary" class="lk-summary" aria-live="polite" aria-atomic="true">
+    <div id="lk-summary" class="lk-summary" data-lang={fr ? 'fr' : 'en'} aria-live="polite" aria-atomic="true">
       <span class="lk-summary-skeleton"></span>
-    </div>
-
-    <!-- ── Medium section ─────────────────────────────── -->
-    <div class="lk-section-header">
-      <div class="lk-section-title">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <rect x="2" y="4" width="20" height="16" rx="2"/>
-          <path d="M7 20v-4M17 20v-4"/>
-        </svg>
-        {txt.sectionM}
-        <span class="lk-dims">{txt.sectionMDims}</span>
-      </div>
-      <p class="lk-section-hint">{txt.sectionMHint}</p>
-    </div>
-
-    <div
-      class="lk-grid lk-grid--m"
-      id="lk-grid-m"
-      data-lang={lang}
-      role="list"
-      aria-label={txt.sectionM}
-    >
-      {Array.from({ length: 7 }).map(() => (
-        <div class="lk-skeleton" aria-hidden="true"></div>
-      ))}
-    </div>
-
-    <!-- ── Large section ──────────────────────────────── -->
-    <div class="lk-section-header lk-section-header--spaced">
-      <div class="lk-section-title">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <rect x="2" y="2" width="20" height="20" rx="2"/>
-          <path d="M7 22v-6M17 22v-6"/>
-        </svg>
-        {txt.sectionL}
-        <span class="lk-dims">{txt.sectionLDims}</span>
-      </div>
-      <p class="lk-section-hint">{txt.sectionLHint}</p>
-    </div>
-
-    <div
-      class="lk-grid lk-grid--l"
-      id="lk-grid-l"
-      role="list"
-      aria-label={txt.sectionL}
-    >
-      {Array.from({ length: 3 }).map(() => (
-        <div class="lk-skeleton lk-skeleton--l" aria-hidden="true"></div>
-      ))}
-    </div>
-
-    <!-- ── Legend ─────────────────────────────────────── -->
-    <div class="lk-legend" role="list" aria-label={fr ? 'Légende' : 'Legend'}>
-      <div class="lk-legend-item" role="listitem">
-        <span class="lk-legend-dot"></span>
-        {txt.statusAvail}
-      </div>
-      <div class="lk-legend-item lk-legend-item--reserved" role="listitem">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <rect x="3" y="11" width="18" height="11" rx="2"/>
-          <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-        </svg>
-        {txt.statusResv}
-      </div>
-      <div class="lk-legend-item lk-legend-item--overtime" role="listitem">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <circle cx="12" cy="12" r="10"/>
-          <polyline points="12 6 12 12 16 14"/>
-        </svg>
-        {txt.statusOver}
-      </div>
-      <div class="lk-legend-item lk-legend-item--blocked" role="listitem">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
-          <line x1="12" y1="9" x2="12" y2="13"/>
-          <line x1="12" y1="17" x2="12.01" y2="17"/>
-        </svg>
-        {txt.statusBlock}
-      </div>
     </div>
 
   </div>
 </section>
 
-<!-- ═══════════════════════════════════════════════════════
-     STYLES
-═══════════════════════════════════════════════════════ -->
 <style>
-  /* Section */
   .lk-section {
     position: relative;
     overflow: hidden;
   }
 
-  /* ── Header ────────────────────────────────────────── */
   .lk-header {
     display: flex;
     align-items: flex-start;
@@ -162,7 +67,6 @@ const txt = {
     max-width: 42ch;
   }
 
-  /* Live badge */
   .lk-live-badge {
     display: flex;
     align-items: center;
@@ -198,14 +102,12 @@ const txt = {
     align-items: center;
     gap: 1rem;
     flex-wrap: wrap;
-    margin-bottom: 2.5rem;
-    padding: 1.1rem 1.5rem;
+    padding: 1.5rem 1.75rem;
     background: var(--color-yellow-soft);
     border: 1.5px solid var(--color-yellow-deep);
     border-radius: 1rem;
     font-weight: 600;
-    font-size: 1rem;
-    min-height: 3.5rem;
+    min-height: 4rem;
   }
 
   .lk-summary-skeleton {
@@ -221,412 +123,47 @@ const txt = {
     animation: lk-shimmer 1.4s infinite;
   }
 
-  /* ── Section labels ────────────────────────────────── */
-  .lk-section-header {
-    margin-bottom: 0.85rem;
-  }
-
-  .lk-section-header--spaced {
-    margin-top: 2.5rem;
-  }
-
-  .lk-section-title {
-    display: flex;
-    align-items: center;
-    gap: 0.45rem;
-    font-size: 0.8rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    color: var(--color-ink);
-  }
-
-  .lk-section-title svg {
-    color: var(--color-coral);
-    flex-shrink: 0;
-  }
-
-  .lk-dims {
-    font-weight: 400;
-    font-size: 0.75rem;
-    text-transform: none;
-    letter-spacing: 0;
-    color: var(--color-ink-faint);
-    background: var(--color-bg-warm);
-    border: 1px solid var(--color-rule);
-    padding: 0.1em 0.5em;
-    border-radius: 0.3rem;
-    margin-left: 0.15rem;
-  }
-
-  .lk-section-hint {
-    margin: 0.3rem 0 0 1.4rem;
-    font-size: 0.8rem;
-    color: var(--color-ink-faint);
-  }
-
-  /* ── Grids ─────────────────────────────────────────── */
-  .lk-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 0.65rem;
-  }
-
-  /* 7th medium locker → center column */
-  .lk-grid--m > :nth-child(7) {
-    grid-column: 2;
-  }
-
-  /* ── Skeletons ─────────────────────────────────────── */
-  .lk-skeleton {
-    border-radius: 1rem;
-    min-height: 118px;
-    background: linear-gradient(90deg,
-      var(--color-bg-warm) 25%,
-      var(--color-rule) 50%,
-      var(--color-bg-warm) 75%);
-    background-size: 200% 100%;
-    animation: lk-shimmer 1.4s infinite;
-  }
-
-  .lk-skeleton--l {
-    min-height: 176px;
-  }
-
   @keyframes lk-shimmer {
     0%   { background-position: 200% 0; }
     100% { background-position: -200% 0; }
   }
-
-  /* ── Legend ────────────────────────────────────────── */
-  .lk-legend {
-    display: flex;
-    align-items: center;
-    gap: 1.25rem;
-    flex-wrap: wrap;
-    margin-top: 2rem;
-    padding-top: 1.5rem;
-    border-top: 1px solid var(--color-rule);
-  }
-
-  .lk-legend-item {
-    display: flex;
-    align-items: center;
-    gap: 0.4rem;
-    font-size: 0.78rem;
-    font-weight: 600;
-    color: var(--color-ink-soft);
-  }
-
-  .lk-legend-dot {
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    background: #22c55e;
-    flex-shrink: 0;
-  }
-
-  .lk-legend-item--reserved { color: var(--color-ink); }
-  .lk-legend-item--overtime { color: #a16207; }
-  .lk-legend-item--blocked  { color: var(--color-coral-dark); }
 </style>
 
-<!-- Cards are injected by JS — need global scope -->
-<style is:global>
-  /* ── Card base ─────────────────────────────────────── */
-  .lk-card {
-    border-radius: 1rem;
-    padding: 0.9rem 0.75rem;
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 0.45rem;
-    min-height: 118px;
-    cursor: default;
-    transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
-    overflow: hidden;
-  }
-
-  .lk-card--l {
-    min-height: 176px;
-  }
-
-  /* ── Status variants ───────────────────────────────── */
-  .lk-card--available {
-    background: #ffffff;
-    border: 1.5px solid var(--color-rule);
-  }
-  .lk-card--available:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 10px 30px color-mix(in srgb, var(--color-ink) 7%, transparent);
-    border-color: var(--color-coral);
-  }
-
-  .lk-card--reserved {
-    background: var(--color-ink);
-    border: 1.5px solid var(--color-ink);
-    color: #ffffff;
-  }
-
-  .lk-card--overtime {
-    background: var(--color-yellow);
-    border: 1.5px solid var(--color-yellow-deep);
-    color: var(--color-ink);
-  }
-
-  .lk-card--blocked {
-    background: var(--color-coral-soft);
-    border: 1.5px solid color-mix(in srgb, var(--color-coral) 40%, transparent);
-    color: var(--color-ink);
-    opacity: 0.85;
-  }
-
-  /* ── Card internals ────────────────────────────────── */
-  .lk-card-num {
-    position: absolute;
-    top: 0.7rem;
-    left: 0.8rem;
-    font-size: 0.72rem;
-    font-weight: 800;
-    letter-spacing: 0.06em;
-    opacity: 0.5;
-  }
-
-  .lk-card-size {
-    position: absolute;
-    top: 0.7rem;
-    right: 0.8rem;
-    font-size: 0.62rem;
-    font-weight: 700;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    opacity: 0.35;
-  }
-
-  .lk-card-icon {
-    width: 26px;
-    height: 26px;
-    stroke-width: 2;
-  }
-
-  .lk-card-timer {
-    font-family: ui-monospace, 'SF Mono', 'Fira Mono', monospace;
-    font-size: 0.88rem;
-    font-weight: 600;
-    letter-spacing: 0.04em;
-    line-height: 1;
-    opacity: 0.9;
-  }
-
-  .lk-card-status {
-    font-size: 0.62rem;
-    font-weight: 700;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    opacity: 0.6;
-    margin-top: -0.1rem;
-  }
-
-  .lk-avail-dot {
-    width: 7px;
-    height: 7px;
-    border-radius: 50%;
-    background: #22c55e;
-    margin-top: 0.1rem;
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .lk-card--available:hover {
-      transform: none;
-    }
-  }
-</style>
-
-<!-- ═══════════════════════════════════════════════════════
-     CLIENT SCRIPT
-═══════════════════════════════════════════════════════ -->
 <script>
-  // ─────────────────────────────────────────────────────
-  //  Types
-  // ─────────────────────────────────────────────────────
-  type Status = 'available' | 'reserved' | 'overtime' | 'blocked';
-
-  interface Locker {
-    id: string;      // '01' … '10'
-    size: 'M' | 'L';
-    status: Status;
-    endsAt?: number; // ms timestamp — when the slot ends
+  interface AvailabilitySummary {
+    total: number;
+    available: number;
+    updatedAt: string;
   }
 
-  async function fetchLockers(): Promise<Locker[]> {
+  async function fetchSummary(): Promise<AvailabilitySummary> {
     const res = await fetch('/api/lockers');
     if (!res.ok) throw new Error(`lockers API returned ${res.status}`);
-    const { lockers } = await res.json();
-    return lockers;
-  }
-
-  // ─────────────────────────────────────────────────────
-  //  SVG icons
-  // ─────────────────────────────────────────────────────
-  const SVG_LOCK_OPEN = `
-    <svg class="lk-card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-         stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-      <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
-      <path d="M7 11V7a5 5 0 0 1 9.9-1"/>
-    </svg>`;
-
-  const SVG_LOCK_CLOSED = `
-    <svg class="lk-card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-         stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-      <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
-      <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-    </svg>`;
-
-  const SVG_CLOCK = `
-    <svg class="lk-card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-         stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-      <circle cx="12" cy="12" r="10"/>
-      <polyline points="12 6 12 12 16 14"/>
-    </svg>`;
-
-  const SVG_WARNING = `
-    <svg class="lk-card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-         stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-      <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
-      <line x1="12" y1="9" x2="12" y2="13"/>
-      <line x1="12" y1="17" x2="12.01" y2="17"/>
-    </svg>`;
-
-  // ─────────────────────────────────────────────────────
-  //  Helpers
-  // ─────────────────────────────────────────────────────
-  function formatCountdown(ms: number): string {
-    if (ms <= 0) return '00:00:00';
-    const s = Math.floor(ms / 1000);
-    const h = Math.floor(s / 3600);
-    const m = Math.floor((s % 3600) / 60);
-    const sec = s % 60;
-    return [h, m, sec].map(n => String(n).padStart(2, '0')).join(':');
+    return res.json();
   }
 
   function formatHHMM(date: Date): string {
     return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   }
 
-  // ─────────────────────────────────────────────────────
-  //  Card builder
-  // ─────────────────────────────────────────────────────
-  function buildCard(locker: Locker, isFr: boolean): HTMLElement {
-    const el = document.createElement('div');
-    el.className = `lk-card lk-card--${locker.status}${locker.size === 'L' ? ' lk-card--l' : ''}`;
-    el.setAttribute('role', 'listitem');
-    el.setAttribute('aria-label', `Locker ${locker.id}`);
-
-    const labels: Record<Status, string> = {
-      available: isFr ? 'Disponible' : 'Available',
-      reserved:  isFr ? 'Réservé'   : 'Reserved',
-      overtime:  isFr ? 'Temps supp.' : 'Overtime',
-      blocked:   isFr ? 'Bloqué'    : 'Blocked',
-    };
-
-    let body = `
-      <span class="lk-card-num">${locker.id}</span>
-      <span class="lk-card-size">${locker.size}</span>`;
-
-    if (locker.status === 'available') {
-      body += `
-        ${SVG_LOCK_OPEN}
-        <span class="lk-avail-dot" aria-hidden="true"></span>
-        <span class="lk-card-status">${labels.available}</span>`;
-
-    } else if (locker.status === 'reserved') {
-      const remaining = locker.endsAt ? locker.endsAt - Date.now() : 0;
-      body += `
-        ${SVG_LOCK_CLOSED}
-        <span class="lk-card-timer" data-ends-at="${locker.endsAt ?? ''}">${formatCountdown(remaining)}</span>
-        <span class="lk-card-status">${labels.reserved}</span>`;
-
-    } else if (locker.status === 'overtime') {
-      body += `
-        ${SVG_CLOCK}
-        <span class="lk-card-status">${labels.overtime}</span>`;
-
-    } else if (locker.status === 'blocked') {
-      body += `
-        ${SVG_WARNING}
-        <span class="lk-card-status">${labels.blocked}</span>`;
-    }
-
-    el.innerHTML = body;
-    return el;
-  }
-
-  // ─────────────────────────────────────────────────────
-  //  Render
-  // ─────────────────────────────────────────────────────
-  function render(lockers: Locker[]) {
-    const gridM  = document.getElementById('lk-grid-m');
-    const gridL  = document.getElementById('lk-grid-l');
+  function render(data: AvailabilitySummary) {
     const summary = document.getElementById('lk-summary');
     const lastUpd = document.getElementById('lk-last-updated');
+    if (!summary) return;
 
-    if (!gridM || !gridL) return;
+    const isFr = summary.dataset.lang === 'fr';
+    const countTxt = isFr
+      ? `${data.available} casier${data.available !== 1 ? 's' : ''} disponible${data.available !== 1 ? 's' : ''} sur ${data.total}`
+      : `${data.available} of ${data.total} lockers available`;
 
-    const isFr   = gridM.dataset.lang === 'fr';
-    const medium  = lockers.filter(l => l.size === 'M');
-    const large   = lockers.filter(l => l.size === 'L');
-    const availAll = lockers.filter(l => l.status === 'available').length;
-    const availM   = medium.filter(l => l.status === 'available').length;
-    const availL   = large.filter(l => l.status === 'available').length;
+    summary.innerHTML = `<span style="font-size:1.3rem">${countTxt}</span>`;
 
-    // Summary
-    if (summary) {
-      const countTxt = isFr
-        ? `${availAll} casier${availAll !== 1 ? 's' : ''} disponible${availAll !== 1 ? 's' : ''} sur ${lockers.length}`
-        : `${availAll} of ${lockers.length} lockers available`;
-      const detailTxt = isFr
-        ? `${availM} moyen${availM !== 1 ? 's' : ''} · ${availL} grand${availL !== 1 ? 's' : ''}`
-        : `${availM} medium · ${availL} large`;
-      summary.innerHTML = `
-        <span style="font-size:1.05rem">${countTxt}</span>
-        <span style="color:var(--color-ink-faint);font-weight:400;font-size:0.82rem">↳ ${detailTxt}</span>`;
-    }
-
-    // Grids
-    gridM.innerHTML = '';
-    medium.forEach((l, i) => {
-      const card = buildCard(l, isFr);
-      if (i === 6) (card as HTMLElement).style.gridColumn = '2';
-      gridM.appendChild(card);
-    });
-
-    gridL.innerHTML = '';
-    large.forEach(l => gridL.appendChild(buildCard(l, isFr)));
-
-    // Timestamp
     if (lastUpd) {
-      const prefix = gridM.dataset.lang === 'fr' ? 'Mis à jour à' : 'Updated at';
+      const prefix = isFr ? 'Mis à jour à' : 'Updated at';
       lastUpd.textContent = `${prefix} ${formatHHMM(new Date())}`;
     }
   }
 
-  // ─────────────────────────────────────────────────────
-  //  Countdown tick (every second)
-  // ─────────────────────────────────────────────────────
-  function tickTimers() {
-    document.querySelectorAll<HTMLElement>('.lk-card-timer[data-ends-at]').forEach(el => {
-      const endsAt = Number(el.dataset.endsAt);
-      if (!endsAt) return;
-      el.textContent = formatCountdown(endsAt - Date.now());
-    });
-  }
-
-  // ─────────────────────────────────────────────────────
-  //  Boot
-  // ─────────────────────────────────────────────────────
-  fetchLockers().then(render).catch(err => console.error('Failed to load lockers', err));
-  setInterval(() => fetchLockers().then(render).catch(err => console.error('Failed to load lockers', err)), 30_000); // re-fetch every 30s
-  setInterval(tickTimers, 1_000);                          // countdown every 1s
+  fetchSummary().then(render).catch(err => console.error('Failed to load lockers summary', err));
+  setInterval(() => fetchSummary().then(render).catch(err => console.error('Failed to load lockers summary', err)), 30_000);
 </script>
