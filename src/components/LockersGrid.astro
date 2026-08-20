@@ -460,31 +460,11 @@ const txt = {
     endsAt?: number; // ms timestamp — when the slot ends
   }
 
-  // ─────────────────────────────────────────────────────
-  //  Mock data  (replace fetchLockers() with real API)
-  // ─────────────────────────────────────────────────────
-  function mockLockers(): Locker[] {
-    const now = Date.now();
-    return [
-      { id: '01', size: 'M', status: 'reserved',  endsAt: now + 8_520_000  }, // ~2h22m
-      { id: '02', size: 'M', status: 'available' },
-      { id: '03', size: 'M', status: 'available' },
-      { id: '04', size: 'M', status: 'reserved',  endsAt: now + 77_635_000 }, // ~21h33m
-      { id: '05', size: 'M', status: 'available' },
-      { id: '06', size: 'M', status: 'available' },
-      { id: '07', size: 'M', status: 'overtime'  },
-      { id: '08', size: 'L', status: 'available' },
-      { id: '09', size: 'L', status: 'reserved',  endsAt: now + 3_600_000  }, // ~1h
-      { id: '10', size: 'L', status: 'blocked'   },
-    ];
-  }
-
   async function fetchLockers(): Promise<Locker[]> {
-    // TODO: swap for real API call:
-    // const res = await fetch('https://api.example.com/lockers/sentier');
-    // const { lockers } = await res.json();
-    // return lockers;
-    return mockLockers();
+    const res = await fetch('/api/lockers');
+    if (!res.ok) throw new Error(`lockers API returned ${res.status}`);
+    const { lockers } = await res.json();
+    return lockers;
   }
 
   // ─────────────────────────────────────────────────────
@@ -646,7 +626,7 @@ const txt = {
   // ─────────────────────────────────────────────────────
   //  Boot
   // ─────────────────────────────────────────────────────
-  fetchLockers().then(render);
-  setInterval(() => fetchLockers().then(render), 30_000); // re-fetch every 30s
+  fetchLockers().then(render).catch(err => console.error('Failed to load lockers', err));
+  setInterval(() => fetchLockers().then(render).catch(err => console.error('Failed to load lockers', err)), 30_000); // re-fetch every 30s
   setInterval(tickTimers, 1_000);                          // countdown every 1s
 </script>
