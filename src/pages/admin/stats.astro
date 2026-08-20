@@ -1,0 +1,161 @@
+---
+import Layout from '../../layouts/Layout.astro';
+---
+
+<Layout title="Back-office — Consign" description="Statistiques d'occupation des casiers.">
+  <section class="section container-x admin-stats">
+    <h1 class="heading-display">Taux d'occupation</h1>
+    <p class="admin-subtitle">Relevé horaire des casiers — consigne Rue de Cléry.</p>
+
+    <div class="admin-controls">
+      <label for="days">Période :</label>
+      <select id="days">
+        <option value="7">7 derniers jours</option>
+        <option value="30" selected>30 derniers jours</option>
+        <option value="90">90 derniers jours</option>
+      </select>
+    </div>
+
+    <div id="admin-summary" class="admin-summary">Chargement…</div>
+
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th>Jour</th>
+          <th>Taux d'occupation</th>
+          <th>Locations</th>
+        </tr>
+      </thead>
+      <tbody id="admin-rows">
+        <tr><td colspan="3">Chargement…</td></tr>
+      </tbody>
+    </table>
+  </section>
+</Layout>
+
+<meta name="robots" content="noindex, nofollow" />
+
+<style>
+  .admin-stats {
+    padding-block: clamp(3rem, 6vw, 5rem);
+    max-width: 860px;
+  }
+  .admin-subtitle {
+    color: var(--color-ink-soft);
+    margin: 0.5rem 0 2rem;
+  }
+  .admin-controls {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin-bottom: 1.5rem;
+    font-size: 0.9rem;
+  }
+  .admin-controls select {
+    padding: 0.4rem 0.7rem;
+    border: 1.5px solid var(--color-rule);
+    border-radius: 0.5rem;
+    font: inherit;
+  }
+  .admin-summary {
+    display: flex;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+    margin-bottom: 2rem;
+  }
+  .admin-summary .stat {
+    padding: 1rem 1.5rem;
+    background: var(--color-bg-warm);
+    border: 1.5px solid var(--color-rule);
+    border-radius: 1rem;
+    min-width: 160px;
+  }
+  .admin-summary .stat-value {
+    display: block;
+    font-size: 1.8rem;
+    font-weight: 800;
+  }
+  .admin-summary .stat-label {
+    font-size: 0.8rem;
+    color: var(--color-ink-faint);
+  }
+  .admin-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.92rem;
+  }
+  .admin-table th,
+  .admin-table td {
+    text-align: left;
+    padding: 0.6rem 0.8rem;
+    border-bottom: 1px solid var(--color-rule);
+  }
+  .admin-table th {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--color-ink-faint);
+  }
+</style>
+
+<script>
+  interface DailyStat {
+    date: string;
+    occupancyRate: number;
+    rentals: number;
+  }
+  interface StatsResponse {
+    periodDays: number;
+    occupancyRate: number;
+    totalRentals: number;
+    daily: DailyStat[];
+  }
+
+  async function loadStats(days: number) {
+    const summary = document.getElementById('admin-summary')!;
+    const rows = document.getElementById('admin-rows')!;
+    summary.textContent = 'Chargement…';
+    rows.innerHTML = '<tr><td colspan="3">Chargement…</td></tr>';
+
+    try {
+      const res = await fetch(`/api/admin/stats?days=${days}`);
+      if (!res.ok) throw new Error(`API returned ${res.status}`);
+      const data: StatsResponse = await res.json();
+
+      summary.innerHTML = `
+        <div class="stat">
+          <span class="stat-value">${data.occupancyRate}%</span>
+          <span class="stat-label">Taux d'occupation moyen</span>
+        </div>
+        <div class="stat">
+          <span class="stat-value">${data.totalRentals}</span>
+          <span class="stat-label">Locations (${data.periodDays}j)</span>
+        </div>`;
+
+      if (data.daily.length === 0) {
+        rows.innerHTML = '<tr><td colspan="3">Pas encore de données — le premier relevé arrive à la prochaine heure pleine.</td></tr>';
+        return;
+      }
+
+      rows.innerHTML = data.daily
+        .slice()
+        .reverse()
+        .map(
+          (d) => `
+        <tr>
+          <td>${new Date(d.date).toLocaleDateString('fr-FR', { day: '2-digit', month: 'short' })}</td>
+          <td>${d.occupancyRate}%</td>
+          <td>${d.rentals}</td>
+        </tr>`
+        )
+        .join('');
+    } catch (err) {
+      summary.textContent = '';
+      rows.innerHTML = `<tr><td colspan="3">Erreur de chargement : ${err instanceof Error ? err.message : 'inconnue'}</td></tr>`;
+    }
+  }
+
+  const select = document.getElementById('days') as HTMLSelectElement;
+  select.addEventListener('change', () => loadStats(Number(select.value)));
+  loadStats(Number(select.value));
+</script>
