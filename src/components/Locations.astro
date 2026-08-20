@@ -1,5 +1,5 @@
 ---
-import { useTranslations } from '../i18n/ui';
+import { useTranslations, localizedPath } from '../i18n/ui';
 
 const lang = Astro.currentLocale ?? 'en';
 const t = useTranslations(lang);
@@ -99,10 +99,15 @@ const directionsUrl =
           ))}
         </dl>
 
-        <a href={directionsUrl} class="btn btn-primary loc-cta" target="_blank" rel="noopener noreferrer">
-          {t('loc.cta.directions')}
-          <span aria-hidden="true">↗</span>
-        </a>
+        <div class="loc-cta-row">
+          <a href={directionsUrl} class="btn btn-primary loc-cta" target="_blank" rel="noopener noreferrer">
+            {t('loc.cta.directions')}
+            <span aria-hidden="true">↗</span>
+          </a>
+          <a href={localizedPath(lang, '/lockers')} class="btn btn-ghost loc-cta">
+            {t('loc.cta.availability')}
+          </a>
+        </div>
       </div>
     </div>
 
@@ -317,6 +322,11 @@ const directionsUrl =
     line-height: 1.4;
   }
 
+  .loc-cta-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
   .loc-cta {
     align-self: flex-start;
   }
