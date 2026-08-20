@@ -1,8 +1,10 @@
 // Vercel Serverless Function — GET /api/admin/stats?days=30
 // Protected by middleware.ts (Basic Auth). Computes daily occupancy rate
 // and rental count from locker_snapshots.
+//
+// Self-contained on purpose — see api/cron/snapshot-lockers.ts for why.
 
-import { getSql, ensureSchema } from '../../lib/db';
+import { neon, type NeonQueryFunction } from '@neondatabase/serverless';
 
 interface VercelRequest {
   query: Record<string, string | string[] | undefined>;
@@ -14,6 +16,19 @@ interface VercelResponse {
   json(body: unknown): void;
 }
 
+let sqlClient: NeonQueryFunction<false, false> | null = null;
+
+function getSql(): NeonQueryFunction<false, false> {
+  if (!sqlClient) {
+    const url = process.env.DATABASE_URL ?? process.env.POSTGRES_URL;
+    if (!url) {
+      throw new Error('Missing DATABASE_URL / POSTGRES_URL env var');
+    }
+    sqlClient = neon(url);
+  }
+  return sqlClient;
+}
+
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   res.setHeader('Cache-Control', 'no-store');
 
@@ -21,8 +36,21 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const days = Math.min(Math.max(Number(Array.isArray(daysParam) ? daysParam[0] : daysParam) || 30, 1), 90);
 
   try {
-    await ensureSchema();
     const sql = getSql();
+    await sql`
+      CREATE TABLE IF NOT EXISTS locker_snapshots (
+        id SERIAL PRIMARY KEY,
+        locker_id TEXT NOT NULL,
+        category TEXT,
+        status TEXT NOT NULL,
+        reservation_id INTEGER,
+        captured_at TIMESTAMPTZ NOT NULL DEFAULT now()
+      )
+    `;
+    await sql`
+      CREATE INDEX IF NOT EXISTS idx_locker_snapshots_captured_at
+        ON locker_snapshots (captured_at)
+    `;
 
     const occupancy = await sql`
       SELECT
