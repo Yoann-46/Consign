@@ -51,6 +51,15 @@ const canonical = new URL(Astro.url.pathname, Astro.site).toString();
       rel="stylesheet"
     />
 
+    <!-- Google tag (gtag.js) -->
+    <script async is:inline src="https://www.googletagmanager.com/gtag/js?id=G-MXXNH012J5"></script>
+    <script is:inline>
+      window.dataLayer = window.dataLayer || [];
+      window.gtag = function(){window.dataLayer.push(arguments);};
+      window.gtag('js', new Date());
+      window.gtag('config', 'G-MXXNH012J5');
+    </script>
+
     <!-- Schema.org LocalBusiness -->
     <script type="application/ld+json" set:html={JSON.stringify({
       '@context': 'https://schema.org',

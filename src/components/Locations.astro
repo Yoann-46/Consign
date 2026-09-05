@@ -100,7 +100,13 @@ const directionsUrl =
         </dl>
 
         <div class="loc-cta-row">
-          <a href={directionsUrl} class="btn btn-primary loc-cta" target="_blank" rel="noopener noreferrer">
+          <a
+            href={directionsUrl}
+            class="btn btn-primary loc-cta"
+            target="_blank"
+            rel="noopener noreferrer"
+            onclick="if(window.gtag){window.gtag('event','get_directions_click',{event_category:'engagement',event_label:'locations'});}"
+          >
             {t('loc.cta.directions')}
             <span aria-hidden="true">↗</span>
           </a>
