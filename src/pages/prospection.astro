@@ -1,0 +1,655 @@
+---
+// Page cachée (aucun lien sur le site) pour le suivi de la prospection commerciale.
+// Protégée par Basic Auth via middleware.ts. Données : /api/prospection (Neon).
+// Carte : Leaflet + OpenStreetMap (sans clé). Recherche : Photon + api-adresse.data.gouv.fr.
+---
+
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="robots" content="noindex, nofollow" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <title>Prospection — Consign</title>
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+      crossorigin=""
+    />
+    <style is:global>
+      :root {
+        --ink: #1a1a1a;
+        --ink-soft: #4a4a47;
+        --ink-faint: #87867f;
+        --bg: #fafaf7;
+        --rule: #e5e3da;
+        --coral: #f65f5f;
+        --coral-dark: #e04444;
+        --jaune-bg: #fdf6c3;
+        --jaune-bd: #e3c936;
+        --vert-bg: #d9f2dc;
+        --vert-bd: #3fa65a;
+        --bleu-bg: #dce8fb;
+        --bleu-bd: #3b78dc;
+      }
+      * { box-sizing: border-box; }
+      html, body { margin: 0; height: 100%; }
+      body {
+        font-family: "Open Sans", ui-sans-serif, system-ui, -apple-system, sans-serif;
+        color: var(--ink);
+        background: var(--bg);
+      }
+      .app {
+        display: grid;
+        grid-template-columns: 380px 1fr;
+        height: 100vh;
+        height: 100dvh;
+      }
+      .side {
+        display: flex;
+        flex-direction: column;
+        min-height: 0;
+        border-right: 1px solid var(--rule);
+        background: #fff;
+      }
+      .side-head { padding: 16px 16px 12px; border-bottom: 1px solid var(--rule); }
+      .side-head h1 { margin: 0 0 10px; font-size: 1.15rem; }
+      .side-head h1 span { color: var(--coral); }
+      .legend { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px; }
+      .chip {
+        border: 1px solid; border-radius: 999px; padding: 2px 10px;
+        font-size: .78rem; cursor: pointer; background: #fff; font-family: inherit;
+      }
+      .chip[data-active="false"] { opacity: .4; }
+      .chip.en_cours { background: var(--jaune-bg); border-color: var(--jaune-bd); }
+      .chip.valide { background: var(--vert-bg); border-color: var(--vert-bd); }
+      .chip.installe { background: var(--bleu-bg); border-color: var(--bleu-bd); }
+      .search-row { display: flex; gap: 8px; }
+      .search-row input {
+        flex: 1; min-width: 0; padding: 9px 12px; border: 1px solid var(--rule);
+        border-radius: 10px; font: inherit; font-size: .95rem;
+      }
+      .btn-add {
+        width: 40px; height: 40px; flex: none; border: 0; border-radius: 10px;
+        background: var(--coral); color: #fff; font-size: 1.5rem; line-height: 1; cursor: pointer;
+      }
+      .btn-add:hover { background: var(--coral-dark); }
+      .list { flex: 1; overflow-y: auto; padding: 12px; display: flex; flex-direction: column; gap: 10px; }
+      .empty { color: var(--ink-faint); text-align: center; padding: 24px 8px; font-size: .9rem; }
+      .item {
+        border: 1px solid; border-left-width: 5px; border-radius: 10px;
+        padding: 10px 12px; cursor: pointer; transition: transform .1s, box-shadow .1s;
+      }
+      .item:hover { transform: translateY(-1px); box-shadow: 0 2px 8px rgba(0,0,0,.08); }
+      .item.selected { box-shadow: 0 0 0 2px var(--ink); }
+      .item.en_cours { background: var(--jaune-bg); border-color: var(--jaune-bd); }
+      .item.valide { background: var(--vert-bg); border-color: var(--vert-bd); }
+      .item.installe { background: var(--bleu-bg); border-color: var(--bleu-bd); }
+      .item-title { font-weight: 700; font-size: .98rem; }
+      .item-addr { font-size: .85rem; color: var(--ink-soft); margin-top: 2px; }
+      .item-foot { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 8px; }
+      .item-contact { font-size: .8rem; color: var(--ink-soft); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+      select.statut {
+        font: inherit; font-size: .8rem; padding: 3px 6px; border-radius: 8px;
+        border: 1px solid rgba(0,0,0,.2); background: rgba(255,255,255,.7); cursor: pointer;
+      }
+      #map { height: 100%; width: 100%; }
+
+      /* Pins */
+      .pin {
+        position: relative; display: block; width: 24px; height: 24px; border-radius: 50% 50% 50% 0;
+        transform: rotate(-45deg); border: 2px solid #fff; box-shadow: 0 1px 4px rgba(0,0,0,.45);
+      }
+      .pin::after {
+        content: ""; position: absolute; width: 8px; height: 8px; border-radius: 50%;
+        background: #fff; top: 6px; left: 6px;
+      }
+      .pin.en_cours { background: var(--jaune-bd); }
+      .pin.valide { background: var(--vert-bd); }
+      .pin.installe { background: var(--bleu-bd); }
+      .pin.selected { width: 32px; height: 32px; }
+      .pin.selected::after { top: 10px; left: 10px; }
+
+      /* Fiche (popup) */
+      .fiche { min-width: 230px; font-family: inherit; }
+      .fiche h3 { margin: 0 0 4px; font-size: 1rem; }
+      .fiche .addr { color: var(--ink-soft); margin: 0 0 8px; }
+      .fiche .badge {
+        display: inline-block; font-size: .75rem; border: 1px solid; border-radius: 999px; padding: 1px 8px; margin-bottom: 8px;
+      }
+      .badge.en_cours { background: var(--jaune-bg); border-color: var(--jaune-bd); }
+      .badge.valide { background: var(--vert-bg); border-color: var(--vert-bd); }
+      .badge.installe { background: var(--bleu-bg); border-color: var(--bleu-bd); }
+      .fiche .row { margin: 3px 0; }
+      .fiche .note { white-space: pre-wrap; background: var(--bg); border-radius: 6px; padding: 6px 8px; margin-top: 6px; }
+      .fiche .actions { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 10px; }
+      .fiche .actions a, .fiche .actions button {
+        font: inherit; font-size: .8rem; padding: 5px 9px; border-radius: 8px; cursor: pointer;
+        border: 1px solid var(--rule); background: #fff; color: var(--ink); text-decoration: none;
+      }
+      .fiche .actions .google { background: var(--ink); color: #fff; border-color: var(--ink); }
+      .fiche .actions .danger { color: var(--coral-dark); }
+
+      /* Formulaire */
+      dialog {
+        border: 0; border-radius: 14px; padding: 0; width: min(460px, calc(100vw - 32px));
+        box-shadow: 0 20px 60px rgba(0,0,0,.25);
+      }
+      dialog::backdrop { background: rgba(0,0,0,.35); }
+      dialog form { padding: 20px; display: flex; flex-direction: column; gap: 12px; }
+      dialog h2 { margin: 0; font-size: 1.1rem; }
+      dialog label { display: flex; flex-direction: column; gap: 4px; font-size: .82rem; color: var(--ink-soft); }
+      dialog input, dialog select, dialog textarea {
+        font: inherit; font-size: .95rem; color: var(--ink); padding: 8px 10px;
+        border: 1px solid var(--rule); border-radius: 8px; width: 100%;
+      }
+      dialog textarea { min-height: 70px; resize: vertical; }
+      .two { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+      .ac { position: relative; }
+      .ac-list {
+        position: absolute; left: 0; right: 0; top: 100%; z-index: 10; background: #fff;
+        border: 1px solid var(--rule); border-radius: 8px; margin-top: 2px; max-height: 220px; overflow-y: auto;
+        box-shadow: 0 6px 20px rgba(0,0,0,.12);
+      }
+      .ac-list[hidden] { display: none; }
+      .ac-item { padding: 8px 10px; cursor: pointer; font-size: .88rem; color: var(--ink); }
+      .ac-item small { display: block; color: var(--ink-faint); }
+      .ac-item:hover, .ac-item.active { background: var(--bg); }
+      .hint { font-size: .75rem; color: var(--ink-faint); }
+      .hint.ok { color: var(--vert-bd); }
+      .form-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 4px; }
+      .form-actions button {
+        font: inherit; padding: 8px 16px; border-radius: 10px; cursor: pointer; border: 1px solid var(--rule); background: #fff;
+      }
+      .form-actions .primary { background: var(--coral); border-color: var(--coral); color: #fff; font-weight: 600; }
+      .form-error { color: var(--coral-dark); font-size: .85rem; min-height: 1em; }
+
+      .toast {
+        position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); z-index: 2000;
+        background: var(--ink); color: #fff; padding: 10px 16px; border-radius: 10px; font-size: .9rem;
+        opacity: 0; pointer-events: none; transition: opacity .2s;
+      }
+      .toast.show { opacity: 1; }
+
+      @media (max-width: 800px) {
+        .app { grid-template-columns: 1fr; grid-template-rows: 45vh 1fr; height: auto; min-height: 100dvh; }
+        .map-wrap { order: -1; height: 45vh; }
+        .side { border-right: 0; border-top: 1px solid var(--rule); }
+        .list { overflow: visible; }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app">
+      <aside class="side">
+        <div class="side-head">
+          <h1>Prospection <span>Consign</span></h1>
+          <div class="legend" id="legend">
+            <button class="chip en_cours" data-statut="en_cours" data-active="true">En cours · <b>0</b></button>
+            <button class="chip valide" data-statut="valide" data-active="true">Validé · <b>0</b></button>
+            <button class="chip installe" data-statut="installe" data-active="true">Installé · <b>0</b></button>
+          </div>
+          <div class="search-row">
+            <input id="search" type="search" placeholder="Rechercher un commerce, une adresse…" autocomplete="off" />
+            <button class="btn-add" id="btn-add" title="Ajouter un emplacement" aria-label="Ajouter un emplacement">+</button>
+          </div>
+        </div>
+        <div class="list" id="list"><div class="empty">Chargement…</div></div>
+      </aside>
+      <main class="map-wrap"><div id="map"></div></main>
+    </div>
+
+    <dialog id="dlg">
+      <form id="form" method="dialog" novalidate>
+        <h2 id="dlg-title">Nouvel emplacement</h2>
+        <label class="ac">
+          Nom du commerce *
+          <input name="nom" id="f-nom" required autocomplete="off" placeholder="Tape le nom du commerce…" />
+          <div class="ac-list" id="ac-nom" hidden></div>
+        </label>
+        <label class="ac">
+          Adresse *
+          <input name="adresse" id="f-adresse" required autocomplete="off" placeholder="Numéro, rue, code postal…" />
+          <div class="ac-list" id="ac-adresse" hidden></div>
+          <span class="hint" id="f-geo">Choisis une adresse dans la liste pour placer le pin.</span>
+        </label>
+        <label>
+          Statut
+          <select name="statut" id="f-statut">
+            <option value="en_cours">En cours</option>
+            <option value="valide">Validé</option>
+            <option value="installe">Installé</option>
+          </select>
+        </label>
+        <div class="two">
+          <label>Nom du gérant <input name="contact_nom" id="f-contact-nom" autocomplete="off" /></label>
+          <label>Téléphone <input name="contact_tel" id="f-contact-tel" type="tel" autocomplete="off" /></label>
+        </div>
+        <label>Note <textarea name="note" id="f-note" placeholder="Infos utiles, prochaine étape…"></textarea></label>
+        <div class="form-error" id="f-error"></div>
+        <div class="form-actions">
+          <button type="button" id="f-cancel">Annuler</button>
+          <button type="submit" class="primary" id="f-submit">Enregistrer</button>
+        </div>
+      </form>
+    </dialog>
+
+    <div class="toast" id="toast"></div>
+
+    <script
+      is:inline
+      src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+      integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+      crossorigin=""
+    ></script>
+    <script is:inline>
+      (function () {
+        const API = '/api/prospection';
+        const LABELS = { en_cours: 'En cours', valide: 'Validé', installe: 'Installé' };
+        const PARIS = [48.8566, 2.3522];
+
+        let items = [];
+        let selectedId = null;
+        let editingId = null;
+        const markers = new Map();
+        const visible = { en_cours: true, valide: true, installe: true };
+
+        const $ = (id) => document.getElementById(id);
+        const listEl = $('list');
+        const searchEl = $('search');
+
+        // ---------- Utils ----------
+        function el(tag, attrs, ...children) {
+          const node = document.createElement(tag);
+          for (const [k, v] of Object.entries(attrs || {})) {
+            if (v == null || v === false) continue;
+            if (k === 'class') node.className = v;
+            else if (k.startsWith('on')) node.addEventListener(k.slice(2), v);
+            else node.setAttribute(k, v);
+          }
+          for (const c of children.flat()) {
+            if (c == null || c === false) continue;
+            node.append(c instanceof Node ? c : document.createTextNode(String(c)));
+          }
+          return node;
+        }
+
+        let toastTimer;
+        function toast(msg) {
+          const t = $('toast');
+          t.textContent = msg;
+          t.classList.add('show');
+          clearTimeout(toastTimer);
+          toastTimer = setTimeout(() => t.classList.remove('show'), 2600);
+        }
+
+        async function api(method, body, id) {
+          const url = id ? `${API}?id=${encodeURIComponent(id)}` : API;
+          const res = await fetch(url, {
+            method,
+            headers: body ? { 'Content-Type': 'application/json' } : undefined,
+            body: body ? JSON.stringify(body) : undefined,
+            credentials: 'same-origin',
+          });
+          let data = {};
+          try { data = await res.json(); } catch (_) {}
+          if (!res.ok) throw new Error(data.error || `Erreur ${res.status}`);
+          return data;
+        }
+
+        function norm(s) {
+          return (s || '').toString().toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+        }
+
+        function googleUrl(it) {
+          return 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(`${it.nom}, ${it.adresse}`);
+        }
+
+        function statutSelect(it, onChange) {
+          const sel = el('select', { class: 'statut', title: 'Changer le statut' },
+            Object.entries(LABELS).map(([v, l]) => el('option', { value: v }, l)));
+          sel.value = it.statut;
+          sel.addEventListener('click', (e) => e.stopPropagation());
+          sel.addEventListener('change', (e) => onChange(e.target.value));
+          return sel;
+        }
+
+        // ---------- Carte ----------
+        const map = L.map('map', { zoomControl: true }).setView(PARIS, 13);
+        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          maxZoom: 19,
+          attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+        }).addTo(map);
+
+        function pinIcon(statut, selected) {
+          const size = selected ? 32 : 24;
+          return L.divIcon({
+            className: '',
+            html: `<span class="pin ${statut}${selected ? ' selected' : ''}"></span>`,
+            iconSize: [size, size],
+            iconAnchor: [size / 2, size * 1.2],
+            popupAnchor: [0, -size * 1.1],
+          });
+        }
+
+        function fiche(it) {
+          return el('div', { class: 'fiche' },
+            el('h3', {}, it.nom),
+            el('p', { class: 'addr' }, it.adresse),
+            el('span', { class: `badge ${it.statut}` }, LABELS[it.statut] || it.statut),
+            it.contact_nom ? el('div', { class: 'row' }, '👤 ', it.contact_nom) : null,
+            it.contact_tel ? el('div', { class: 'row' }, '📞 ', el('a', { href: `tel:${it.contact_tel.replace(/\s+/g, '')}` }, it.contact_tel)) : null,
+            it.note ? el('div', { class: 'note' }, it.note) : null,
+            el('div', { class: 'actions' },
+              el('a', { class: 'google', href: googleUrl(it), target: '_blank', rel: 'noopener' }, 'Fiche Google ↗'),
+              el('button', { type: 'button', onclick: () => openForm(it) }, 'Modifier'),
+              el('button', { type: 'button', class: 'danger', onclick: () => removeItem(it) }, 'Supprimer'),
+            ),
+          );
+        }
+
+        function renderMarkers() {
+          for (const m of markers.values()) m.remove();
+          markers.clear();
+          for (const it of items) {
+            if (!visible[it.statut]) continue;
+            const m = L.marker([Number(it.lat), Number(it.lng)], {
+              icon: pinIcon(it.statut, it.id === selectedId),
+              title: it.nom,
+              zIndexOffset: it.id === selectedId ? 1000 : 0,
+            }).addTo(map);
+            m.bindPopup(() => fiche(it), { maxWidth: 300 });
+            m.on('click', () => select(it.id, { fromMap: true }));
+            markers.set(it.id, m);
+          }
+        }
+
+        // ---------- Liste ----------
+        function filtered() {
+          const q = norm(searchEl.value.trim());
+          return items.filter((it) => {
+            if (!visible[it.statut]) return false;
+            if (!q) return true;
+            return norm(`${it.nom} ${it.adresse} ${it.contact_nom} ${it.note} ${LABELS[it.statut]}`).includes(q);
+          });
+        }
+
+        function renderLegend() {
+          for (const chip of document.querySelectorAll('#legend .chip')) {
+            const s = chip.dataset.statut;
+            chip.querySelector('b').textContent = items.filter((i) => i.statut === s).length;
+            chip.dataset.active = String(visible[s]);
+          }
+        }
+
+        function renderList() {
+          const rows = filtered();
+          listEl.replaceChildren();
+          if (!rows.length) {
+            listEl.append(el('div', { class: 'empty' },
+              items.length ? 'Aucun emplacement ne correspond.' : 'Aucun emplacement pour l’instant. Clique sur « + » pour en ajouter un.'));
+            return;
+          }
+          for (const it of rows) {
+            const contact = [it.contact_nom, it.contact_tel].filter(Boolean).join(' · ');
+            listEl.append(el('div', {
+                class: `item ${it.statut}${it.id === selectedId ? ' selected' : ''}`,
+                'data-id': it.id,
+                onclick: () => select(it.id),
+              },
+              el('div', { class: 'item-title' }, it.nom),
+              el('div', { class: 'item-addr' }, it.adresse),
+              el('div', { class: 'item-foot' },
+                statutSelect(it, (v) => updateItem(it, { statut: v })),
+                contact ? el('span', { class: 'item-contact' }, contact) : null,
+              ),
+            ));
+          }
+        }
+
+        function renderAll() {
+          renderLegend();
+          renderList();
+          renderMarkers();
+        }
+
+        function select(id, opts = {}) {
+          const it = items.find((i) => i.id === id);
+          if (!it) return;
+          const prev = selectedId;
+          selectedId = id;
+          if (prev !== id) {
+            renderList();
+            renderMarkers();
+          }
+          const m = markers.get(id);
+          map.flyTo([Number(it.lat), Number(it.lng)], Math.max(map.getZoom(), 17), { duration: 0.6 });
+          if (m) setTimeout(() => m.openPopup(), opts.fromMap ? 0 : 650);
+          const row = listEl.querySelector(`[data-id="${id}"]`);
+          if (row) row.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+        }
+
+        // ---------- Données ----------
+        async function load() {
+          try {
+            const data = await api('GET');
+            items = data.items || [];
+            renderAll();
+            const pts = items.map((i) => [Number(i.lat), Number(i.lng)]);
+            if (pts.length > 1) map.fitBounds(pts, { padding: [40, 40], maxZoom: 16 });
+            else if (pts.length === 1) map.setView(pts[0], 16);
+          } catch (e) {
+            listEl.replaceChildren(el('div', { class: 'empty' }, 'Impossible de charger les emplacements : ' + e.message));
+          }
+        }
+
+        function upsertLocal(item) {
+          const i = items.findIndex((x) => x.id === item.id);
+          if (i >= 0) items[i] = item; else items.unshift(item);
+        }
+
+        async function updateItem(it, patch) {
+          try {
+            const { item } = await api('PUT', patch, it.id);
+            upsertLocal(item);
+            map.closePopup();
+            renderAll();
+            toast('Emplacement mis à jour');
+          } catch (e) {
+            toast('Erreur : ' + e.message);
+            renderAll();
+          }
+        }
+
+        async function removeItem(it) {
+          if (!confirm(`Supprimer « ${it.nom} » ?`)) return;
+          try {
+            await api('DELETE', null, it.id);
+            items = items.filter((x) => x.id !== it.id);
+            if (selectedId === it.id) selectedId = null;
+            map.closePopup();
+            renderAll();
+            toast('Emplacement supprimé');
+          } catch (e) {
+            toast('Erreur : ' + e.message);
+          }
+        }
+
+        // ---------- Formulaire ----------
+        const dlg = $('dlg');
+        const form = $('form');
+        const fNom = $('f-nom');
+        const fAdr = $('f-adresse');
+        const fGeo = $('f-geo');
+        let coords = null; // { lat, lng, adresse } issue de l'autocomplétion
+
+        function setCoords(c) {
+          coords = c;
+          fGeo.textContent = c ? '✓ Position trouvée' : 'Choisis une adresse dans la liste pour placer le pin.';
+          fGeo.classList.toggle('ok', !!c);
+        }
+
+        function openForm(it) {
+          editingId = it ? it.id : null;
+          $('dlg-title').textContent = it ? 'Modifier l’emplacement' : 'Nouvel emplacement';
+          form.reset();
+          $('f-error').textContent = '';
+          fNom.value = it ? it.nom : '';
+          fAdr.value = it ? it.adresse : '';
+          $('f-statut').value = it ? it.statut : 'en_cours';
+          $('f-contact-nom').value = it ? it.contact_nom : '';
+          $('f-contact-tel').value = it ? it.contact_tel : '';
+          $('f-note').value = it ? it.note : '';
+          setCoords(it ? { lat: Number(it.lat), lng: Number(it.lng), adresse: it.adresse } : null);
+          map.closePopup();
+          dlg.showModal();
+          fNom.focus();
+        }
+
+        $('btn-add').addEventListener('click', () => openForm(null));
+        $('f-cancel').addEventListener('click', () => dlg.close());
+
+        form.addEventListener('submit', async (e) => {
+          e.preventDefault();
+          const errEl = $('f-error');
+          const payload = {
+            nom: fNom.value.trim(),
+            adresse: fAdr.value.trim(),
+            statut: $('f-statut').value,
+            contact_nom: $('f-contact-nom').value.trim(),
+            contact_tel: $('f-contact-tel').value.trim(),
+            note: $('f-note').value.trim(),
+          };
+          if (!payload.nom) { errEl.textContent = 'Le nom du commerce est obligatoire.'; return; }
+          if (!payload.adresse) { errEl.textContent = 'L’adresse est obligatoire.'; return; }
+          if (!coords) {
+            // Dernière chance : géocoder l'adresse tapée.
+            const r = await searchAdresse(payload.adresse);
+            if (r[0]) setCoords({ lat: r[0].lat, lng: r[0].lng, adresse: r[0].label });
+          }
+          if (!coords) { errEl.textContent = 'Adresse introuvable : choisis-la dans la liste proposée.'; return; }
+          payload.lat = coords.lat;
+          payload.lng = coords.lng;
+          const btn = $('f-submit');
+          btn.disabled = true;
+          try {
+            const { item } = editingId ? await api('PUT', payload, editingId) : await api('POST', payload);
+            upsertLocal(item);
+            dlg.close();
+            renderAll();
+            select(item.id);
+            toast(editingId ? 'Emplacement mis à jour' : 'Emplacement ajouté');
+          } catch (err) {
+            errEl.textContent = err.message;
+          } finally {
+            btn.disabled = false;
+          }
+        });
+
+        // ---------- Autocomplétion ----------
+        async function searchAdresse(q) {
+          if (q.length < 3) return [];
+          try {
+            const res = await fetch(`https://api-adresse.data.gouv.fr/search/?q=${encodeURIComponent(q)}&limit=6&lat=${PARIS[0]}&lon=${PARIS[1]}`);
+            const data = await res.json();
+            return (data.features || []).map((f) => ({
+              title: f.properties.label,
+              sub: f.properties.context || '',
+              label: f.properties.label,
+              lat: f.geometry.coordinates[1],
+              lng: f.geometry.coordinates[0],
+            }));
+          } catch (_) { return []; }
+        }
+
+        async function searchCommerce(q) {
+          if (q.length < 3) return [];
+          try {
+            const res = await fetch(`https://photon.komoot.io/api/?q=${encodeURIComponent(q)}&lat=${PARIS[0]}&lon=${PARIS[1]}&limit=8&lang=fr`);
+            const data = await res.json();
+            return (data.features || [])
+              .filter((f) => f.properties && f.properties.name)
+              .map((f) => {
+                const p = f.properties;
+                const rue = [p.housenumber, p.street].filter(Boolean).join(' ');
+                const ville = [p.postcode, p.city].filter(Boolean).join(' ');
+                const label = [rue, ville].filter(Boolean).join(' ');
+                return {
+                  title: p.name,
+                  sub: label || p.city || '',
+                  name: p.name,
+                  label,
+                  lat: f.geometry.coordinates[1],
+                  lng: f.geometry.coordinates[0],
+                };
+              });
+          } catch (_) { return []; }
+        }
+
+        function autocomplete(input, listBox, search, onPick) {
+          let timer, results = [], active = -1, seq = 0;
+          const close = () => { listBox.hidden = true; active = -1; };
+          const render = () => {
+            listBox.replaceChildren(...results.map((r, i) =>
+              el('div', {
+                class: `ac-item${i === active ? ' active' : ''}`,
+                onmousedown: (e) => { e.preventDefault(); onPick(r); close(); },
+              }, r.title, r.sub ? el('small', {}, r.sub) : null)));
+            listBox.hidden = results.length === 0;
+          };
+          input.addEventListener('input', () => {
+            clearTimeout(timer);
+            const q = input.value.trim();
+            if (q.length < 3) { results = []; close(); return; }
+            timer = setTimeout(async () => {
+              const my = ++seq;
+              const r = await search(q);
+              if (my !== seq) return;
+              results = r; active = -1; render();
+            }, 250);
+          });
+          input.addEventListener('keydown', (e) => {
+            if (listBox.hidden) return;
+            if (e.key === 'ArrowDown') { active = Math.min(active + 1, results.length - 1); render(); e.preventDefault(); }
+            else if (e.key === 'ArrowUp') { active = Math.max(active - 1, 0); render(); e.preventDefault(); }
+            else if (e.key === 'Enter' && active >= 0) { onPick(results[active]); close(); e.preventDefault(); }
+            else if (e.key === 'Escape') { close(); e.stopPropagation(); e.preventDefault(); }
+          });
+          input.addEventListener('blur', () => setTimeout(close, 150));
+        }
+
+        // Nom du commerce → suggestions de commerces (remplit aussi l'adresse si connue)
+        autocomplete(fNom, $('ac-nom'), searchCommerce, (r) => {
+          fNom.value = r.name;
+          if (r.label) {
+            fAdr.value = r.label;
+            setCoords({ lat: r.lat, lng: r.lng, adresse: r.label });
+          }
+        });
+        // Adresse → base adresse nationale
+        autocomplete(fAdr, $('ac-adresse'), searchAdresse, (r) => {
+          fAdr.value = r.label;
+          setCoords({ lat: r.lat, lng: r.lng, adresse: r.label });
+        });
+        // Adresse modifiée à la main → position à refaire
+        fAdr.addEventListener('input', () => {
+          if (coords && fAdr.value.trim() !== coords.adresse) setCoords(null);
+        });
+
+        // ---------- Recherche + filtres ----------
+        searchEl.addEventListener('input', renderList);
+        for (const chip of document.querySelectorAll('#legend .chip')) {
+          chip.addEventListener('click', () => {
+            const s = chip.dataset.statut;
+            visible[s] = !visible[s];
+            renderAll();
+          });
+        }
+
+        load();
+      })();
+    </script>
+  </body>
+</html>
