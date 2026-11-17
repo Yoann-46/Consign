@@ -1,7 +1,7 @@
 ---
 // Page cachée (aucun lien sur le site) pour le suivi de la prospection commerciale.
 // Accès libre (pas d'authentification, choix assumé). Données : /api/prospection (Neon).
-// Carte : Leaflet + OpenStreetMap (sans clé). Recherche : Photon + api-adresse.data.gouv.fr.
+// Carte : Leaflet + fond Esri World Street Map (sans clé). Recherche : Photon + api-adresse.data.gouv.fr.
 ---
 
 <!doctype html>
@@ -318,9 +318,9 @@
 
         // ---------- Carte ----------
         const map = L.map('map', { zoomControl: true }).setView(PARIS, 13);
-        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', {
           maxZoom: 19,
-          attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+          attribution: 'Tiles &copy; Esri &mdash; Source: Esri, HERE, Garmin, USGS, Intermap, INCREMENT P, NRCan, Esri Japan, METI, Esri China (Hong Kong), Esri Korea, Esri (Thailand), NGCC, &copy; OpenStreetMap contributors, and the GIS User Community',
         }).addTo(map);
 
         function pinIcon(statut, selected) {
