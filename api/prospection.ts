@@ -1,5 +1,5 @@
 // Vercel Serverless Function — /api/prospection
-// Protected by middleware.ts (Basic Auth). CRUD for the sales prospecting map
+// Public (no auth, by choice). CRUD for the sales prospecting map
 // (hidden page /prospection): locations negotiated with shops + installed lockers.
 //
 //   GET    /api/prospection            → list all locations
