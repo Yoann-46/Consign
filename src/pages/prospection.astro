@@ -54,8 +54,9 @@
       .side-head h1 { margin: 0; font-size: 1.15rem; }
       .btn-gear {
         width: 34px; height: 34px; border: 1px solid var(--rule); border-radius: 10px; background: #fff;
-        font-size: 1.1rem; cursor: pointer; color: var(--ink-soft);
+        cursor: pointer; color: var(--ink-soft); display: inline-flex; align-items: center; justify-content: center; padding: 0;
       }
+      .btn-gear svg { width: 18px; height: 18px; }
       .btn-gear:hover { background: var(--bg); }
       .side-head h1 span { color: var(--coral); }
       .legend { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px; }
@@ -88,10 +89,28 @@
         font: inherit; font-size: .8rem; padding: 4px 10px; border-radius: 8px; border: 0;
         background: var(--ink); color: #fff; cursor: pointer;
       }
-      select.couleur {
-        font: inherit; font-size: .8rem; padding: 3px 6px; border-radius: 8px;
-        border: 1px solid rgba(0,0,0,.2); background: rgba(255,255,255,.8); cursor: pointer; max-width: 150px;
+      /* Sélecteur de couleur (menu maison : les <select> natifs ne colorent pas les options sur Mac) */
+      .cpick {
+        display: inline-flex; align-items: center; gap: 6px; font: inherit; font-size: .8rem; color: var(--ink);
+        padding: 3px 8px; border-radius: 8px; border: 1px solid rgba(0,0,0,.2); background: rgba(255,255,255,.85);
+        cursor: pointer; max-width: 170px;
       }
+      .cpick .lbl { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+      .cpick .caret { color: var(--ink-faint); font-size: .7rem; }
+      .cpick.big { font-size: .95rem; padding: 8px 10px; width: 100%; max-width: none; border-color: var(--rule); background: #fff; }
+      .cpick.big .caret { margin-left: auto; }
+      .cmenu {
+        position: fixed; z-index: 3000; background: #fff; border: 1px solid var(--rule); border-radius: 10px;
+        box-shadow: 0 8px 28px rgba(0,0,0,.18); padding: 4px; min-width: 180px; max-height: 360px; overflow-y: auto;
+      }
+      .cmenu[hidden] { display: none; }
+      .cmenu button {
+        display: flex; align-items: center; gap: 8px; width: 100%; border: 0; background: none; font: inherit;
+        font-size: .88rem; color: var(--ink); padding: 7px 10px; border-radius: 7px; cursor: pointer; text-align: left;
+      }
+      .cmenu button:hover, .cmenu button:focus-visible { background: var(--bg); outline: none; }
+      .cmenu button.on { font-weight: 700; }
+      .cmenu button.on::after { content: "✓"; margin-left: auto; color: var(--ink-soft); }
       input[type="checkbox"] { width: 16px; height: 16px; cursor: pointer; accent-color: var(--ink); margin: 0; }
       .list { flex: 1; overflow-y: auto; padding: 12px; display: flex; flex-direction: column; gap: 10px; }
       .empty { color: var(--ink-faint); text-align: center; padding: 24px 8px; font-size: .9rem; }
@@ -198,7 +217,9 @@
         <div class="side-head">
           <div class="head-row">
             <h1>Prospection <span>Consign</span></h1>
-            <button class="btn-gear" id="btn-gear" title="Nommer les couleurs" aria-label="Nommer les couleurs">⚙︎</button>
+            <button class="btn-gear" id="btn-gear" title="Nommer les couleurs" aria-label="Nommer les couleurs">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+            </button>
           </div>
           <div class="legend" id="legend"></div>
           <div class="search-row">
@@ -210,7 +231,7 @@
           <label><input type="checkbox" id="sel-all" /> Tout sélectionner</label>
           <div class="bulk" id="bulk" hidden>
             <span id="bulk-count"></span>
-            <select class="couleur" id="bulk-couleur" aria-label="Couleur à appliquer"></select>
+            <span id="bulk-couleur"></span>
             <button type="button" id="bulk-apply">Appliquer</button>
           </div>
         </div>
@@ -235,7 +256,7 @@
         </label>
         <label>
           Couleur du pin
-          <select name="couleur" id="f-couleur"></select>
+          <span id="f-couleur"></span>
         </label>
         <div class="two">
           <label>Nom du gérant <input name="contact_nom" id="f-contact-nom" autocomplete="off" /></label>
@@ -341,19 +362,69 @@
           return 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(`${it.nom}, ${it.adresse}`);
         }
 
-        function fillCouleurs(sel, value) {
-          sel.replaceChildren(...PALETTE.map((c, i) => el('option', { value: i }, '● ' + noms[i])));
-          if (value != null) sel.value = String(value);
+        // ---------- Sélecteur de couleur ----------
+        const cmenu = el('div', { class: 'cmenu', role: 'listbox', hidden: true });
+        document.body.append(cmenu);
+        let cmenuOwner = null;
+        function closeMenu() {
+          cmenu.hidden = true;
+          cmenuOwner = null;
+        }
+        document.addEventListener('mousedown', (e) => {
+          if (!cmenu.hidden && !cmenu.contains(e.target) && e.target.closest('.cpick') !== cmenuOwner) closeMenu();
+        });
+        document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !cmenu.hidden) { closeMenu(); e.preventDefault(); } });
+        window.addEventListener('resize', closeMenu);
+        document.addEventListener('scroll', (e) => { if (!cmenu.contains(e.target)) closeMenu(); }, true);
+
+        // Renvoie un bouton avec .value (index de couleur) et .refresh().
+        function colorPicker(value, onChange, opts = {}) {
+          const btn = el('button', { type: 'button', class: 'cpick' + (opts.big ? ' big' : ''), title: 'Changer la couleur', 'aria-haspopup': 'listbox' });
+          btn.value = value;
+          btn.refresh = () => {
+            btn.replaceChildren(
+              el('span', { class: 'dot', style: `background:${PALETTE[btn.value]}` }),
+              el('span', { class: 'lbl' }, noms[btn.value]),
+              el('span', { class: 'caret' }, '▾'));
+          };
+          btn.refresh();
+          btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (cmenuOwner === btn) { closeMenu(); return; }
+            cmenu.replaceChildren(...PALETTE.map((c, i) => el('button', {
+              type: 'button', role: 'option', class: i === btn.value ? 'on' : '',
+              onclick: (ev) => {
+                ev.stopPropagation();
+                closeMenu();
+                if (i === btn.value) return;
+                btn.value = i;
+                btn.refresh();
+                if (onChange) onChange(i);
+              },
+            }, el('span', { class: 'dot', style: `background:${c}` }), noms[i])));
+            // Dans une fenêtre modale, le menu doit être dedans pour passer au-dessus.
+            (btn.closest('dialog') || document.body).append(cmenu);
+            cmenu.hidden = false;
+            cmenuOwner = btn;
+            const r = btn.getBoundingClientRect();
+            const h = cmenu.offsetHeight;
+            const top = r.bottom + 4 + h > window.innerHeight ? Math.max(8, r.top - 4 - h) : r.bottom + 4;
+            cmenu.style.top = top + 'px';
+            cmenu.style.left = Math.min(r.left, window.innerWidth - cmenu.offsetWidth - 8) + 'px';
+            const on = cmenu.querySelector('.on');
+            if (on) on.focus();
+          });
+          return btn;
         }
 
         function couleurSelect(it, onChange) {
-          const sel = el('select', { class: 'couleur', title: 'Changer la couleur' });
-          fillCouleurs(sel, coul(it));
-          sel.style.color = PALETTE[coul(it)];
-          sel.addEventListener('click', (e) => e.stopPropagation());
-          sel.addEventListener('change', (e) => onChange(Number(e.target.value)));
-          return sel;
+          return colorPicker(coul(it), onChange);
         }
+
+        const bulkPick = colorPicker(0);
+        $('bulk-couleur').replaceWith(bulkPick);
+        const formPick = colorPicker(1, null, { big: true });
+        $('f-couleur').replaceWith(formPick);
 
         // ---------- Carte ----------
         const map = L.map('map', { zoomControl: true }).setView(PARIS, 13);
@@ -503,7 +574,7 @@
           renderList();
           renderMarkers();
           renderSelection();
-          fillCouleurs($('bulk-couleur'), $('bulk-couleur').value || 0);
+          bulkPick.refresh();
         }
 
         function select(id, opts = {}) {
@@ -591,7 +662,8 @@
           $('f-error').textContent = '';
           fNom.value = it ? it.nom : '';
           fAdr.value = it ? it.adresse : '';
-          fillCouleurs($('f-couleur'), it ? coul(it) : 1);
+          formPick.value = it ? coul(it) : 1;
+          formPick.refresh();
           $('f-contact-nom').value = it ? it.contact_nom : '';
           $('f-contact-tel').value = it ? it.contact_tel : '';
           $('f-note').value = it ? it.note : '';
@@ -610,7 +682,7 @@
           const payload = {
             nom: fNom.value.trim(),
             adresse: fAdr.value.trim(),
-            couleur: Number($('f-couleur').value),
+            couleur: formPick.value,
             contact_nom: $('f-contact-nom').value.trim(),
             contact_tel: $('f-contact-tel').value.trim(),
             note: $('f-note').value.trim(),
@@ -744,7 +816,7 @@
         });
 
         $('bulk-apply').addEventListener('click', async () => {
-          const couleur = Number($('bulk-couleur').value);
+          const couleur = bulkPick.value;
           const ids = [...checked];
           if (!ids.length) return;
           try {
