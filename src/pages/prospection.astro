@@ -1,7 +1,7 @@
 ---
 // Page cachée (aucun lien sur le site) pour le suivi de la prospection commerciale.
 // Accès libre (pas d'authentification, choix assumé). Données : /api/prospection (Neon).
-// Carte : Leaflet + fond Esri World Street Map (sans clé). Recherche : Photon + api-adresse.data.gouv.fr.
+// Carte : Leaflet + fond Esri Light Gray Canvas (sans clé). Pins : 10 couleurs nommables. Recherche : Photon + api-adresse.data.gouv.fr.
 ---
 
 <!doctype html>
@@ -27,12 +27,7 @@
         --rule: #e5e3da;
         --coral: #f65f5f;
         --coral-dark: #e04444;
-        --jaune-bg: #fdf6c3;
-        --jaune-bd: #e3c936;
-        --vert-bg: #d9f2dc;
-        --vert-bd: #3fa65a;
-        --bleu-bg: #dce8fb;
-        --bleu-bd: #3b78dc;
+        --ok: #3fa65a;
       }
       * { box-sizing: border-box; }
       html, body { margin: 0; height: 100%; }
@@ -55,17 +50,23 @@
         background: #fff;
       }
       .side-head { padding: 16px 16px 12px; border-bottom: 1px solid var(--rule); }
-      .side-head h1 { margin: 0 0 10px; font-size: 1.15rem; }
+      .head-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+      .side-head h1 { margin: 0; font-size: 1.15rem; }
+      .btn-gear {
+        width: 34px; height: 34px; border: 1px solid var(--rule); border-radius: 10px; background: #fff;
+        font-size: 1.1rem; cursor: pointer; color: var(--ink-soft);
+      }
+      .btn-gear:hover { background: var(--bg); }
       .side-head h1 span { color: var(--coral); }
       .legend { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px; }
       .chip {
-        border: 1px solid; border-radius: 999px; padding: 2px 10px;
-        font-size: .78rem; cursor: pointer; background: #fff; font-family: inherit;
+        display: inline-flex; align-items: center; gap: 5px;
+        border: 1px solid var(--rule); border-radius: 999px; padding: 2px 9px 2px 6px;
+        font-size: .78rem; cursor: pointer; background: #fff; font-family: inherit; color: var(--ink);
       }
-      .chip[data-active="false"] { opacity: .4; }
-      .chip.en_cours { background: var(--jaune-bg); border-color: var(--jaune-bd); }
-      .chip.valide { background: var(--vert-bg); border-color: var(--vert-bd); }
-      .chip.installe { background: var(--bleu-bg); border-color: var(--bleu-bd); }
+      .chip[data-active="false"] { opacity: .35; }
+      .chip.all { padding-left: 9px; font-weight: 600; }
+      .dot { width: 11px; height: 11px; border-radius: 50%; flex: none; display: inline-block; }
       .search-row { display: flex; gap: 8px; }
       .search-row input {
         flex: 1; min-width: 0; padding: 9px 12px; border: 1px solid var(--rule);
@@ -76,6 +77,22 @@
         background: var(--coral); color: #fff; font-size: 1.5rem; line-height: 1; cursor: pointer;
       }
       .btn-add:hover { background: var(--coral-dark); }
+      .sel-bar {
+        display: flex; align-items: center; gap: 8px; padding: 8px 16px; border-bottom: 1px solid var(--rule);
+        font-size: .85rem; color: var(--ink-soft); flex-wrap: wrap;
+      }
+      .sel-bar label { display: flex; align-items: center; gap: 6px; cursor: pointer; }
+      .sel-bar .bulk { display: flex; align-items: center; gap: 6px; margin-left: auto; }
+      .sel-bar .bulk[hidden] { display: none; }
+      .sel-bar button {
+        font: inherit; font-size: .8rem; padding: 4px 10px; border-radius: 8px; border: 0;
+        background: var(--ink); color: #fff; cursor: pointer;
+      }
+      select.couleur {
+        font: inherit; font-size: .8rem; padding: 3px 6px; border-radius: 8px;
+        border: 1px solid rgba(0,0,0,.2); background: rgba(255,255,255,.8); cursor: pointer; max-width: 150px;
+      }
+      input[type="checkbox"] { width: 16px; height: 16px; cursor: pointer; accent-color: var(--ink); margin: 0; }
       .list { flex: 1; overflow-y: auto; padding: 12px; display: flex; flex-direction: column; gap: 10px; }
       .empty { color: var(--ink-faint); text-align: center; padding: 24px 8px; font-size: .9rem; }
       .item {
@@ -84,17 +101,13 @@
       }
       .item:hover { transform: translateY(-1px); box-shadow: 0 2px 8px rgba(0,0,0,.08); }
       .item.selected { box-shadow: 0 0 0 2px var(--ink); }
-      .item.en_cours { background: var(--jaune-bg); border-color: var(--jaune-bd); }
-      .item.valide { background: var(--vert-bg); border-color: var(--vert-bd); }
-      .item.installe { background: var(--bleu-bg); border-color: var(--bleu-bd); }
+      .item-top { display: flex; gap: 10px; align-items: flex-start; }
+      .item-top input { margin-top: 3px; }
+      .item-body { flex: 1; min-width: 0; }
       .item-title { font-weight: 700; font-size: .98rem; }
       .item-addr { font-size: .85rem; color: var(--ink-soft); margin-top: 2px; }
       .item-foot { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 8px; }
       .item-contact { font-size: .8rem; color: var(--ink-soft); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-      select.statut {
-        font: inherit; font-size: .8rem; padding: 3px 6px; border-radius: 8px;
-        border: 1px solid rgba(0,0,0,.2); background: rgba(255,255,255,.7); cursor: pointer;
-      }
       #map { height: 100%; width: 100%; }
 
       /* Pins */
@@ -106,9 +119,6 @@
         content: ""; position: absolute; width: 8px; height: 8px; border-radius: 50%;
         background: #fff; top: 6px; left: 6px;
       }
-      .pin.en_cours { background: var(--jaune-bd); }
-      .pin.valide { background: var(--vert-bd); }
-      .pin.installe { background: var(--bleu-bd); }
       .pin.selected { width: 32px; height: 32px; }
       .pin.selected::after { top: 10px; left: 10px; }
 
@@ -117,11 +127,9 @@
       .fiche h3 { margin: 0 0 4px; font-size: 1rem; }
       .fiche .addr { color: var(--ink-soft); margin: 0 0 8px; }
       .fiche .badge {
-        display: inline-block; font-size: .75rem; border: 1px solid; border-radius: 999px; padding: 1px 8px; margin-bottom: 8px;
+        display: inline-flex; align-items: center; gap: 5px; font-size: .75rem; border: 1px solid var(--rule);
+        border-radius: 999px; padding: 1px 8px 1px 5px; margin-bottom: 8px;
       }
-      .badge.en_cours { background: var(--jaune-bg); border-color: var(--jaune-bd); }
-      .badge.valide { background: var(--vert-bg); border-color: var(--vert-bd); }
-      .badge.installe { background: var(--bleu-bg); border-color: var(--bleu-bd); }
       .fiche .row { margin: 3px 0; }
       .fiche .note { white-space: pre-wrap; background: var(--bg); border-radius: 6px; padding: 6px 8px; margin-top: 6px; }
       .fiche .actions { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 10px; }
@@ -158,7 +166,10 @@
       .ac-item small { display: block; color: var(--ink-faint); }
       .ac-item:hover, .ac-item.active { background: var(--bg); }
       .hint { font-size: .75rem; color: var(--ink-faint); }
-      .hint.ok { color: var(--vert-bd); }
+      .hint.ok { color: var(--ok); }
+      .noms { display: flex; flex-direction: column; gap: 8px; }
+      .nom-row { display: flex; align-items: center; gap: 10px; }
+      .nom-row .dot { width: 18px; height: 18px; }
       .form-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 4px; }
       .form-actions button {
         font: inherit; padding: 8px 16px; border-radius: 10px; cursor: pointer; border: 1px solid var(--rule); background: #fff;
@@ -185,15 +196,22 @@
     <div class="app">
       <aside class="side">
         <div class="side-head">
-          <h1>Prospection <span>Consign</span></h1>
-          <div class="legend" id="legend">
-            <button class="chip en_cours" data-statut="en_cours" data-active="true">En cours · <b>0</b></button>
-            <button class="chip valide" data-statut="valide" data-active="true">Validé · <b>0</b></button>
-            <button class="chip installe" data-statut="installe" data-active="true">Installé · <b>0</b></button>
+          <div class="head-row">
+            <h1>Prospection <span>Consign</span></h1>
+            <button class="btn-gear" id="btn-gear" title="Nommer les couleurs" aria-label="Nommer les couleurs">⚙︎</button>
           </div>
+          <div class="legend" id="legend"></div>
           <div class="search-row">
             <input id="search" type="search" placeholder="Rechercher un commerce, une adresse…" autocomplete="off" />
             <button class="btn-add" id="btn-add" title="Ajouter un emplacement" aria-label="Ajouter un emplacement">+</button>
+          </div>
+        </div>
+        <div class="sel-bar">
+          <label><input type="checkbox" id="sel-all" /> Tout sélectionner</label>
+          <div class="bulk" id="bulk" hidden>
+            <span id="bulk-count"></span>
+            <select class="couleur" id="bulk-couleur" aria-label="Couleur à appliquer"></select>
+            <button type="button" id="bulk-apply">Appliquer</button>
           </div>
         </div>
         <div class="list" id="list"><div class="empty">Chargement…</div></div>
@@ -216,12 +234,8 @@
           <span class="hint" id="f-geo">Choisis une adresse dans la liste pour placer le pin.</span>
         </label>
         <label>
-          Statut
-          <select name="statut" id="f-statut">
-            <option value="en_cours">En cours</option>
-            <option value="valide">Validé</option>
-            <option value="installe">Installé</option>
-          </select>
+          Couleur du pin
+          <select name="couleur" id="f-couleur"></select>
         </label>
         <div class="two">
           <label>Nom du gérant <input name="contact_nom" id="f-contact-nom" autocomplete="off" /></label>
@@ -232,6 +246,18 @@
         <div class="form-actions">
           <button type="button" id="f-cancel">Annuler</button>
           <button type="submit" class="primary" id="f-submit">Enregistrer</button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog id="dlg-noms">
+      <form id="form-noms" method="dialog" novalidate>
+        <h2>Nom des couleurs</h2>
+        <div class="noms" id="noms"></div>
+        <div class="form-error" id="n-error"></div>
+        <div class="form-actions">
+          <button type="button" id="n-cancel">Annuler</button>
+          <button type="submit" class="primary" id="n-submit">Enregistrer</button>
         </div>
       </form>
     </dialog>
@@ -247,14 +273,22 @@
     <script is:inline>
       (function () {
         const API = '/api/prospection';
-        const LABELS = { en_cours: 'En cours', valide: 'Validé', installe: 'Installé' };
         const PARIS = [48.8566, 2.3522];
+        // 10 couleurs bien distinctes sur fond gris clair (index stocké en base).
+        const PALETTE = ['#e53935', '#f57c00', '#d4a106', '#43a047', '#00acc1', '#1e88e5', '#283593', '#8e24aa', '#e040fb', '#795548'];
+        let noms = ['Rouge', 'En cours', 'Jaune', 'Validé', 'Turquoise', 'Installé', 'Bleu marine', 'Violet', 'Fuchsia', 'Marron'];
 
         let items = [];
         let selectedId = null;
         let editingId = null;
         const markers = new Map();
-        const visible = { en_cours: true, valide: true, installe: true };
+        const visible = PALETTE.map(() => true);
+        const checked = new Set();
+
+        const coul = (it) => {
+          const c = Number(it.couleur);
+          return Number.isInteger(c) && c >= 0 && c < PALETTE.length ? c : 1;
+        };
 
         const $ = (id) => document.getElementById(id);
         const listEl = $('list');
@@ -285,8 +319,8 @@
           toastTimer = setTimeout(() => t.classList.remove('show'), 2600);
         }
 
-        async function api(method, body, id) {
-          const url = id ? `${API}?id=${encodeURIComponent(id)}` : API;
+        async function api(method, body, id, qs) {
+          const url = id ? `${API}?id=${encodeURIComponent(id)}` : qs ? `${API}?${qs}` : API;
           const res = await fetch(url, {
             method,
             headers: body ? { 'Content-Type': 'application/json' } : undefined,
@@ -307,27 +341,39 @@
           return 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(`${it.nom}, ${it.adresse}`);
         }
 
-        function statutSelect(it, onChange) {
-          const sel = el('select', { class: 'statut', title: 'Changer le statut' },
-            Object.entries(LABELS).map(([v, l]) => el('option', { value: v }, l)));
-          sel.value = it.statut;
+        function fillCouleurs(sel, value) {
+          sel.replaceChildren(...PALETTE.map((c, i) => el('option', { value: i }, '● ' + noms[i])));
+          if (value != null) sel.value = String(value);
+        }
+
+        function couleurSelect(it, onChange) {
+          const sel = el('select', { class: 'couleur', title: 'Changer la couleur' });
+          fillCouleurs(sel, coul(it));
+          sel.style.color = PALETTE[coul(it)];
           sel.addEventListener('click', (e) => e.stopPropagation());
-          sel.addEventListener('change', (e) => onChange(e.target.value));
+          sel.addEventListener('change', (e) => onChange(Number(e.target.value)));
           return sel;
         }
 
         // ---------- Carte ----------
         const map = L.map('map', { zoomControl: true }).setView(PARIS, 13);
-        L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', {
-          maxZoom: 19,
-          attribution: 'Tiles &copy; Esri &mdash; Source: Esri, HERE, Garmin, USGS, Intermap, INCREMENT P, NRCan, Esri Japan, METI, Esri China (Hong Kong), Esri Korea, Esri (Thailand), NGCC, &copy; OpenStreetMap contributors, and the GIS User Community',
+        map.setMaxZoom(18);
+        const ESRI = 'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/';
+        L.tileLayer(ESRI + 'World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}', {
+          maxZoom: 18,
+          maxNativeZoom: 16,
+          attribution: 'Tiles &copy; Esri &mdash; Esri, HERE, Garmin, &copy; OpenStreetMap contributors',
+        }).addTo(map);
+        L.tileLayer(ESRI + 'World_Light_Gray_Reference/MapServer/tile/{z}/{y}/{x}', {
+          maxZoom: 18,
+          maxNativeZoom: 16,
         }).addTo(map);
 
-        function pinIcon(statut, selected) {
+        function pinIcon(c, selected) {
           const size = selected ? 32 : 24;
           return L.divIcon({
             className: '',
-            html: `<span class="pin ${statut}${selected ? ' selected' : ''}"></span>`,
+            html: `<span class="pin${selected ? ' selected' : ''}" style="background:${PALETTE[c]}"></span>`,
             iconSize: [size, size],
             iconAnchor: [size / 2, size * 1.2],
             popupAnchor: [0, -size * 1.1],
@@ -338,7 +384,7 @@
           return el('div', { class: 'fiche' },
             el('h3', {}, it.nom),
             el('p', { class: 'addr' }, it.adresse),
-            el('span', { class: `badge ${it.statut}` }, LABELS[it.statut] || it.statut),
+            el('span', { class: 'badge' }, el('span', { class: 'dot', style: `background:${PALETTE[coul(it)]}` }), noms[coul(it)]),
             it.contact_nom ? el('div', { class: 'row' }, '👤 ', it.contact_nom) : null,
             it.contact_tel ? el('div', { class: 'row' }, '📞 ', el('a', { href: `tel:${it.contact_tel.replace(/\s+/g, '')}` }, it.contact_tel)) : null,
             it.note ? el('div', { class: 'note' }, it.note) : null,
@@ -354,9 +400,9 @@
           for (const m of markers.values()) m.remove();
           markers.clear();
           for (const it of items) {
-            if (!visible[it.statut]) continue;
+            if (!visible[coul(it)]) continue;
             const m = L.marker([Number(it.lat), Number(it.lng)], {
-              icon: pinIcon(it.statut, it.id === selectedId),
+              icon: pinIcon(coul(it), it.id === selectedId),
               title: it.nom,
               zIndexOffset: it.id === selectedId ? 1000 : 0,
             }).addTo(map);
@@ -370,18 +416,47 @@
         function filtered() {
           const q = norm(searchEl.value.trim());
           return items.filter((it) => {
-            if (!visible[it.statut]) return false;
+            if (!visible[coul(it)]) return false;
             if (!q) return true;
-            return norm(`${it.nom} ${it.adresse} ${it.contact_nom} ${it.note} ${LABELS[it.statut]}`).includes(q);
+            return norm(`${it.nom} ${it.adresse} ${it.contact_nom} ${it.note} ${noms[coul(it)]}`).includes(q);
           });
         }
 
+        // Pastilles de filtre : une par couleur utilisée (ou masquée), + « Toutes ».
         function renderLegend() {
-          for (const chip of document.querySelectorAll('#legend .chip')) {
-            const s = chip.dataset.statut;
-            chip.querySelector('b').textContent = items.filter((i) => i.statut === s).length;
-            chip.dataset.active = String(visible[s]);
-          }
+          const legend = $('legend');
+          const allOn = visible.every(Boolean);
+          const chips = [el('button', {
+            class: 'chip all', type: 'button', 'data-active': String(allOn), title: 'Afficher toutes les couleurs',
+            onclick: () => { visible.fill(true); renderAll(); },
+          }, 'Toutes · ', el('b', {}, items.length))];
+          PALETTE.forEach((c, i) => {
+            const n = items.filter((it) => coul(it) === i).length;
+            if (!n && visible[i]) return;
+            chips.push(el('button', {
+              class: 'chip', type: 'button', 'data-active': String(visible[i]),
+              title: 'Clic : afficher / masquer cette couleur',
+              onclick: () => {
+                // Si tout est affiché, le premier clic isole la couleur.
+                if (visible.every(Boolean)) { visible.fill(false); visible[i] = true; }
+                else visible[i] = !visible[i];
+                if (!visible.some(Boolean)) visible.fill(true);
+                renderAll();
+              },
+            }, el('span', { class: 'dot', style: `background:${c}` }), noms[i], ' · ', el('b', {}, n)));
+          });
+          legend.replaceChildren(...chips);
+        }
+
+        function renderSelection() {
+          const rows = filtered();
+          const n = checked.size;
+          $('bulk').hidden = n === 0;
+          $('bulk-count').textContent = n === 1 ? '1 sélectionné' : `${n} sélectionnés`;
+          const all = $('sel-all');
+          const nVis = rows.filter((r) => checked.has(r.id)).length;
+          all.checked = rows.length > 0 && nVis === rows.length;
+          all.indeterminate = nVis > 0 && nVis < rows.length;
         }
 
         function renderList() {
@@ -394,16 +469,30 @@
           }
           for (const it of rows) {
             const contact = [it.contact_nom, it.contact_tel].filter(Boolean).join(' · ');
+            const c = PALETTE[coul(it)];
+            const box = el('input', { type: 'checkbox', 'aria-label': 'Sélectionner ' + it.nom });
+            box.checked = checked.has(it.id);
+            box.addEventListener('click', (e) => e.stopPropagation());
+            box.addEventListener('change', () => {
+              if (box.checked) checked.add(it.id); else checked.delete(it.id);
+              renderSelection();
+            });
             listEl.append(el('div', {
-                class: `item ${it.statut}${it.id === selectedId ? ' selected' : ''}`,
+                class: `item${it.id === selectedId ? ' selected' : ''}`,
+                style: `background:${c}1a;border-color:${c}66;border-left-color:${c}`,
                 'data-id': it.id,
                 onclick: () => select(it.id),
               },
-              el('div', { class: 'item-title' }, it.nom),
-              el('div', { class: 'item-addr' }, it.adresse),
-              el('div', { class: 'item-foot' },
-                statutSelect(it, (v) => updateItem(it, { statut: v })),
-                contact ? el('span', { class: 'item-contact' }, contact) : null,
+              el('div', { class: 'item-top' },
+                box,
+                el('div', { class: 'item-body' },
+                  el('div', { class: 'item-title' }, it.nom),
+                  el('div', { class: 'item-addr' }, it.adresse),
+                  el('div', { class: 'item-foot' },
+                    couleurSelect(it, (v) => updateItem(it, { couleur: v })),
+                    contact ? el('span', { class: 'item-contact' }, contact) : null,
+                  ),
+                ),
               ),
             ));
           }
@@ -413,6 +502,8 @@
           renderLegend();
           renderList();
           renderMarkers();
+          renderSelection();
+          fillCouleurs($('bulk-couleur'), $('bulk-couleur').value || 0);
         }
 
         function select(id, opts = {}) {
@@ -425,7 +516,7 @@
             renderMarkers();
           }
           const m = markers.get(id);
-          map.flyTo([Number(it.lat), Number(it.lng)], Math.max(map.getZoom(), 17), { duration: 0.6 });
+          map.flyTo([Number(it.lat), Number(it.lng)], Math.max(map.getZoom(), 16), { duration: 0.6 });
           if (m) setTimeout(() => m.openPopup(), opts.fromMap ? 0 : 650);
           const row = listEl.querySelector(`[data-id="${id}"]`);
           if (row) row.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
@@ -436,6 +527,7 @@
           try {
             const data = await api('GET');
             items = data.items || [];
+            if (Array.isArray(data.couleurs)) for (const c of data.couleurs) noms[c.idx] = c.nom;
             renderAll();
             const pts = items.map((i) => [Number(i.lat), Number(i.lng)]);
             if (pts.length > 1) map.fitBounds(pts, { padding: [40, 40], maxZoom: 16 });
@@ -468,6 +560,7 @@
           try {
             await api('DELETE', null, it.id);
             items = items.filter((x) => x.id !== it.id);
+            checked.delete(it.id);
             if (selectedId === it.id) selectedId = null;
             map.closePopup();
             renderAll();
@@ -498,7 +591,7 @@
           $('f-error').textContent = '';
           fNom.value = it ? it.nom : '';
           fAdr.value = it ? it.adresse : '';
-          $('f-statut').value = it ? it.statut : 'en_cours';
+          fillCouleurs($('f-couleur'), it ? coul(it) : 1);
           $('f-contact-nom').value = it ? it.contact_nom : '';
           $('f-contact-tel').value = it ? it.contact_tel : '';
           $('f-note').value = it ? it.note : '';
@@ -517,7 +610,7 @@
           const payload = {
             nom: fNom.value.trim(),
             adresse: fAdr.value.trim(),
-            statut: $('f-statut').value,
+            couleur: Number($('f-couleur').value),
             contact_nom: $('f-contact-nom').value.trim(),
             contact_tel: $('f-contact-tel').value.trim(),
             note: $('f-note').value.trim(),
@@ -639,14 +732,57 @@
         });
 
         // ---------- Recherche + filtres ----------
-        searchEl.addEventListener('input', renderList);
-        for (const chip of document.querySelectorAll('#legend .chip')) {
-          chip.addEventListener('click', () => {
-            const s = chip.dataset.statut;
-            visible[s] = !visible[s];
+        searchEl.addEventListener('input', () => { renderList(); renderSelection(); });
+
+        // ---------- Sélection multiple ----------
+        $('sel-all').addEventListener('change', (e) => {
+          const rows = filtered();
+          if (e.target.checked) rows.forEach((r) => checked.add(r.id));
+          else rows.forEach((r) => checked.delete(r.id));
+          renderList();
+          renderSelection();
+        });
+
+        $('bulk-apply').addEventListener('click', async () => {
+          const couleur = Number($('bulk-couleur').value);
+          const ids = [...checked];
+          if (!ids.length) return;
+          try {
+            const data = await api('PUT', { ids, couleur }, null, 'bulk=1');
+            for (const item of data.items || []) upsertLocal(item);
+            checked.clear();
+            map.closePopup();
             renderAll();
-          });
-        }
+            toast(`${ids.length} emplacement${ids.length > 1 ? 's' : ''} → ${noms[couleur]}`);
+          } catch (e) {
+            toast('Erreur : ' + e.message);
+          }
+        });
+
+        // ---------- Noms des couleurs (roue crantée) ----------
+        const dlgNoms = $('dlg-noms');
+        $('btn-gear').addEventListener('click', () => {
+          $('n-error').textContent = '';
+          $('noms').replaceChildren(...PALETTE.map((c, i) =>
+            el('label', { class: 'nom-row' },
+              el('span', { class: 'dot', style: `background:${c}` }),
+              el('input', { value: noms[i], maxlength: 60, 'data-idx': i, 'aria-label': `Nom de la couleur ${i + 1}` }))));
+          dlgNoms.showModal();
+        });
+        $('n-cancel').addEventListener('click', () => dlgNoms.close());
+        $('form-noms').addEventListener('submit', async (e) => {
+          e.preventDefault();
+          const vals = [...$('noms').querySelectorAll('input')].map((i) => i.value.trim());
+          try {
+            const data = await api('PUT', { noms: vals }, null, 'couleurs=1');
+            for (const c of data.couleurs || []) noms[c.idx] = c.nom;
+            dlgNoms.close();
+            renderAll();
+            toast('Noms des couleurs enregistrés');
+          } catch (err) {
+            $('n-error').textContent = err.message;
+          }
+        });
 
         load();
       })();

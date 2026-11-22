@@ -2,10 +2,16 @@
 // Public (no auth, by choice). CRUD for the sales prospecting map
 // (hidden page /prospection): locations negotiated with shops + installed lockers.
 //
-//   GET    /api/prospection            → list all locations
-//   POST   /api/prospection            → create (JSON body)
-//   PUT    /api/prospection?id=<id>    → update (JSON body, partial allowed)
-//   DELETE /api/prospection?id=<id>    → delete
+//   GET    /api/prospection                → { items, couleurs }
+//   POST   /api/prospection                → create (JSON body)
+//   PUT    /api/prospection?id=<id>        → update (JSON body, partial allowed)
+//   PUT    /api/prospection?bulk=1         → { ids: number[], couleur } recolor several
+//   PUT    /api/prospection?couleurs=1     → { noms: string[10] } rename the colors
+//   DELETE /api/prospection?id=<id>        → delete
+//
+// Each location has a pin color (index 0-9, palette defined in the page).
+// Color names are shared in table prospection_couleurs. The old `statut`
+// column is kept (not shown anymore) so no data is lost.
 //
 // Self-contained on purpose — see api/cron/snapshot-lockers.ts for why.
 
@@ -24,6 +30,9 @@ interface VercelResponse {
 }
 
 const STATUTS = ['en_cours', 'valide', 'installe'] as const;
+const NB_COULEURS = 10;
+// Default color names (index = palette position in the page).
+const NOMS_DEFAUT = ['Rouge', 'En cours', 'Jaune', 'Validé', 'Turquoise', 'Installé', 'Bleu marine', 'Violet', 'Fuchsia', 'Marron'];
 type Statut = (typeof STATUTS)[number];
 
 interface Prospect {
@@ -32,6 +41,7 @@ interface Prospect {
   lat: number;
   lng: number;
   statut: Statut;
+  couleur: number;
   contact_nom: string;
   contact_tel: string;
   note: string;
@@ -77,6 +87,21 @@ async function ensureTable(sql: NeonQueryFunction<false, false>) {
       VALUES ('Consign — Rue de Cléry', '67 Rue de Cléry 75002 Paris', 48.869062, 2.349638, 'installe')
     `;
   }
+  // v2: pin colors. Existing rows inherit a color from their status.
+  await sql`ALTER TABLE prospects ADD COLUMN IF NOT EXISTS couleur INTEGER`;
+  await sql`
+    UPDATE prospects SET couleur = CASE statut WHEN 'installe' THEN 5 WHEN 'valide' THEN 3 ELSE 1 END
+    WHERE couleur IS NULL
+  `;
+  await sql`
+    CREATE TABLE IF NOT EXISTS prospection_couleurs (
+      idx INTEGER PRIMARY KEY,
+      nom TEXT NOT NULL
+    )
+  `;
+  for (let i = 0; i < NB_COULEURS; i++) {
+    await sql`INSERT INTO prospection_couleurs (idx, nom) VALUES (${i}, ${NOMS_DEFAUT[i]}) ON CONFLICT (idx) DO NOTHING`;
+  }
   tableReady = true;
 }
 
@@ -103,23 +128,30 @@ function validate(input: Record<string, unknown>): Prospect | string {
   const adresse = str(input.adresse, 300);
   const lat = Number(input.lat);
   const lng = Number(input.lng);
-  const statut = str(input.statut, 20) as Statut;
+  const statut = (str(input.statut, 20) || 'en_cours') as Statut;
+  const couleur = input.couleur == null || input.couleur === '' ? 1 : Number(input.couleur);
   if (!nom) return 'Le nom du commerce est obligatoire.';
   if (!adresse) return "L'adresse est obligatoire.";
   if (!Number.isFinite(lat) || !Number.isFinite(lng) || Math.abs(lat) > 90 || Math.abs(lng) > 180) {
     return "Position introuvable : choisis l'adresse dans la liste proposée.";
   }
   if (!STATUTS.includes(statut)) return 'Statut invalide.';
+  if (!Number.isInteger(couleur) || couleur < 0 || couleur >= NB_COULEURS) return 'Couleur invalide.';
   return {
     nom,
     adresse,
     lat,
     lng,
     statut,
+    couleur,
     contact_nom: str(input.contact_nom, 200),
     contact_tel: str(input.contact_tel, 50),
     note: str(input.note, 2000),
   };
+}
+
+function flag(req: VercelRequest, name: string): boolean {
+  return req.query[name] != null;
 }
 
 function getId(req: VercelRequest): number | null {
@@ -138,11 +170,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     if (method === 'GET') {
       const rows = await sql`
-        SELECT id, nom, adresse, lat, lng, statut, contact_nom, contact_tel, note, created_at, updated_at
+        SELECT id, nom, adresse, lat, lng, statut, couleur, contact_nom, contact_tel, note, created_at, updated_at
         FROM prospects
         ORDER BY updated_at DESC
       `;
-      res.status(200).json({ items: rows });
+      const couleurs = await sql`SELECT idx, nom FROM prospection_couleurs ORDER BY idx`;
+      res.status(200).json({ items: rows, couleurs });
       return;
     }
 
@@ -153,11 +186,49 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         return;
       }
       const rows = await sql`
-        INSERT INTO prospects (nom, adresse, lat, lng, statut, contact_nom, contact_tel, note)
-        VALUES (${p.nom}, ${p.adresse}, ${p.lat}, ${p.lng}, ${p.statut}, ${p.contact_nom}, ${p.contact_tel}, ${p.note})
+        INSERT INTO prospects (nom, adresse, lat, lng, statut, couleur, contact_nom, contact_tel, note)
+        VALUES (${p.nom}, ${p.adresse}, ${p.lat}, ${p.lng}, ${p.statut}, ${p.couleur}, ${p.contact_nom}, ${p.contact_tel}, ${p.note})
         RETURNING *
       `;
       res.status(201).json({ item: rows[0] });
+      return;
+    }
+
+    if ((method === 'PUT' || method === 'PATCH') && flag(req, 'couleurs')) {
+      const noms = parseBody(req.body).noms;
+      if (!Array.isArray(noms) || noms.length !== NB_COULEURS) {
+        res.status(400).json({ error: 'Il faut 10 noms de couleur.' });
+        return;
+      }
+      for (let i = 0; i < NB_COULEURS; i++) {
+        const nom = str(noms[i], 60) || NOMS_DEFAUT[i];
+        await sql`UPDATE prospection_couleurs SET nom = ${nom} WHERE idx = ${i}`;
+      }
+      const couleurs = await sql`SELECT idx, nom FROM prospection_couleurs ORDER BY idx`;
+      res.status(200).json({ couleurs });
+      return;
+    }
+
+    if ((method === 'PUT' || method === 'PATCH') && flag(req, 'bulk')) {
+      const body = parseBody(req.body);
+      const couleur = Number(body.couleur);
+      const ids = Array.isArray(body.ids)
+        ? body.ids.map(Number).filter((n) => Number.isInteger(n) && n > 0).slice(0, 1000)
+        : [];
+      if (!Number.isInteger(couleur) || couleur < 0 || couleur >= NB_COULEURS) {
+        res.status(400).json({ error: 'Couleur invalide.' });
+        return;
+      }
+      if (!ids.length) {
+        res.status(400).json({ error: 'Aucun emplacement sélectionné.' });
+        return;
+      }
+      const rows = await sql`
+        UPDATE prospects SET couleur = ${couleur}, updated_at = now()
+        WHERE id = ANY(${ids}::int[])
+        RETURNING *
+      `;
+      res.status(200).json({ items: rows });
       return;
     }
 
@@ -181,7 +252,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       const rows = await sql`
         UPDATE prospects SET
           nom = ${p.nom}, adresse = ${p.adresse}, lat = ${p.lat}, lng = ${p.lng},
-          statut = ${p.statut}, contact_nom = ${p.contact_nom}, contact_tel = ${p.contact_tel},
+          statut = ${p.statut}, couleur = ${p.couleur}, contact_nom = ${p.contact_nom}, contact_tel = ${p.contact_tel},
           note = ${p.note}, updated_at = now()
         WHERE id = ${id}
         RETURNING *
