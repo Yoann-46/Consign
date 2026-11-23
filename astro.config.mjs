@@ -4,7 +4,7 @@ import tailwindcss from '@tailwindcss/vite';
 
 // https://astro.build/config
 export default defineConfig({
-  site: 'https://www.consign-locker.com',
+  site: 'https://www.consignlocker.com',
   i18n: {
     defaultLocale: 'en',
     locales: ['en', 'fr'],
