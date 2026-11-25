@@ -34,7 +34,7 @@ const lockers = [
 
 <section class="pricing-hero" aria-labelledby="pricing-title">
   <div class="container-x">
-    <header class="pricing-header" data-pricing-anim="header">
+    <header class="pricing-header" data-pricing-anim="header" data-reveal>
       <span class="eyebrow pricing-eyebrow">{t('pricing.eyebrow')}</span>
       <h1 id="pricing-title" class="heading-display pricing-title">
         {t('pricing.title')} <span class="pricing-accent">{t('pricing.title.accent')}</span>
@@ -43,7 +43,7 @@ const lockers = [
     </header>
 
     <!-- Pricing cards grid -->
-    <div class="pricing-grid" data-pricing-anim="grid">
+    <div class="pricing-grid" data-pricing-anim="grid" data-reveal>
       {lockers.map((locker) => (
         <article class={`locker-card locker-${locker.key}`}>
 
@@ -93,7 +93,7 @@ const lockers = [
     </div>
 
     <!-- Note + CTA -->
-    <footer class="pricing-foot" data-pricing-anim="foot">
+    <footer class="pricing-foot" data-pricing-anim="foot" data-reveal>
       <p class="pricing-note">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" width="18" height="18">
           <rect x="2" y="5" width="20" height="14" rx="2" />
@@ -124,8 +124,6 @@ const lockers = [
   .pricing-header {
     max-width: 680px;
     margin-bottom: clamp(3rem, 6vw, 5rem);
-    opacity: 0;
-    transform: translateY(20px);
   }
   .pricing-eyebrow {
     color: var(--color-coral-dark);
@@ -155,8 +153,6 @@ const lockers = [
     display: grid;
     grid-template-columns: 1fr;
     gap: 1.5rem;
-    opacity: 0;
-    transform: translateY(24px);
   }
   @media (min-width: 680px) {
     .pricing-grid {
@@ -338,8 +334,6 @@ const lockers = [
     flex-direction: column;
     align-items: flex-start;
     gap: 1.5rem;
-    opacity: 0;
-    transform: translateY(16px);
   }
   .pricing-note {
     margin: 0;
@@ -374,40 +368,3 @@ const lockers = [
   }
 </style>
 
-<script>
-  import { gsap } from 'gsap';
-  import { ScrollTrigger } from 'gsap/ScrollTrigger';
-
-  gsap.registerPlugin(ScrollTrigger);
-
-  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-  const header = document.querySelector<HTMLElement>('[data-pricing-anim="header"]');
-  const grid = document.querySelector<HTMLElement>('[data-pricing-anim="grid"]');
-  const foot = document.querySelector<HTMLElement>('[data-pricing-anim="foot"]');
-
-  if (reduce) {
-    [header, grid, foot].forEach((el) => {
-      if (el) gsap.set(el, { opacity: 1, y: 0 });
-    });
-  } else {
-    if (header) {
-      gsap.to(header, {
-        opacity: 1, y: 0, duration: 1.1, ease: 'power3.out',
-        scrollTrigger: { trigger: header, start: 'top 75%', once: true },
-      });
-    }
-    if (grid) {
-      gsap.to(grid, {
-        opacity: 1, y: 0, duration: 1.2, ease: 'power3.out',
-        scrollTrigger: { trigger: grid, start: 'top 78%', once: true },
-      });
-    }
-    if (foot) {
-      gsap.to(foot, {
-        opacity: 1, y: 0, duration: 0.9, ease: 'power2.out',
-        scrollTrigger: { trigger: foot, start: 'top 88%', once: true },
-      });
-    }
-  }
-</script>

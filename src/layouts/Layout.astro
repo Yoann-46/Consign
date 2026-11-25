@@ -2,14 +2,17 @@
 import '../styles/global.css';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
+import MobileCta from '../components/MobileCta.astro';
 import { useTranslations } from '../i18n/ui';
 
 interface Props {
   title?: string;
   description?: string;
+  /** Sticky "Directions" bar on mobile (off for back-office pages) */
+  mobileCta?: boolean;
 }
 
-const { title, description } = Astro.props;
+const { title, description, mobileCta = true } = Astro.props;
 const lang = Astro.currentLocale ?? 'en';
 const t = useTranslations(lang);
 const finalTitle = title ?? t('meta.title');
@@ -85,6 +88,42 @@ const canonical = new URL(Astro.url.pathname, Astro.site).toString();
     <Header />
     <main id="main"><slot /></main>
     <Footer />
+    {mobileCta && <MobileCta />}
+
+    <script>
+      // Scroll reveal as progressive enhancement: content is visible in CSS.
+      // Only elements still below the fold at load get hidden, by JS, and the
+      // same JS reveals them as they enter. No JS = everything visible.
+      const els = Array.from(document.querySelectorAll<HTMLElement>('[data-reveal]'));
+      const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (!reduce && 'IntersectionObserver' in window && els.length) {
+        const io = new IntersectionObserver(
+          (entries) => {
+            let i = 0;
+            for (const e of entries) {
+              if (!e.isIntersecting) continue;
+              const el = e.target as HTMLElement;
+              io.unobserve(el);
+              el.style.transitionDelay = `${Math.min(i++, 4) * 60}ms`;
+              el.classList.add('reveal-in');
+              el.classList.remove('reveal-pending');
+              el.addEventListener('transitionend', () => {
+                el.classList.remove('reveal-in');
+                el.style.transitionDelay = '';
+              }, { once: true });
+            }
+          },
+          { rootMargin: '0px 0px -6% 0px' },
+        );
+        const fold = window.innerHeight;
+        for (const el of els) {
+          if (el.getBoundingClientRect().top > fold) {
+            el.classList.add('reveal-pending');
+            io.observe(el);
+          }
+        }
+      }
+    </script>
 
     <style>
       .skip-link {

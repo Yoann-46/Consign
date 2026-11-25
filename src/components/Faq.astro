@@ -17,14 +17,14 @@ const items = [
 
 <section class="faq" id="faq" aria-labelledby="faq-title">
   <div class="container-x faq-wrap">
-    <header class="faq-header" data-faq-anim="header">
+    <header class="faq-header" data-faq-anim="header" data-reveal>
       <span class="eyebrow faq-eyebrow">{t('faq.eyebrow')}</span>
       <h2 id="faq-title" class="heading-display faq-title">{t('faq.title')}</h2>
     </header>
 
     <ul class="faq-list" role="list">
       {items.map((item, i) => (
-        <li class="faq-item" data-faq-anim="item">
+        <li class="faq-item" data-faq-anim="item" data-reveal>
           <button
             type="button"
             class="faq-q"
@@ -68,8 +68,6 @@ const items = [
 
   .faq-header {
     margin-bottom: clamp(2.5rem, 5vw, 3.75rem);
-    opacity: 0;
-    transform: translateY(20px);
   }
   .faq-eyebrow {
     color: var(--color-coral-dark);
@@ -91,8 +89,6 @@ const items = [
 
   .faq-item {
     border-bottom: 1.5px solid var(--color-ink);
-    opacity: 0;
-    transform: translateY(16px);
   }
 
   .faq-q {
@@ -170,37 +166,8 @@ const items = [
 
 <script>
   import { gsap } from 'gsap';
-  import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
-  gsap.registerPlugin(ScrollTrigger);
-
-  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-  const header = document.querySelector<HTMLElement>('[data-faq-anim="header"]');
   const items = document.querySelectorAll<HTMLElement>('[data-faq-anim="item"]');
-
-  if (reduce) {
-    if (header) gsap.set(header, { opacity: 1, y: 0 });
-    gsap.set(items, { opacity: 1, y: 0 });
-  } else {
-    if (header) {
-      gsap.to(header, {
-        opacity: 1,
-        y: 0,
-        duration: 1,
-        ease: 'power3.out',
-        scrollTrigger: { trigger: header, start: 'top 80%', once: true },
-      });
-    }
-    gsap.to(items, {
-      opacity: 1,
-      y: 0,
-      duration: 0.75,
-      ease: 'power3.out',
-      stagger: 0.1,
-      scrollTrigger: { trigger: '.faq-list', start: 'top 75%', once: true },
-    });
-  }
 
   // Accordion behavior — animate height: auto via GSAP
   items.forEach((item) => {

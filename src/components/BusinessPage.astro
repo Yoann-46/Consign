@@ -44,7 +44,7 @@ const partnerSteps = [
 <section class="biz-hero" aria-labelledby="biz-title">
   <div class="biz-hero-bg" aria-hidden="true"></div>
   <div class="container-x">
-    <header class="biz-header" data-biz-anim="header">
+    <header class="biz-header" data-biz-anim="header" data-reveal>
       <span class="eyebrow biz-eyebrow">{t('business.eyebrow')}</span>
       <h1 id="biz-title" class="heading-display biz-title">
         {t('business.title')} <span class="biz-title-accent">{t('business.title.accent')}</span>
@@ -61,7 +61,7 @@ const partnerSteps = [
 <!-- USE CASES -->
 <section class="biz-cases" aria-labelledby="biz-cases-title">
   <div class="container-x">
-    <header class="biz-section-header" data-biz-anim="cases-header">
+    <header class="biz-section-header" data-biz-anim="cases-header" data-reveal>
       <span class="eyebrow biz-section-eyebrow">{t('business.cases.eyebrow')}</span>
       <h2 id="biz-cases-title" class="heading-display biz-section-title">
         Hotels. Aparthotels. Airbnb managers.
@@ -69,7 +69,7 @@ const partnerSteps = [
     </header>
     <ul class="biz-cases-list">
       {cases.map((c) => (
-        <li class={`biz-case accent-${c.accent}`} data-biz-anim="case">
+        <li class={`biz-case accent-${c.accent}`} data-biz-anim="case" data-reveal>
           <span class="biz-case-icon" aria-hidden="true">
             {c.icon === 'hotel' && (
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
@@ -107,7 +107,7 @@ const partnerSteps = [
 <!-- BENEFITS -->
 <section class="biz-benefits" aria-labelledby="biz-benefits-title">
   <div class="container-x">
-    <header class="biz-section-header" data-biz-anim="benefits-header">
+    <header class="biz-section-header" data-biz-anim="benefits-header" data-reveal>
       <span class="eyebrow biz-section-eyebrow biz-section-eyebrow--light">{t('business.benefits.eyebrow')}</span>
       <h2 id="biz-benefits-title" class="heading-display biz-section-title biz-section-title--light">
         {t('business.benefits.title')}
@@ -115,7 +115,7 @@ const partnerSteps = [
     </header>
     <ol class="biz-benefits-list">
       {benefits.map((b) => (
-        <li class={`biz-benefit accent-${b.accent}`} data-biz-anim="benefit">
+        <li class={`biz-benefit accent-${b.accent}`} data-biz-anim="benefit" data-reveal>
           <span class="biz-benefit-num">{b.num}</span>
           <h3 class="biz-benefit-title">{b.title}</h3>
           <p class="biz-benefit-desc">{b.desc}</p>
@@ -128,7 +128,7 @@ const partnerSteps = [
 <!-- HOW PARTNERSHIPS WORK -->
 <section class="biz-steps" aria-labelledby="biz-steps-title">
   <div class="container-x">
-    <header class="biz-section-header" data-biz-anim="steps-header">
+    <header class="biz-section-header" data-biz-anim="steps-header" data-reveal>
       <span class="eyebrow biz-section-eyebrow">{t('business.steps.eyebrow')}</span>
       <h2 id="biz-steps-title" class="heading-display biz-section-title">
         From spot to revenue, in 4 steps.
@@ -136,7 +136,7 @@ const partnerSteps = [
     </header>
     <ol class="biz-steps-list">
       {partnerSteps.map((s, i) => (
-        <li class="biz-step" data-biz-anim="step">
+        <li class="biz-step" data-biz-anim="step" data-reveal>
           <span class="biz-step-num">{s.num}</span>
           <h3 class="biz-step-title">{s.title}</h3>
           <p class="biz-step-desc">{s.desc}</p>
@@ -149,7 +149,7 @@ const partnerSteps = [
 <!-- CONTACT -->
 <section class="biz-contact" id="biz-contact" aria-labelledby="biz-contact-title">
   <div class="container-x">
-    <div class="biz-contact-card" data-biz-anim="contact">
+    <div class="biz-contact-card" data-biz-anim="contact" data-reveal>
       <header>
         <span class="eyebrow biz-contact-eyebrow">{t('business.eyebrow')}</span>
         <h2 id="biz-contact-title" class="heading-display biz-contact-title">
@@ -210,8 +210,6 @@ const partnerSteps = [
   }
   .biz-header {
     max-width: 920px;
-    opacity: 0;
-    transform: translateY(20px);
   }
   .biz-eyebrow {
     color: var(--color-coral-dark);
@@ -240,8 +238,6 @@ const partnerSteps = [
   .biz-section-header {
     margin-bottom: clamp(2.5rem, 5vw, 4rem);
     max-width: 760px;
-    opacity: 0;
-    transform: translateY(20px);
   }
   .biz-section-eyebrow {
     color: var(--color-coral-dark);
@@ -282,8 +278,6 @@ const partnerSteps = [
     display: flex;
     flex-direction: column;
     gap: 0.85rem;
-    opacity: 0;
-    transform: translateY(20px);
   }
   .biz-case.accent-coral { --accent: var(--color-coral); }
   .biz-case.accent-yellow { --accent: var(--color-yellow); }
@@ -343,8 +337,6 @@ const partnerSteps = [
       'num desc';
     column-gap: 1.5rem;
     row-gap: 0.4rem;
-    opacity: 0;
-    transform: translateY(20px);
   }
   .biz-benefit-num {
     grid-area: num;
@@ -412,8 +404,6 @@ const partnerSteps = [
     row-gap: 0.4rem;
     padding: 1.5rem 0;
     border-top: 1px solid var(--color-rule);
-    opacity: 0;
-    transform: translateY(20px);
   }
   .biz-step:first-child { border-top: none; padding-top: 0; }
   .biz-step-num {
@@ -475,8 +465,6 @@ const partnerSteps = [
     border: 1.5px solid var(--color-ink);
     border-radius: 22px;
     padding: clamp(1.75rem, 4vw, 2.75rem);
-    opacity: 0;
-    transform: translateY(20px);
   }
   .biz-contact-eyebrow {
     color: var(--color-coral-dark);
@@ -575,41 +563,3 @@ const partnerSteps = [
   });
 </script>
 
-<script>
-  import { gsap } from 'gsap';
-  import { ScrollTrigger } from 'gsap/ScrollTrigger';
-  gsap.registerPlugin(ScrollTrigger);
-
-  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-  const header = document.querySelector<HTMLElement>('[data-biz-anim="header"]');
-  if (header) {
-    if (reduce) gsap.set(header, { opacity: 1, y: 0 });
-    else gsap.to(header, { opacity: 1, y: 0, duration: 1.1, ease: 'power3.out' });
-  }
-
-  function revealOnScroll(selector: string, trigger: string, stagger = 0.1) {
-    const els = document.querySelectorAll<HTMLElement>(selector);
-    if (!els.length) return;
-    if (reduce) {
-      gsap.set(els, { opacity: 1, y: 0 });
-    } else {
-      gsap.to(els, {
-        opacity: 1,
-        y: 0,
-        duration: 0.9,
-        ease: 'power3.out',
-        stagger,
-        scrollTrigger: { trigger, start: 'top 78%', once: true },
-      });
-    }
-  }
-
-  revealOnScroll('[data-biz-anim="cases-header"]', '.biz-cases', 0);
-  revealOnScroll('[data-biz-anim="case"]', '.biz-cases-list', 0.12);
-  revealOnScroll('[data-biz-anim="benefits-header"]', '.biz-benefits', 0);
-  revealOnScroll('[data-biz-anim="benefit"]', '.biz-benefits-list', 0.1);
-  revealOnScroll('[data-biz-anim="steps-header"]', '.biz-steps', 0);
-  revealOnScroll('[data-biz-anim="step"]', '.biz-steps-list', 0.1);
-  revealOnScroll('[data-biz-anim="contact"]', '.biz-contact', 0);
-</script>

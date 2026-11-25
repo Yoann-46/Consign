@@ -17,7 +17,7 @@ const reasons = Array.from({ length: 10 }, (_, i) => {
 
 <section class="reasons" id="reasons" aria-labelledby="reasons-title">
   <div class="container-x">
-    <header class="reasons-header" data-reasons-anim="header">
+    <header class="reasons-header" data-reasons-anim="header" data-reveal>
       <span class="eyebrow reasons-eyebrow">{t('reasons.eyebrow')}</span>
       <h2 id="reasons-title" class="heading-display reasons-title">
         {t('reasons.title')} <span class="reasons-title-accent">{t('reasons.title.accent')}</span>
@@ -26,7 +26,7 @@ const reasons = Array.from({ length: 10 }, (_, i) => {
 
     <ol class="reasons-list">
       {reasons.map((r) => (
-        <li class={`reason accent-${r.accent}`} data-reasons-anim="card">
+        <li class={`reason accent-${r.accent}`} data-reasons-anim="card" data-reveal>
           <span class="reason-num">{r.num}</span>
           <h3 class="reason-title">{r.title}</h3>
           <p class="reason-desc">{r.desc}</p>
@@ -74,8 +74,6 @@ const reasons = Array.from({ length: 10 }, (_, i) => {
   .reasons-header {
     margin-bottom: clamp(3rem, 6vw, 5rem);
     max-width: 880px;
-    opacity: 0;
-    transform: translateY(20px);
   }
   .reasons-eyebrow {
     color: var(--color-coral);
@@ -114,8 +112,6 @@ const reasons = Array.from({ length: 10 }, (_, i) => {
     align-items: start;
     padding: 1.5rem 0;
     border-bottom: 1px solid color-mix(in srgb, var(--color-bg) 14%, transparent);
-    opacity: 0;
-    transform: translateY(20px);
   }
 
   .reason-num {
@@ -209,37 +205,3 @@ const reasons = Array.from({ length: 10 }, (_, i) => {
   }
 </style>
 
-<script>
-  import { gsap } from 'gsap';
-  import { ScrollTrigger } from 'gsap/ScrollTrigger';
-
-  gsap.registerPlugin(ScrollTrigger);
-
-  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-  const header = document.querySelector<HTMLElement>('[data-reasons-anim="header"]');
-  const cards = document.querySelectorAll<HTMLElement>('[data-reasons-anim="card"]');
-
-  if (reduce) {
-    if (header) gsap.set(header, { opacity: 1, y: 0 });
-    gsap.set(cards, { opacity: 1, y: 0 });
-  } else {
-    if (header) {
-      gsap.to(header, {
-        opacity: 1,
-        y: 0,
-        duration: 1,
-        ease: 'power3.out',
-        scrollTrigger: { trigger: header, start: 'top 75%', once: true },
-      });
-    }
-    gsap.to(cards, {
-      opacity: 1,
-      y: 0,
-      duration: 1,
-      ease: 'power3.out',
-      stagger: 0.08,
-      scrollTrigger: { trigger: '.reasons-list', start: 'top 75%', once: true },
-    });
-  }
-</script>

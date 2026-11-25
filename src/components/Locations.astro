@@ -24,7 +24,7 @@ const directionsUrl =
 
 <section class="locations" id="locations" aria-labelledby="loc-title">
   <div class="container-x">
-    <header class="loc-header" data-loc-anim="header">
+    <header class="loc-header" data-loc-anim="header" data-reveal>
       <span class="eyebrow loc-eyebrow">{t('loc.eyebrow')}</span>
       <h2 id="loc-title" class="heading-display loc-title">
         {t('loc.title')} <span class="loc-title-accent">{t('loc.title.accent')}</span>
@@ -34,7 +34,7 @@ const directionsUrl =
 
     <div class="loc-main">
       <!-- Real Google Maps embed, framed -->
-      <div class="loc-map" data-loc-anim="map">
+      <div class="loc-map" data-loc-anim="map" data-reveal>
         <iframe
           class="map-iframe"
           title="Consign locker location at 67 rue de Cléry, Paris"
@@ -51,7 +51,7 @@ const directionsUrl =
       </div>
 
       <!-- Address card -->
-      <div class="loc-card" data-loc-anim="card">
+      <div class="loc-card" data-loc-anim="card" data-reveal>
         <span class="loc-card-tag">
           <span class="loc-card-dot" aria-hidden="true"></span>
           Live now
@@ -118,7 +118,7 @@ const directionsUrl =
     </div>
 
     <!-- Coming soon -->
-    <aside class="loc-coming" data-loc-anim="coming" aria-label={t('loc.coming.title')}>
+    <aside class="loc-coming" data-loc-anim="coming" data-reveal aria-label={t('loc.coming.title')}>
       <span class="coming-label">{t('loc.coming.title')}</span>
       <ul class="coming-list">
         {comingSoon.map((c) => (
@@ -142,8 +142,6 @@ const directionsUrl =
   .loc-header {
     /* No max-width so the title can stay on one line on desktop */
     margin-bottom: clamp(2rem, 5vw, 3.5rem);
-    opacity: 0;
-    transform: translateY(20px);
   }
   .loc-eyebrow {
     color: var(--color-coral-dark);
@@ -188,8 +186,6 @@ const directionsUrl =
     position: relative;
     aspect-ratio: 5 / 4;
     background: var(--color-bg-warm);
-    opacity: 0;
-    transform: translateY(24px);
   }
   .map-iframe {
     width: 100%;
@@ -240,8 +236,6 @@ const directionsUrl =
     display: flex;
     flex-direction: column;
     gap: 1.25rem;
-    opacity: 0;
-    transform: translateY(24px);
   }
 
   .loc-card-tag {
@@ -344,8 +338,6 @@ const directionsUrl =
     border: 1.5px dashed var(--color-ink);
     border-radius: 22px;
     background: color-mix(in srgb, var(--color-yellow) 28%, var(--color-bg));
-    opacity: 0;
-    transform: translateY(20px);
   }
   .coming-label {
     display: block;
@@ -413,63 +405,3 @@ const directionsUrl =
   }
 </style>
 
-<script>
-  import { gsap } from 'gsap';
-  import { ScrollTrigger } from 'gsap/ScrollTrigger';
-
-  gsap.registerPlugin(ScrollTrigger);
-
-  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-  const header = document.querySelector<HTMLElement>('[data-loc-anim="header"]');
-  const map = document.querySelector<HTMLElement>('[data-loc-anim="map"]');
-  const card = document.querySelector<HTMLElement>('[data-loc-anim="card"]');
-  const coming = document.querySelector<HTMLElement>('[data-loc-anim="coming"]');
-
-  if (reduce) {
-    [header, map, card, coming].forEach((el) => {
-      if (el) gsap.set(el, { opacity: 1, y: 0 });
-    });
-  } else {
-    if (header) {
-      gsap.to(header, {
-        opacity: 1,
-        y: 0,
-        duration: 1.1,
-        ease: 'power3.out',
-        scrollTrigger: { trigger: header, start: 'top 75%', once: true },
-      });
-    }
-
-    if (map) {
-      gsap.to(map, {
-        opacity: 1,
-        y: 0,
-        duration: 1.3,
-        ease: 'power3.out',
-        scrollTrigger: { trigger: '.loc-main', start: 'top 70%', once: true },
-      });
-    }
-
-    if (card) {
-      gsap.to(card, {
-        opacity: 1,
-        y: 0,
-        duration: 1.3,
-        ease: 'power3.out',
-        delay: 0.2,
-        scrollTrigger: { trigger: '.loc-main', start: 'top 70%', once: true },
-      });
-    }
-
-    if (coming) {
-      gsap.to(coming, {
-        opacity: 1,
-        y: 0,
-        duration: 1,
-        ease: 'power3.out',
-        scrollTrigger: { trigger: coming, start: 'top 85%', once: true },
-      });
-    }
-  }
-</script>

@@ -38,7 +38,7 @@ const steps = [
 
 <section class="how" id="how" aria-labelledby="how-title">
   <div class="container-x">
-    <header class="how-header" data-how-anim="header">
+    <header class="how-header" data-how-anim="header" data-reveal>
       <span class="eyebrow how-eyebrow">{t('how.eyebrow')}</span>
       <h2 id="how-title" class="heading-display how-title">
         {t('how.title')} <span class="how-title-accent">{t('how.title.accent')}</span>
@@ -47,7 +47,7 @@ const steps = [
 
     <ol class="how-steps">
       {steps.map((s) => (
-        <li class={`step accent-${s.accent}`} data-how-anim="step">
+        <li class={`step accent-${s.accent}`} data-how-anim="step" data-reveal>
           <div class="step-icon" aria-hidden="true">
             {s.icon === 'pin' && (
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
@@ -115,8 +115,6 @@ const steps = [
   .how-header {
     margin-bottom: clamp(2.5rem, 5vw, 4rem);
     max-width: 720px;
-    opacity: 0;
-    transform: translateY(20px);
   }
 
   .how-eyebrow {
@@ -158,8 +156,6 @@ const steps = [
     align-items: center;
     padding: 1.25rem 0 1.5rem;
     border-bottom: 1px solid color-mix(in srgb, var(--color-bg) 18%, transparent);
-    opacity: 0;
-    transform: translateY(24px);
   }
 
   .step-icon {
@@ -259,49 +255,3 @@ const steps = [
   }
 </style>
 
-<script>
-  import { gsap } from 'gsap';
-  import { ScrollTrigger } from 'gsap/ScrollTrigger';
-
-  gsap.registerPlugin(ScrollTrigger);
-
-  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-  const header = document.querySelector<HTMLElement>('[data-how-anim="header"]');
-  const steps = document.querySelectorAll<HTMLElement>('[data-how-anim="step"]');
-
-  if (reduce) {
-    if (header) gsap.set(header, { opacity: 1, y: 0 });
-    gsap.set(steps, { opacity: 1, y: 0 });
-  } else {
-    // Header reveals first, slower, when the heading is well into view
-    if (header) {
-      gsap.to(header, {
-        opacity: 1,
-        y: 0,
-        duration: 1.1,
-        ease: 'power3.out',
-        scrollTrigger: {
-          trigger: header,
-          start: 'top 70%',
-          once: true,
-        },
-      });
-    }
-
-    // Steps reveal one by one, only once the steps row is well into view.
-    // Slower duration + larger stagger so the cascade is actually catchable.
-    gsap.to(steps, {
-      opacity: 1,
-      y: 0,
-      duration: 1.4,
-      ease: 'power3.out',
-      stagger: 0.28,
-      scrollTrigger: {
-        trigger: '.how-steps',
-        start: 'top 65%',
-        once: true,
-      },
-    });
-  }
-</script>

@@ -27,6 +27,7 @@ export const ui = {
     'nav.business': 'For business',
     'nav.contact': 'Contact',
     'nav.cta': 'Find a locker',
+    'cta.directions': 'Directions',
 
     // Hero
     'hero.eyebrow': 'Paris · Sentier · 7am–10pm',
@@ -256,6 +257,7 @@ export const ui = {
     'nav.business': 'Professionnels',
     'nav.contact': 'Contact',
     'nav.cta': 'Trouver un casier',
+    'cta.directions': 'Itinéraire',
 
     // Hero — slogan stays EN per brand decision
     'hero.eyebrow': 'Paris · Sentier · 7h–22h',

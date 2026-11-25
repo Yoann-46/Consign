@@ -1,0 +1,72 @@
+---
+import { useTranslations } from '../i18n/ui';
+import { DIRECTIONS_URL, ADDRESS_SHORT } from '../lib/site';
+
+const lang = Astro.currentLocale ?? 'en';
+const t = useTranslations(lang);
+---
+
+<div class="mobile-cta">
+  <a
+    href={DIRECTIONS_URL}
+    class="mobile-cta-btn"
+    target="_blank"
+    rel="noopener noreferrer"
+    onclick="if(window.gtag){window.gtag('event','get_directions_click',{event_category:'engagement',event_label:'sticky_bar'});}"
+  >
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M20 10c0 7-8 13-8 13s-8-6-8-13a8 8 0 0 1 16 0z" />
+      <circle cx="12" cy="10" r="3" />
+    </svg>
+    <span>{t('cta.directions')} <span class="mobile-cta-sep" aria-hidden="true">·</span> {ADDRESS_SHORT}</span>
+  </a>
+</div>
+
+<style>
+  .mobile-cta {
+    position: fixed;
+    inset: auto 0 0 0;
+    z-index: 40;
+    padding: 0.6rem var(--spacing-gutter) calc(0.6rem + env(safe-area-inset-bottom));
+    background: color-mix(in srgb, var(--color-bg) 94%, transparent);
+    border-top: 1px solid var(--color-rule);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+  }
+  .mobile-cta-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    min-height: 48px;
+    width: 100%;
+    border-radius: 999px;
+    background: var(--color-coral);
+    color: #fff;
+    font-weight: 700;
+    font-size: 1rem;
+    text-decoration: none;
+  }
+  .mobile-cta-btn:active {
+    background: var(--color-coral-dark);
+  }
+  .mobile-cta-btn svg {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+  }
+  .mobile-cta-sep {
+    opacity: 0.7;
+    margin-inline: 0.1em;
+  }
+
+  /* Keep the page's last content (footer) clear of the bar */
+  :global(body:has(.mobile-cta)) {
+    padding-bottom: calc(68px + env(safe-area-inset-bottom));
+  }
+
+  @media (min-width: 760px) {
+    .mobile-cta { display: none; }
+    :global(body:has(.mobile-cta)) { padding-bottom: 0; }
+  }
+</style>

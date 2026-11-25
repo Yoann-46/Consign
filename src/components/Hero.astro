@@ -12,10 +12,6 @@ const t = useTranslations(lang);
   <div class="hero-blob hero-blob-2" aria-hidden="true"></div>
 
   <div class="container-x hero-inner">
-    <p class="hero-wordmark" data-hero-anim="wordmark" aria-hidden="true">
-      Consign<span class="wordmark-dot">.</span>
-    </p>
-
     <h1 id="hero-title" class="heading-display hero-title">
       <span class="word">
         <span class="word-inner" data-hero-anim="word">{t('hero.title.a')}</span>
@@ -117,27 +113,10 @@ const t = useTranslations(lang);
     align-items: flex-start;
   }
 
-  /* Brand wordmark sitting above the slogan — 15% smaller than the slogan */
-  .hero-wordmark {
-    font-family: var(--font-display);
-    font-size: clamp(2.75rem, 11vw, 8rem);
-    font-weight: 700;
-    letter-spacing: -0.045em;
-    line-height: 0.92;
-    color: var(--color-ink);
-    /* Mobile: more space between Consign and the slogan */
-    margin: 0 0 0.35em;
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  .wordmark-dot {
-    color: var(--color-coral);
-  }
-
   .hero-title {
     font-size: clamp(3.25rem, 13vw, 9.5rem);
-    /* Mobile: more breathing room before the subtitle */
-    margin: 0 0 1.75rem;
+    /* Room for the descenders of "you explore." before the subtitle */
+    margin: 0 0 calc(1.25rem + 0.12em);
     color: var(--color-ink);
   }
 
@@ -145,15 +124,12 @@ const t = useTranslations(lang);
     display: inline-block;
     overflow: visible;
     margin-right: 0.18em;
-    clip-path: inset(-25% 0 -10% 0);
   }
   .hero-title .word:last-child { margin-right: 0; }
 
   .hero-title .word-inner {
     display: inline-block;
     position: relative;
-    transform: translateY(100%);
-    will-change: transform;
   }
 
   .has-pill {
@@ -168,7 +144,6 @@ const t = useTranslations(lang);
     z-index: 0;
     border-radius: 0.14em;
     transform-origin: left center;
-    transform: scaleX(0);
   }
   .pill-coral-bg {
     background: var(--color-coral);
@@ -181,6 +156,9 @@ const t = useTranslations(lang);
     z-index: 1;
     color: var(--color-ink);
   }
+  .pill-coral-bg + .pill-text {
+    color: #fff;
+  }
 
   .hero-subtitle {
     max-width: 38ch;
@@ -188,8 +166,6 @@ const t = useTranslations(lang);
     font-size: clamp(1.05rem, 2.2vw, 1.35rem);
     line-height: 1.45;
     color: var(--color-ink-soft);
-    opacity: 0;
-    transform: translateY(20px);
   }
 
   .hero-ctas {
@@ -197,8 +173,6 @@ const t = useTranslations(lang);
     flex-wrap: nowrap;
     gap: 0.65rem;
     margin-bottom: 2.25rem;
-    opacity: 0;
-    transform: translateY(20px);
   }
   /* Mobile: compact so the two buttons fit side by side at 375px */
   .hero-ctas .btn {
@@ -237,8 +211,6 @@ const t = useTranslations(lang);
     flex-direction: column;
     gap: 0.1rem;
     padding: 0.7rem 0.5rem;
-    opacity: 0;
-    transform: translateY(16px);
     border-right: 1.5px solid var(--color-ink);
     text-align: center;
     align-items: center;
@@ -279,96 +251,42 @@ const t = useTranslations(lang);
       max-width: 44ch;
     }
   }
+  /* Entrance: pure CSS, so nothing depends on JS. Everything is visible by
+     default; the keyframes only describe where it comes from. Total < 0.9 s.
+     prefers-reduced-motion collapses durations globally (global.css). */
+  @media (prefers-reduced-motion: no-preference) {
+    .hero-title .word-inner {
+      animation: hero-rise 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+    .hero-title .word:nth-of-type(2) .word-inner { animation-delay: 0.05s; }
+    .hero-title .word:nth-of-type(3) .word-inner { animation-delay: 0.1s; }
+    .hero-title .word:nth-of-type(4) .word-inner { animation-delay: 0.15s; }
+    .pill {
+      animation: pill-sweep 0.45s cubic-bezier(0.65, 0, 0.35, 1) 0.25s both;
+    }
+    .word:nth-of-type(4) .pill { animation-delay: 0.4s; }
+    .pill-coral-bg + .pill-text {
+      animation: pill-ink 0.25s ease-out 0.4s both;
+    }
+    .hero-subtitle,
+    .hero-ctas,
+    .hero-stats {
+      animation: hero-fade 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.15s both;
+    }
+    .hero-ctas { animation-delay: 0.2s; }
+    .hero-stats { animation-delay: 0.25s; }
+  }
+  @keyframes hero-rise {
+    from { opacity: 0; transform: translateY(0.3em); }
+  }
+  @keyframes pill-sweep {
+    from { transform: scaleX(0); }
+  }
+  @keyframes pill-ink {
+    from { color: var(--color-ink); }
+  }
+  @keyframes hero-fade {
+    from { opacity: 0; transform: translateY(10px); }
+  }
 </style>
 
-<script>
-  import { gsap } from 'gsap';
-
-  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-  const wordmark = document.querySelector<HTMLElement>('[data-hero-anim="wordmark"]');
-  const wordInners = document.querySelectorAll<HTMLElement>('[data-hero-anim="word"]');
-  const pills = document.querySelectorAll<HTMLElement>('[data-hero-anim="pill"]');
-  const coralPillText = document.querySelector<HTMLElement>('.pill-coral-bg + .pill-text');
-  const subtitle = document.querySelector<HTMLElement>('[data-hero-anim="subtitle"]');
-  const ctas = document.querySelector<HTMLElement>('[data-hero-anim="ctas"]');
-  const stats = document.querySelectorAll<HTMLElement>('[data-hero-anim="stats"] .stat');
-
-  if (reduce) {
-    if (wordmark) gsap.set(wordmark, { opacity: 1, y: 0 });
-    gsap.set(wordInners, { y: '0%' });
-    gsap.set(pills, { scaleX: 1 });
-    if (coralPillText) gsap.set(coralPillText, { color: '#ffffff' });
-    gsap.set([subtitle, ctas], { opacity: 1, y: 0 });
-    gsap.set(stats, { opacity: 1, y: 0 });
-  } else {
-    const tl = gsap.timeline({ defaults: { ease: 'expo.out' } });
-
-    // 0. Brand wordmark fades up first as the curtain raise
-    if (wordmark) {
-      tl.to(wordmark, {
-        opacity: 1,
-        y: 0,
-        duration: 0.95,
-        ease: 'power3.out',
-      });
-    }
-
-    tl.to(
-      wordInners,
-      {
-        y: '0%',
-        duration: 1.1,
-        stagger: 0.085,
-      },
-      '-=0.55',
-    );
-
-    tl.to(
-      pills,
-      {
-        scaleX: 1,
-        duration: 0.6,
-        ease: 'power3.out',
-        stagger: 0.18,
-      },
-      '-=0.7',
-    );
-
-    if (coralPillText) {
-      tl.to(
-        coralPillText,
-        {
-          color: '#ffffff',
-          duration: 0.25,
-          ease: 'power1.out',
-        },
-        '-=0.45',
-      );
-    }
-
-    tl.to(
-      [subtitle, ctas],
-      {
-        opacity: 1,
-        y: 0,
-        duration: 0.8,
-        stagger: 0.12,
-        ease: 'power2.out',
-      },
-      '-=0.4',
-    );
-
-    tl.to(
-      stats,
-      {
-        opacity: 1,
-        y: 0,
-        duration: 0.6,
-        stagger: 0.08,
-        ease: 'power2.out',
-      },
-      '-=0.4',
-    );
-  }
-</script>

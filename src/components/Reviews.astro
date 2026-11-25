@@ -51,7 +51,7 @@ const tints = ['coral', 'yellow', 'coral', 'yellow', 'coral'] as const;
 
 <section class="reviews" id="reviews" aria-labelledby="reviews-title">
   <div class="container-x">
-    <header class="reviews-header" data-rev-anim="header">
+    <header class="reviews-header" data-rev-anim="header" data-reveal>
       <span class="eyebrow reviews-eyebrow">{t('reviews.eyebrow')}</span>
       <h2 id="reviews-title" class="heading-display reviews-title">{t('reviews.title')}</h2>
 
@@ -79,7 +79,7 @@ const tints = ['coral', 'yellow', 'coral', 'yellow', 'coral'] as const;
 
     <ul class="reviews-list">
       {reviews.map((r, i) => (
-        <li class={`review tint-${tints[i]}`} data-rev-anim="card">
+        <li class={`review tint-${tints[i]}`} data-rev-anim="card" data-reveal>
           <div class="review-stars" aria-label={t('reviews.rating.aria')}>
             {Array.from({ length: 5 }).map(() => (
               <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
@@ -105,7 +105,7 @@ const tints = ['coral', 'yellow', 'coral', 'yellow', 'coral'] as const;
       ))}
     </ul>
 
-    <div class="reviews-foot" data-rev-anim="foot">
+    <div class="reviews-foot" data-rev-anim="foot" data-reveal>
       <a
         href="https://www.google.com/maps"
         class="btn btn-ghost reviews-cta"
@@ -162,8 +162,6 @@ const tints = ['coral', 'yellow', 'coral', 'yellow', 'coral'] as const;
   .reviews-header {
     margin-bottom: clamp(2.5rem, 5vw, 4rem);
     max-width: 720px;
-    opacity: 0;
-    transform: translateY(20px);
   }
   .reviews-eyebrow {
     color: var(--color-coral-dark);
@@ -330,8 +328,6 @@ const tints = ['coral', 'yellow', 'coral', 'yellow', 'coral'] as const;
     margin-top: 2.5rem;
     display: flex;
     justify-content: center;
-    opacity: 0;
-    transform: translateY(16px);
   }
   /* .reviews-cta inherits the new global .btn sizes */
 
@@ -362,61 +358,3 @@ const tints = ['coral', 'yellow', 'coral', 'yellow', 'coral'] as const;
   }
 </style>
 
-<script>
-  import { gsap } from 'gsap';
-  import { ScrollTrigger } from 'gsap/ScrollTrigger';
-
-  gsap.registerPlugin(ScrollTrigger);
-
-  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-  const header = document.querySelector<HTMLElement>('[data-rev-anim="header"]');
-  const foot = document.querySelector<HTMLElement>('[data-rev-anim="foot"]');
-  const list = document.querySelector<HTMLElement>('.reviews-list');
-
-  if (reduce) {
-    if (header) gsap.set(header, { opacity: 1, y: 0 });
-    if (foot) gsap.set(foot, { opacity: 1, y: 0 });
-  } else {
-    // Header reveals once when scrolled into view
-    if (header) {
-      gsap.to(header, {
-        opacity: 1,
-        y: 0,
-        duration: 1.1,
-        ease: 'power3.out',
-        scrollTrigger: { trigger: header, start: 'top 75%', once: true },
-      });
-    }
-
-    // Foot CTA reveal
-    if (foot) {
-      gsap.to(foot, {
-        opacity: 1,
-        y: 0,
-        duration: 0.9,
-        ease: 'power2.out',
-        scrollTrigger: { trigger: foot, start: 'top 90%', once: true },
-      });
-    }
-
-    // Cards stagger-reveal on tablet+ (no parallax to avoid overflow issues)
-    const isTabletPlus = window.matchMedia('(min-width: 640px)').matches;
-    if (list && isTabletPlus) {
-      const cards = list.querySelectorAll<HTMLElement>('[data-rev-anim="card"]');
-      gsap.set(cards, { opacity: 0, y: 28 });
-      gsap.to(cards, {
-        opacity: 1,
-        y: 0,
-        duration: 0.85,
-        ease: 'power3.out',
-        stagger: 0.12,
-        scrollTrigger: {
-          trigger: list,
-          start: 'top 80%',
-          once: true,
-        },
-      });
-    }
-  }
-</script>
