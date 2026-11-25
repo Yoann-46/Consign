@@ -52,7 +52,6 @@ const tints = ['coral', 'yellow', 'coral', 'yellow', 'coral'] as const;
 <section class="reviews" id="reviews" aria-labelledby="reviews-title">
   <div class="container-x">
     <header class="reviews-header" data-rev-anim="header" data-reveal>
-      <span class="eyebrow reviews-eyebrow">{t('reviews.eyebrow')}</span>
       <h2 id="reviews-title" class="heading-display reviews-title">{t('reviews.title')}</h2>
 
       <div class="reviews-rating" aria-label={t('reviews.rating.aria')}>
@@ -128,19 +127,6 @@ const tints = ['coral', 'yellow', 'coral', 'yellow', 'coral'] as const;
     overflow: hidden;
   }
 
-  /* Decorative dot grid in background */
-  .reviews::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background-image: radial-gradient(circle, color-mix(in srgb, var(--color-ink) 8%, transparent) 1px, transparent 1px);
-    background-size: 22px 22px;
-    mask-image: radial-gradient(ellipse at 50% 0%, black 20%, transparent 70%);
-    -webkit-mask-image: radial-gradient(ellipse at 50% 0%, black 20%, transparent 70%);
-    pointer-events: none;
-    z-index: 0;
-  }
-
   .container-x {
     position: relative;
     z-index: 1;
@@ -162,11 +148,6 @@ const tints = ['coral', 'yellow', 'coral', 'yellow', 'coral'] as const;
   .reviews-header {
     margin-bottom: clamp(2.5rem, 5vw, 4rem);
     max-width: 720px;
-  }
-  .reviews-eyebrow {
-    color: var(--color-coral-dark);
-    margin-bottom: 0.85rem;
-    display: inline-block;
   }
   .reviews-title {
     font-size: clamp(2.25rem, 6.5vw, 4.5rem);

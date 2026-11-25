@@ -39,7 +39,6 @@ const steps = [
 <section class="how" id="how" aria-labelledby="how-title">
   <div class="container-x">
     <header class="how-header" data-how-anim="header" data-reveal>
-      <span class="eyebrow how-eyebrow">{t('how.eyebrow')}</span>
       <h2 id="how-title" class="heading-display how-title">
         {t('how.title')} <span class="how-title-accent">{t('how.title.accent')}</span>
       </h2>
@@ -94,19 +93,6 @@ const steps = [
     overflow: hidden;
   }
 
-  /* Subtle radial accent in the background */
-  .how::before {
-    content: '';
-    position: absolute;
-    inset: -20% -20% auto auto;
-    width: 38rem;
-    height: 38rem;
-    background: radial-gradient(circle at center, color-mix(in srgb, var(--color-coral) 18%, transparent), transparent 70%);
-    filter: blur(40px);
-    pointer-events: none;
-    z-index: 0;
-  }
-
   .container-x {
     position: relative;
     z-index: 1;
@@ -117,11 +103,6 @@ const steps = [
     max-width: 720px;
   }
 
-  .how-eyebrow {
-    color: var(--color-coral);
-    display: inline-block;
-    margin-bottom: 1rem;
-  }
 
   .how-title {
     font-size: clamp(2.5rem, 7vw, 5rem);
