@@ -1,4 +1,5 @@
 ---
+import { DIRECTIONS_URL } from '../lib/site';
 import { useTranslations, localizedPath } from '../i18n/ui';
 
 const lang = Astro.currentLocale ?? 'en';
@@ -35,7 +36,7 @@ const ha = (hash: string) => (lang === 'fr' ? '/fr' : '') + '/#' + hash;
       <a href={otherLangPath} class="lang-switch" aria-label={`Switch to ${otherLangLabel}`}>
         {otherLangLabel}
       </a>
-      <a href={ha('locations')} class="btn btn-primary header-cta">
+      <a href={DIRECTIONS_URL} target="_blank" rel="noopener noreferrer" class="btn btn-primary header-cta" onclick="if(window.gtag){window.gtag('event','get_directions_click',{event_category:'engagement',event_label:'header'});}">
         {t('nav.cta')}
         <span aria-hidden="true">→</span>
       </a>
@@ -56,7 +57,7 @@ const ha = (hash: string) => (lang === 'fr' ? '/fr' : '') + '/#' + hash;
       <a href={localizedPath(lang, '/contact')}>{t('nav.contact')}</a>
       <div class="mobile-cta-row">
         <a href={otherLangPath} class="lang-switch">{otherLangLabel}</a>
-        <a href={ha('locations')} class="btn btn-primary">{t('nav.cta')} →</a>
+        <a href={DIRECTIONS_URL} target="_blank" rel="noopener noreferrer" class="btn btn-primary">{t('nav.cta')}</a>
       </div>
     </nav>
   </div>

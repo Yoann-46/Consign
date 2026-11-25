@@ -1,5 +1,6 @@
 ---
 import { useTranslations, localizedPath } from '../i18n/ui';
+import { DIRECTIONS_URL } from '../lib/site';
 
 const lang = Astro.currentLocale ?? 'en';
 const t = useTranslations(lang);
@@ -102,7 +103,7 @@ const lockers = [
         {t('pricing.note')}
       </p>
       <div class="pricing-ctas">
-        <a href={localizedPath(lang, '/#locations')} class="btn btn-primary">
+        <a href={DIRECTIONS_URL} target="_blank" rel="noopener noreferrer" class="btn btn-primary">
           {t('pricing.cta')}
           <span aria-hidden="true">→</span>
         </a>
