@@ -117,7 +117,11 @@ const t = useTranslations(lang);
   }
 
   .hero-title {
-    font-size: clamp(3.25rem, 13vw, 9.5rem);
+    /* Lines are set by hand with <br>: no balancing */
+    text-wrap: wrap;
+    white-space: nowrap;
+    /* "you explore." with its pill must fit 320–390 px screens */
+    font-size: clamp(2.25rem, 11vw, 9.5rem);
     /* Room for the descenders of "you explore." before the subtitle */
     margin: 0 0 calc(1.25rem + 0.12em);
     color: var(--color-ink);
@@ -173,12 +177,13 @@ const t = useTranslations(lang);
 
   .hero-ctas {
     display: flex;
-    flex-wrap: nowrap;
+    flex-wrap: wrap;
     gap: 0.65rem;
     margin-bottom: 2.25rem;
   }
   /* Mobile: compact so the two buttons fit side by side at 375px */
   .hero-ctas .btn {
+    white-space: nowrap;
     padding: 0.6rem 1.05rem;
     font-size: 0.85rem;
     min-height: 42px;
