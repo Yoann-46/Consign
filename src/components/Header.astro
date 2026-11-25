@@ -24,7 +24,7 @@ const ha = (hash: string) => (lang === 'fr' ? '/fr' : '') + '/#' + hash;
       <span class="brand-name">Consign<span class="brand-dot">.</span></span>
     </a>
 
-    <nav class="nav-primary" aria-label="Primary">
+    <nav class="nav-primary" aria-label={lang === 'fr' ? 'Navigation principale' : 'Primary'}>
       <a href={ha('how')}>{t('nav.how')}</a>
       <a href={localizedPath(lang, '/pricing')}>{t('nav.pricing')}</a>
       <a href={ha('locations')}>{t('nav.locations')}</a>
@@ -33,14 +33,14 @@ const ha = (hash: string) => (lang === 'fr' ? '/fr' : '') + '/#' + hash;
     </nav>
 
     <div class="header-actions">
-      <a href={otherLangPath} class="lang-switch" aria-label={`Switch to ${otherLangLabel}`}>
+      <a href={otherLangPath} class="lang-switch" aria-label={lang === 'fr' ? 'Read in English' : 'Lire en français'} hreflang={lang === 'fr' ? 'en' : 'fr'}>
         {otherLangLabel}
       </a>
       <a href={DIRECTIONS_URL} target="_blank" rel="noopener noreferrer" class="btn btn-primary header-cta" onclick="if(window.gtag){window.gtag('event','get_directions_click',{event_category:'engagement',event_label:'header'});}">
         {t('nav.cta')}
-        <span aria-hidden="true">→</span>
+        <svg class="btn-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17 17 7M9 7h8v8" /></svg>
       </a>
-      <button class="burger" id="burger" aria-label="Open menu" aria-expanded="false">
+      <button class="burger" id="burger" aria-label={lang === 'fr' ? 'Menu' : 'Menu'} aria-expanded="false">
         <span></span><span></span><span></span>
       </button>
     </div>

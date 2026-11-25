@@ -17,7 +17,7 @@ const ha = (hash: string) => (lang === 'fr' ? '/fr' : '') + '/#' + hash;
       <p class="footer-tagline">{t('footer.tagline')}</p>
     </div>
 
-    <nav class="footer-nav" aria-label="Footer">
+    <nav class="footer-nav" aria-label={lang === 'fr' ? 'Pied de page' : 'Footer'}>
       <div class="footer-col">
         <span class="eyebrow">{t('footer.product')}</span>
         <a href={ha('how')}>{t('nav.how')}</a>
@@ -34,7 +34,7 @@ const ha = (hash: string) => (lang === 'fr' ? '/fr' : '') + '/#' + hash;
         <span class="eyebrow">{t('footer.contact')}</span>
         <a href={PHONE_TEL}>{PHONE_DISPLAY}</a>
         <a href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer">WhatsApp</a>
-        <a href={`mailto:${EMAIL}`}>{EMAIL}</a>
+        <a href={`mailto:${EMAIL}`}>E‑mail</a>
       </div>
       <div class="footer-col">
         <span class="eyebrow">{t('footer.legal')}</span>

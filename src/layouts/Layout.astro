@@ -81,7 +81,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site).toString();
     })} />
   </head>
   <body>
-    <a href="#main" class="skip-link">Skip to content</a>
+    <a href="#main" class="skip-link">{lang === 'fr' ? 'Aller au contenu' : 'Skip to content'}</a>
     <Header />
     <main id="main"><slot /></main>
     <Footer />

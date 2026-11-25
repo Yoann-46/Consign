@@ -77,18 +77,33 @@ body {
   padding-inline: var(--spacing-gutter);
 }
 
-/* Decorative grid bg pattern */
-.bg-grid {
-  background-image:
-    linear-gradient(to right, color-mix(in srgb, var(--color-ink) 4%, transparent) 1px, transparent 1px),
-    linear-gradient(to bottom, color-mix(in srgb, var(--color-ink) 4%, transparent) 1px, transparent 1px);
-  background-size: 56px 56px;
+/* Keyboard focus: always visible, themed from the palette */
+:focus-visible {
+  outline: 2.5px solid var(--color-ink);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+.btn:focus-visible { border-radius: 999px; }
+.how :focus-visible,
+.site-footer :focus-visible {
+  outline-color: var(--color-yellow);
 }
 
-.bg-dots {
-  background-image: radial-gradient(circle, color-mix(in srgb, var(--color-ink) 12%, transparent) 1px, transparent 1px);
-  background-size: 18px 18px;
+/* Inline icon inside buttons and links (replaces unicode arrows) */
+.btn-icon {
+  width: 1.05em;
+  height: 1.05em;
+  flex-shrink: 0;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.25;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  vertical-align: -0.15em;
 }
+
+h1, h2, h3 { text-wrap: balance; }
+p, li, dd { text-wrap: pretty; }
 
 /* Display heading utility */
 .heading-display {
