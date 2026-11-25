@@ -1,5 +1,6 @@
 ---
 import { useTranslations, localizedPath } from '../i18n/ui';
+import { PHONE_TEL, PHONE_DISPLAY, WHATSAPP_URL, EMAIL } from '../lib/site';
 
 const lang = Astro.currentLocale ?? 'en';
 const t = useTranslations(lang);
@@ -18,21 +19,28 @@ const ha = (hash: string) => (lang === 'fr' ? '/fr' : '') + '/#' + hash;
 
     <nav class="footer-nav" aria-label="Footer">
       <div class="footer-col">
-        <span class="eyebrow">Product</span>
+        <span class="eyebrow">{t('footer.product')}</span>
         <a href={ha('how')}>{t('nav.how')}</a>
         <a href={localizedPath(lang, '/pricing')}>{t('nav.pricing')}</a>
         <a href={ha('locations')}>{t('nav.locations')}</a>
         <a href={ha('faq')}>{t('nav.faq')}</a>
       </div>
       <div class="footer-col">
-        <span class="eyebrow">Company</span>
+        <span class="eyebrow">{t('footer.company')}</span>
         <a href={localizedPath(lang, '/business')}>{t('nav.business')}</a>
         <a href={localizedPath(lang, '/contact')}>{t('nav.contact')}</a>
       </div>
       <div class="footer-col">
+        <span class="eyebrow">{t('footer.contact')}</span>
+        <a href={PHONE_TEL}>{PHONE_DISPLAY}</a>
+        <a href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer">WhatsApp</a>
+        <a href={`mailto:${EMAIL}`}>{EMAIL}</a>
+      </div>
+      <div class="footer-col">
         <span class="eyebrow">{t('footer.legal')}</span>
-        <a href="#">{t('footer.privacy')}</a>
-        <a href="#">{t('footer.terms')}</a>
+        <a href={localizedPath(lang, '/privacy')}>{t('footer.privacy')}</a>
+        <a href={localizedPath(lang, '/terms')}>{t('footer.terms')}</a>
+        <button type="button" class="footer-cookies" data-consent-open>{t('footer.cookies')}</button>
       </div>
     </nav>
   </div>
@@ -48,7 +56,6 @@ const ha = (hash: string) => (lang === 'fr' ? '/fr' : '') + '/#' + hash;
     background: var(--color-ink);
     color: var(--color-bg);
     padding-block: 4rem 1.5rem;
-    /* No top margin — the last section (10 reasons, also dark ink) flows directly into the footer */
     margin-top: 0;
   }
 
@@ -84,8 +91,11 @@ const ha = (hash: string) => (lang === 'fr' ? '/fr' : '') + '/#' + hash;
 
   .footer-nav {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 2rem;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 2.25rem 1.5rem;
+  }
+  @media (min-width: 1000px) {
+    .footer-nav { grid-template-columns: repeat(4, minmax(0, 1fr)); }
   }
   .footer-col {
     display: flex;
@@ -96,13 +106,25 @@ const ha = (hash: string) => (lang === 'fr' ? '/fr' : '') + '/#' + hash;
     color: var(--color-yellow);
     margin-bottom: 0.3rem;
   }
-  .footer-col a {
-    color: color-mix(in srgb, var(--color-bg) 78%, transparent);
+  .footer-col a,
+  .footer-cookies {
+    color: color-mix(in srgb, var(--color-bg) 82%, transparent);
     text-decoration: none;
     font-weight: 500;
+    overflow-wrap: anywhere;
     transition: color 160ms ease;
   }
-  .footer-col a:hover {
+  .footer-cookies {
+    background: none;
+    border: 0;
+    padding: 0;
+    font: inherit;
+    font-weight: 500;
+    text-align: left;
+    cursor: pointer;
+  }
+  .footer-col a:hover,
+  .footer-cookies:hover {
     color: var(--color-coral);
   }
 

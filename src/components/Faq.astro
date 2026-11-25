@@ -1,5 +1,6 @@
 ---
 import { useTranslations } from '../i18n/ui';
+import { PHONE_TEL, WHATSAPP_URL, EMAIL } from '../lib/site';
 
 const lang = Astro.currentLocale ?? 'en';
 const t = useTranslations(lang);
@@ -9,9 +10,10 @@ const items = [
   { q: t('faq.q2'), a: t('faq.a2') },
   { q: t('faq.q3'), a: t('faq.a3') },
   { q: t('faq.q4'), a: t('faq.a4') },
-  { q: t('faq.q5'), a: t('faq.a5') },
+  { q: t('faq.q5'), a: t('faq.a5'), contact: true },
   { q: t('faq.q6'), a: t('faq.a6') },
   { q: t('faq.q7'), a: t('faq.a7') },
+  { q: t('faq.q8'), a: t('faq.a8'), contact: true },
 ];
 ---
 
@@ -46,6 +48,13 @@ const items = [
           >
             <div class="faq-a-inner">
               <p>{item.a}</p>
+              {item.contact && (
+                <p class="faq-contact">
+                  <a href={PHONE_TEL}>{t('card.call')}</a>
+                  <a href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer">WhatsApp</a>
+                  <a href={`mailto:${EMAIL}`}>E‑mail</a>
+                </p>
+              )}
             </div>
           </div>
         </li>
@@ -103,6 +112,20 @@ const items = [
     letter-spacing: -0.01em;
     line-height: 1.3;
     transition: color 180ms ease;
+  }
+  .faq-contact {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.25rem;
+    margin-top: 0.75rem;
+  }
+  .faq-contact a {
+    font-weight: 700;
+    color: var(--color-ink);
+    text-underline-offset: 3px;
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
   }
   .faq-q:hover { color: var(--color-coral-dark); }
   .faq-q:focus-visible {

@@ -1,6 +1,6 @@
 ---
 import { useTranslations, localizedPath } from '../i18n/ui';
-import { DIRECTIONS_URL, PRICES } from '../lib/site';
+import { DIRECTIONS_URL, PRICES, PHONE_TEL, PHONE_DISPLAY, WHATSAPP_URL } from '../lib/site';
 
 const lang = Astro.currentLocale ?? 'en';
 const t = useTranslations(lang);
@@ -99,6 +99,12 @@ const sizes = [
     </a>
     <a href={localizedPath(lang, '/pricing')} class="lcard-link">{t('card.allPrices')}</a>
   </div>
+
+  <p class="lcard-help">
+    <span>{t('card.help')}</span>
+    <a href={PHONE_TEL}>{PHONE_DISPLAY}</a>
+    <a href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer">WhatsApp</a>
+  </p>
 </article>
 
 <style>
@@ -267,6 +273,27 @@ const sizes = [
     min-height: 44px;
     display: inline-flex;
     align-items: center;
+  }
+
+  .lcard-help {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0 1rem;
+    margin: -0.25rem 0 0;
+    padding-top: 0.9rem;
+    border-top: 1px solid var(--color-rule);
+    font-size: 0.92rem;
+    color: var(--color-ink-soft);
+  }
+  .lcard-help a {
+    font-weight: 700;
+    color: var(--color-ink);
+    text-underline-offset: 3px;
+    min-height: 40px;
+    display: inline-flex;
+    align-items: center;
+    white-space: nowrap;
   }
 
   .sr-only {
