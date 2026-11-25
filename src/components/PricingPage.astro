@@ -36,7 +36,6 @@ const lockers = [
 <section class="pricing-hero" aria-labelledby="pricing-title">
   <div class="container-x">
     <header class="pricing-header" data-pricing-anim="header" data-reveal>
-      <span class="eyebrow pricing-eyebrow">{t('pricing.eyebrow')}</span>
       <h1 id="pricing-title" class="heading-display pricing-title">
         {t('pricing.title')} <span class="pricing-accent">{t('pricing.title.accent')}</span>
       </h1>
@@ -125,11 +124,6 @@ const lockers = [
   .pricing-header {
     max-width: 680px;
     margin-bottom: clamp(3rem, 6vw, 5rem);
-  }
-  .pricing-eyebrow {
-    color: var(--color-coral-dark);
-    display: inline-block;
-    margin-bottom: 1rem;
   }
   .pricing-title {
     font-size: clamp(2.5rem, 7vw, 5rem);
@@ -229,24 +223,16 @@ const lockers = [
   .locker-m .locker-dims { color: var(--color-ink-faint); }
   .locker-l .locker-dims { color: color-mix(in srgb, var(--color-bg) 60%, transparent); }
 
-  /* Fit hint */
+  /* Fit hint — plain line, no inner box */
   .locker-fit {
     margin: 0;
-    font-size: 0.9rem;
+    font-size: 0.95rem;
     display: flex;
     align-items: center;
     gap: 0.55rem;
-    padding: 0.65rem 0.9rem;
-    border-radius: 10px;
   }
-  .locker-m .locker-fit {
-    background: var(--color-bg-warm);
-    color: var(--color-ink-soft);
-  }
-  .locker-l .locker-fit {
-    background: color-mix(in srgb, var(--color-bg) 10%, transparent);
-    color: color-mix(in srgb, var(--color-bg) 75%, transparent);
-  }
+  .locker-m .locker-fit { color: var(--color-ink-soft); }
+  .locker-l .locker-fit { color: color-mix(in srgb, var(--color-bg) 80%, transparent); }
   .fit-dot {
     width: 7px;
     height: 7px;
@@ -256,77 +242,49 @@ const lockers = [
   .locker-m .fit-dot { background: var(--color-coral); }
   .locker-l .fit-dot { background: var(--color-yellow); }
 
-  /* Price rows */
+  /* Price rows — a ruled list directly in the card (no card-in-card) */
   .price-rows {
     display: flex;
     flex-direction: column;
-    gap: 0;
-    border-radius: 14px;
-    overflow: hidden;
   }
-  .locker-m .price-rows {
-    border: 1.5px solid var(--color-rule);
-  }
-  .locker-l .price-rows {
-    border: 1.5px solid color-mix(in srgb, var(--color-bg) 18%, transparent);
-  }
-
   .price-row {
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    padding: 0.85rem 1.1rem;
-    position: relative;
-  }
-  .locker-m .price-row {
-    border-bottom: 1.5px solid var(--color-rule);
+    gap: 0.75rem;
+    padding: 0.9rem 0;
+    border-top: 1px solid var(--color-rule);
   }
   .locker-l .price-row {
-    border-bottom: 1.5px solid color-mix(in srgb, var(--color-bg) 12%, transparent);
+    border-top-color: color-mix(in srgb, var(--color-bg) 18%, transparent);
   }
-  .price-row:last-child { border-bottom: none; }
-
-  .price-row-popular {
-    background: var(--color-coral);
-  }
-  .locker-l .price-row-popular {
-    background: var(--color-yellow);
-  }
-
   .price-slot {
     font-weight: 600;
-    font-size: 0.95rem;
+    font-size: 1rem;
+    margin-right: auto;
   }
   .locker-m .price-slot { color: var(--color-ink); }
   .locker-l .price-slot { color: var(--color-bg); }
-  .price-row-popular .price-slot { color: white; }
-  .locker-l .price-row-popular .price-slot { color: var(--color-ink); }
 
   .popular-badge {
-    font-size: 0.7rem;
+    font-size: 0.75rem;
     font-weight: 700;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    padding: 0.2rem 0.55rem;
+    padding: 0.2rem 0.6rem;
     border-radius: 999px;
-    background: rgba(255,255,255,0.25);
-    color: white;
+    white-space: nowrap;
   }
-  .locker-l .popular-badge {
-    background: rgba(0,0,0,0.15);
-    color: var(--color-ink);
-  }
+  .locker-m .popular-badge { background: var(--color-ink); color: var(--color-bg); }
+  .locker-l .popular-badge { background: var(--color-yellow); color: var(--color-ink); }
 
   .price-amount {
     font-size: 1.35rem;
     font-weight: 800;
     letter-spacing: -0.03em;
     font-variant-numeric: tabular-nums;
+    min-width: 3ch;
+    text-align: right;
   }
   .locker-m .price-amount { color: var(--color-ink); }
   .locker-l .price-amount { color: var(--color-bg); }
-  .price-row-popular .price-amount { color: white; }
-  .locker-l .price-row-popular .price-amount { color: var(--color-ink); }
 
   /* Footer */
   .pricing-foot {
