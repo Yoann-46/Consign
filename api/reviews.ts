@@ -1,5 +1,5 @@
 // Vercel Serverless Function — GET /api/reviews
-// Google rating, review count and up to 5 reviews (Places API New).
+// Google rating, review count and up to 6 recent 4-5 star reviews (Places API New).
 // The CDN caches the answer for a day so Google is called ~once a day.
 // The API key stays server-side (GOOGLE_PLACES_API_KEY, Vercel env).
 
@@ -75,13 +75,26 @@ export default async function handler(_req: VercelRequest, res: VercelResponse) 
 
   try {
     if (!placeId) placeId = await findPlaceId(key);
-    const p = (await gfetch(
-      `${BASE}/places/${placeId}`,
-      key,
-      'id,displayName,rating,userRatingCount,googleMapsUri,reviews',
-    )) as GPlace;
+    // Google only returns its 5 "most relevant" reviews and offers no
+    // newest-first sort. Asking in several languages yields different
+    // sets; merge them, keep 4-5 stars, newest first.
+    const langs = ['fr', 'en', 'es', 'de', 'it', 'pt', 'nl', 'ja', 'zh', 'ko'];
+    const results = await Promise.allSettled(
+      langs.map((l) =>
+        gfetch(
+          `${BASE}/places/${placeId}?languageCode=${l}`,
+          key,
+          'id,displayName,rating,userRatingCount,googleMapsUri,reviews',
+        ),
+      ),
+    );
+    const ok = results.filter((r): r is PromiseFulfilledResult<GPlace> => r.status === 'fulfilled').map((r) => r.value);
+    if (!ok.length) throw (results[0] as PromiseRejectedResult).reason;
+    const p = ok[0];
 
-    const reviews = (p.reviews ?? [])
+    const seen = new Set<string>();
+    const reviews = ok
+      .flatMap((x) => x.reviews ?? [])
       .map((r) => ({
         rating: r.rating ?? null,
         text: r.originalText?.text ?? r.text?.text ?? '',
@@ -92,8 +105,14 @@ export default async function handler(_req: VercelRequest, res: VercelResponse) 
         publishTime: r.publishTime ?? null,
         uri: r.googleMapsUri ?? null,
       }))
-      .filter((r) => r.text.trim().length > 0)
-      .sort((a, b) => (b.publishTime ?? '').localeCompare(a.publishTime ?? ''));
+      .filter((r) => {
+        const id = `${r.author}|${r.publishTime}`;
+        if (seen.has(id)) return false;
+        seen.add(id);
+        return r.text.trim().length > 0 && (r.rating ?? 0) >= 4;
+      })
+      .sort((a, b) => (b.publishTime ?? '').localeCompare(a.publishTime ?? ''))
+      .slice(0, 6);
 
     res.setHeader('Cache-Control', 'public, s-maxage=86400, stale-while-revalidate=86400');
     res.status(200).json({
