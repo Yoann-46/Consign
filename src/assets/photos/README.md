@@ -10,3 +10,11 @@ Déposez ici les 3 photos, avec exactement ces noms (extension .jpg, .jpeg, .png
 
 Tant qu'un fichier manque, sa vignette n'est pas affichée (aucun « placeholder »).
 Astro génère automatiquement les versions WebP/AVIF redimensionnées au build.
+
+Photo de la section avis (à gauche des avis, desktop) :
+
+| Fichier     | Sujet                         | Format conseillé            |
+|-------------|-------------------------------|-----------------------------|
+| `avis.jpg`  | Un casier (ou la rangée de casiers) | 4:5 portrait, 1600 × 2000 px |
+
+Tant qu'elle manque, une illustration de casier occupe la place sur desktop.

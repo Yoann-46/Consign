@@ -1,58 +1,119 @@
 ---
+/**
+ * Google reviews, condensed: a photo slot on the left, the rating and one
+ * rotating quote on the right.
+ * - Reviews come from /api/reviews (Places API, CDN-cached a day). A copy is
+ *   fetched at build time so the quote is in the HTML; the client refreshes it.
+ * - Photo: src/assets/photos/avis.(jpg|png|webp), portrait 4:5. Until it
+ *   exists, an authored locker illustration holds the space (desktop only).
+ */
+import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
 import { useTranslations } from '../i18n/ui';
 import { GOOGLE_RATING, GOOGLE_REVIEWS_COUNT, GOOGLE_PLACE_URL } from '../lib/site';
 
 const lang = Astro.currentLocale ?? 'en';
 const t = useTranslations(lang);
 
-// Rating, count and up to 5 real Google reviews, loaded from /api/reviews
-// (cached a day). The static values are a fallback if the API is down.
-const fmtRating = (r: number) => (lang === 'fr' ? r.toFixed(1).replace('.', ',') : r.toFixed(1));
+type Rev = { rating: number | null; text: string; author: string; authorUri: string | null; publishTime: string | null; uri: string | null };
+
+let rating = GOOGLE_RATING;
+let count = GOOGLE_REVIEWS_COUNT;
+let reviews: Rev[] = [];
+try {
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), 5000);
+  const res = await fetch('https://www.consignlocker.com/api/reviews', { signal: ctrl.signal });
+  clearTimeout(timer);
+  if (res.ok) {
+    const d = await res.json();
+    if (typeof d.rating === 'number') rating = d.rating;
+    if (typeof d.count === 'number') count = d.count;
+    if (Array.isArray(d.reviews)) reviews = d.reviews.filter((r: Rev) => r.text);
+  }
+} catch {
+  /* build offline: the client fetch fills the quote */
+}
+
+const fmt = (r: number) => (lang === 'fr' ? r.toFixed(1).replace('.', ',') : r.toFixed(1));
+const first = reviews[0];
+
+const files = import.meta.glob<{ default: ImageMetadata }>('../assets/photos/*.{jpg,jpeg,png,webp}', { eager: true });
+const photo = Object.entries(files).find(([p]) => p.split('/').pop()!.replace(/\.\w+$/, '') === 'avis')?.[1].default;
+
+const star = 'M12 2.5l2.95 6.59 7.05.61-5.38 4.69 1.66 6.86L12 17.77l-6.28 3.48 1.66-6.86-5.38-4.69 7.05-.61z';
 ---
 
 <section class="reviews" id="reviews" aria-labelledby="reviews-title">
-  <div class="container-x">
-    <header class="reviews-header" data-rev-anim="header" data-reveal>
-      <h2 id="reviews-title" class="heading-display reviews-title">{t('reviews.title')}</h2>
+  <div class="container-x rv-grid">
+    <figure class={`rv-media${photo ? ' has-photo' : ''}`} data-reveal>
+      {photo ? (
+        <Image src={photo} alt={t('reviews.photo.alt')} widths={[480, 800, 1200]} sizes="(min-width: 900px) 40vw, 100vw" class="rv-photo" />
+      ) : (
+        <svg class="rv-illu" viewBox="0 0 400 500" role="img" aria-label={t('reviews.photo.alt')}>
+          <rect x="70" y="60" width="260" height="380" rx="14" class="i-ln" />
+          <path d="M70 186h260M70 312h260M200 60v380" class="i-ln" />
+          <circle cx="182" cy="123" r="4" class="i-dot" />
+          <circle cx="182" cy="249" r="4" class="i-dot" />
+          <circle cx="182" cy="375" r="4" class="i-dot" />
+          <circle cx="312" cy="123" r="4" class="i-dot" />
+          <circle cx="312" cy="375" r="4" class="i-dot" />
+          <path d="M200 186h130v126H200z" class="i-open" />
+          <path d="M330 186l46 -18v162l-46 -18" class="i-door" />
+          <rect x="232" y="214" width="66" height="86" rx="9" class="i-case" />
+          <path d="M254 214v-12h22v12M254 228v58M276 228v58" class="i-ink" />
+          <path d="M40 440h320" class="i-ln" />
+        </svg>
+      )}
+    </figure>
 
-      <div class="reviews-rating">
-        <span class="rating-stars" aria-hidden="true">
-          {Array.from({ length: 5 }).map(() => (
-            <svg viewBox="0 0 24 24" fill="currentColor">
-              <path d="M12 2.5l2.95 6.59 7.05.61-5.38 4.69 1.66 6.86L12 17.77l-6.28 3.48 1.66-6.86-5.38-4.69 7.05-.61z" />
-            </svg>
-          ))}
+    <div class="rv-body">
+      <h2 id="reviews-title" class="heading-display rv-title" data-reveal>{t('reviews.title')}</h2>
+
+      <div class="rv-score" data-reveal>
+        <span class="rv-value" id="rev-rating">{fmt(rating)}</span>
+        <span class="rv-score-side">
+          <span class="rv-stars" aria-hidden="true">
+            {Array.from({ length: 5 }).map(() => <svg viewBox="0 0 24 24"><path d={star} /></svg>)}
+          </span>
+          <span class="rv-count">
+            <span id="rev-count">{t('reviews.count').replace('{n}', String(count))}</span> {t('reviews.rating.label')}
+          </span>
         </span>
-        <span class="rating-value" id="rev-rating">{fmtRating(GOOGLE_RATING)}</span>
-        <span class="rating-google" aria-hidden="true">
-          <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
-            <path fill="#4285F4" d="M23.49 12.27c0-.79-.07-1.54-.19-2.27H12v4.51h6.45c-.28 1.45-1.13 2.68-2.4 3.5v2.91h3.87c2.26-2.08 3.57-5.15 3.57-8.65z" />
-            <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.87-2.91c-1.07.72-2.45 1.16-4.06 1.16-3.12 0-5.77-2.1-6.71-4.94H1.29v3.1C3.26 21.3 7.31 24 12 24z" />
-            <path fill="#FBBC05" d="M5.29 14.4c-.24-.72-.38-1.49-.38-2.4s.14-1.68.38-2.4V6.5H1.29A11.97 11.97 0 0 0 0 12c0 1.94.46 3.77 1.29 5.5l4-3.1z" />
-            <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.59 1.79l3.43-3.43C17.95 1.19 15.24 0 12 0 7.31 0 3.26 2.7 1.29 6.5l4 3.1c.94-2.84 3.59-4.85 6.71-4.85z" />
-          </svg>
-          <span class="sr-only">Google</span>
-        </span>
-        <span class="rating-label">{t('reviews.rating.label')} · <span id="rev-count">{t('reviews.count').replace('{n}', String(GOOGLE_REVIEWS_COUNT))}</span></span>
       </div>
-    </header>
 
-    <ul
-      class="reviews-list"
-      id="rev-list"
-      hidden
-      data-lang={lang}
-      data-count={t('reviews.count')}
-      data-source={t('reviews.source')}
-    ></ul>
-
-    <div class="reviews-foot" data-rev-anim="foot" data-reveal>
-      <a
-        href={GOOGLE_PLACE_URL}
-        class="btn btn-ghost reviews-cta"
-        target="_blank"
-        rel="noopener noreferrer"
+      <div
+        class="rv-card"
+        id="rev-card"
+        data-reveal
+        hidden={!first}
+        data-lang={lang}
+        data-reviews={JSON.stringify(reviews)}
+        data-count={t('reviews.count')}
       >
+        <blockquote class="rv-quote" aria-live="polite">
+          <p id="rev-text">{first?.text}</p>
+        </blockquote>
+        <div class="rv-foot">
+          <p class="rv-who">
+            <span class="rv-author" id="rev-author">{first?.author}</span>
+            <span class="rv-meta"><span id="rev-when"></span><a id="rev-link" href={first?.uri ?? GOOGLE_PLACE_URL} target="_blank" rel="noopener noreferrer">{t('reviews.read')}</a></span>
+          </p>
+          <div class="rv-nav">
+            <span class="rv-dots" id="rev-dots" aria-hidden="true">
+              {reviews.map((_, i) => <span class={i === 0 ? 'on' : ''}></span>)}
+            </span>
+            <button type="button" class="rv-btn" id="rev-prev" aria-label={t('reviews.prev')}>
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6l-6 6 6 6" /></svg>
+            </button>
+            <button type="button" class="rv-btn rv-btn-next" id="rev-next" aria-label={t('reviews.next')}>
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6" /></svg>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <a href={GOOGLE_PLACE_URL} class="rv-all" target="_blank" rel="noopener noreferrer" data-reveal>
         {t('reviews.cta')}
         <svg class="btn-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17 17 7M9 7h8v8" /></svg>
       </a>
@@ -63,148 +124,251 @@ const fmtRating = (r: number) => (lang === 'fr' ? r.toFixed(1).replace('.', ',')
 <style>
   .reviews {
     background: var(--color-bg-warm);
-    padding-block: clamp(4.5rem, 9vw, 8rem);
-    position: relative;
+    padding-block: clamp(3.5rem, 7vw, 6rem);
+  }
+  .rv-grid {
+    display: grid;
+    gap: 2rem;
+    align-items: center;
   }
 
-  .container-x {
-    position: relative;
-    z-index: 1;
+  /* Photo slot */
+  .rv-media {
+    margin: 0;
+    display: none;
   }
-
-  .sr-only {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    padding: 0;
-    margin: -1px;
+  .rv-media.has-photo {
+    display: block;
+    aspect-ratio: 16 / 10;
+    border-radius: 18px;
     overflow: hidden;
-    clip: rect(0, 0, 0, 0);
-    white-space: nowrap;
-    border: 0;
   }
-
-  /* Header */
-  .reviews-header {
-    margin-bottom: 2rem;
-    max-width: 720px;
-  }
-  .reviews-title {
-    font-size: clamp(2.25rem, 6.5vw, 4.5rem);
-    margin: 0 0 1.5rem;
-    color: var(--color-ink);
-  }
-
-  /* Big rating block */
-  .reviews-rating {
-    display: inline-flex;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 0.75rem;
-    padding: 0.75rem 1.1rem;
-    background: var(--color-bg);
-    border: 1.5px solid var(--color-ink);
-    border-radius: 999px;
-  }
-  .rating-stars {
-    display: inline-flex;
-    gap: 0.15rem;
-    color: var(--color-coral);
-  }
-  .rating-stars svg {
-    width: 18px;
-    height: 18px;
-  }
-  .rating-value {
-    font-weight: 800;
-    font-size: 1.05rem;
-    letter-spacing: -0.01em;
-    color: var(--color-ink);
-  }
-  .rating-google {
-    display: inline-flex;
-    align-items: center;
-  }
-  .rating-google svg {
+  .rv-media :global(.rv-photo) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
     display: block;
   }
-  .rating-label {
-    font-size: 0.95rem;
-    color: var(--color-ink-soft);
-    font-weight: 500;
+  .rv-illu {
+    display: block;
+    width: 100%;
+    height: 100%;
   }
+  .rv-illu :is(.i-ln, .i-ink, .i-door, .i-open, .i-case) {
+    stroke-width: 4;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .rv-illu .i-ln { fill: none; stroke: var(--color-bg); }
+  .rv-illu .i-dot { fill: var(--color-bg); }
+  .rv-illu .i-open { fill: color-mix(in srgb, var(--color-bg) 10%, transparent); stroke: var(--color-bg); }
+  .rv-illu .i-door { fill: var(--color-ink); stroke: var(--color-bg); }
+  .rv-illu .i-case { fill: var(--color-coral); stroke: var(--color-coral); }
+  .rv-illu .i-ink { fill: none; stroke: var(--color-ink); }
 
-  /* Review cards (filled by the script below) */
-  .reviews-list {
-    list-style: none;
-    margin: 0 0 2rem;
-    padding: 0;
-    display: grid;
-    gap: 1rem;
+  /* Rating */
+  .rv-title {
+    font-size: clamp(2rem, 5vw, 3.25rem);
+    margin: 0 0 1.25rem;
+    color: var(--color-ink);
   }
-  @media (min-width: 700px) {
-    .reviews-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .rv-score {
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+    margin-bottom: 1.5rem;
   }
-  @media (min-width: 1100px) {
-    .reviews-list { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .rv-value {
+    font-size: clamp(3rem, 6vw, 4rem);
+    font-weight: 800;
+    letter-spacing: -0.04em;
+    line-height: 0.9;
+    color: var(--color-ink);
+    font-variant-numeric: tabular-nums;
   }
-  .reviews-list :global(.rev) {
+  .rv-score-side {
     display: flex;
     flex-direction: column;
-    gap: 0.75rem;
-    padding: 1.35rem 1.4rem 1.2rem;
+    gap: 0.3rem;
+  }
+  .rv-stars {
+    display: inline-flex;
+    gap: 2px;
+  }
+  .rv-stars svg {
+    width: 18px;
+    height: 18px;
+    fill: var(--color-coral);
+  }
+  .rv-count {
+    font-size: 0.95rem;
+    color: var(--color-ink-soft);
+  }
+
+  /* Quote card */
+  .rv-card {
     background: var(--color-bg);
     border: 1.5px solid var(--color-ink);
-    border-radius: 18px;
+    border-radius: 20px;
+    padding: 1.4rem 1.5rem 1.15rem;
   }
-  .reviews-list :global(.rev-stars) {
-    color: var(--color-coral);
-    letter-spacing: 0.1em;
-    font-size: 0.95rem;
-  }
-  .reviews-list :global(.rev-text) {
+  .rv-quote {
     margin: 0;
+    min-height: calc(1.5em * 4);
+    font-size: clamp(1.05rem, 1.6vw, 1.2rem);
+    line-height: 1.5;
     color: var(--color-ink);
-    line-height: 1.55;
+  }
+  .rv-quote p {
+    margin: 0;
     display: -webkit-box;
-    -webkit-line-clamp: 7;
+    -webkit-line-clamp: 4;
     -webkit-box-orient: vertical;
     overflow: hidden;
-    flex-grow: 1;
+    transition: opacity 180ms cubic-bezier(0.22, 1, 0.36, 1);
   }
-  .reviews-list :global(.rev-meta) {
+  .rv-quote p::before { content: '“'; }
+  .rv-quote p::after { content: '”'; }
+  :global(html[lang='fr']) .rv-quote p::before { content: '« '; }
+  :global(html[lang='fr']) .rv-quote p::after { content: ' »'; }
+  .rv-quote p.is-swapping { opacity: 0; }
+
+  .rv-foot {
     display: flex;
-    flex-wrap: wrap;
-    align-items: baseline;
-    gap: 0.25rem 0.5rem;
-    padding-top: 0.7rem;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-top: 1.1rem;
+    padding-top: 0.9rem;
     border-top: 1px solid var(--color-rule);
+  }
+  .rv-who {
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    min-width: 0;
+  }
+  .rv-author {
+    font-weight: 700;
+    color: var(--color-ink);
+  }
+  .rv-meta {
     font-size: 0.85rem;
     color: var(--color-ink-faint);
   }
-  .reviews-list :global(.rev-author) {
-    font-weight: 700;
-    font-size: 0.95rem;
-    color: var(--color-ink);
-    text-decoration: none;
+  .rv-meta a {
+    color: var(--color-ink-soft);
+    text-underline-offset: 3px;
   }
-  .reviews-list :global(a.rev-author:hover) { text-decoration: underline; }
+  #rev-when:not(:empty)::after { content: ' · '; }
 
-  /* Footer CTA */
-  .reviews-foot {
+  .rv-nav {
     display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-shrink: 0;
   }
-  /* .reviews-cta inherits the new global .btn sizes */
+  .rv-dots {
+    display: inline-flex;
+    gap: 5px;
+    margin-right: 0.35rem;
+  }
+  .rv-dots span {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--color-rule);
+    transition: background 180ms ease, width 220ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .rv-dots span.on {
+    width: 16px;
+    border-radius: 3px;
+    background: var(--color-ink);
+  }
+  .rv-btn {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    border: 1.5px solid var(--color-ink);
+    background: transparent;
+    color: var(--color-ink);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background 160ms ease, color 160ms ease;
+  }
+  .rv-btn svg {
+    width: 18px;
+    height: 18px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2.2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .rv-btn-next,
+  .rv-btn:hover {
+    background: var(--color-ink);
+    color: var(--color-bg);
+  }
+  .rv-btn-next:hover { background: var(--color-ink-soft); }
 
+  .rv-all {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin-top: 1.25rem;
+    font-weight: 700;
+    color: var(--color-ink);
+    text-underline-offset: 3px;
+    min-height: 44px;
+  }
+
+  @media (max-width: 480px) {
+    .rv-dots { display: none; }
+    .rv-card { padding: 1.2rem 1.2rem 1rem; }
+  }
+
+  @media (min-width: 900px) {
+    .rv-grid {
+      grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+      gap: clamp(2.5rem, 5vw, 5rem);
+    }
+    .rv-media {
+      display: block;
+      aspect-ratio: 4 / 5;
+      max-height: 560px;
+      border-radius: 22px;
+      overflow: hidden;
+      background: var(--color-ink);
+    }
+    .rv-media.has-photo { aspect-ratio: 4 / 5; }
+    .rv-illu { padding: 8% 10%; box-sizing: border-box; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .rv-quote p, .rv-dots span { transition: none; }
+  }
 </style>
 
-
 <script>
-  type Rev = { rating: number | null; text: string; author: string; authorUri: string | null; publishTime: string | null };
-  const list = document.getElementById('rev-list') as HTMLUListElement | null;
-  if (list) {
-    const lang = list.dataset.lang === 'fr' ? 'fr' : 'en';
+  type Rev = { rating: number | null; text: string; author: string; publishTime: string | null; uri: string | null };
+  const card = document.getElementById('rev-card') as HTMLElement | null;
+  if (card) {
+    const lang = card.dataset.lang === 'fr' ? 'fr' : 'en';
+    const $ = (id: string) => document.getElementById(id)!;
+    const text = $('rev-text');
+    const author = $('rev-author');
+    const when = $('rev-when');
+    const link = $('rev-link') as HTMLAnchorElement;
+    const dots = $('rev-dots');
     const rtf = new Intl.RelativeTimeFormat(lang, { numeric: 'auto' });
+    const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let list: Rev[] = JSON.parse(card.dataset.reviews || '[]');
+    let i = 0;
+
     const ago = (iso: string | null) => {
       if (!iso) return '';
       const days = Math.round((Date.parse(iso) - Date.now()) / 86_400_000);
@@ -213,42 +377,56 @@ const fmtRating = (r: number) => (lang === 'fr' ? r.toFixed(1).replace('.', ',')
       if (Math.abs(days) < 365) return rtf.format(Math.round(days / 30), 'month');
       return rtf.format(Math.round(days / 365), 'year');
     };
-    const el = (tag: string, cls: string, text?: string) => {
-      const e = document.createElement(tag);
-      e.className = cls;
-      if (text != null) e.textContent = text;
-      return e;
+
+    const paint = () => {
+      const r = list[i];
+      text.textContent = r.text;
+      author.textContent = r.author;
+      when.textContent = ago(r.publishTime);
+      if (r.uri) link.href = r.uri;
+      [...dots.children].forEach((d, k) => d.classList.toggle('on', k === i));
     };
+    const go = (n: number) => {
+      if (list.length < 2) return;
+      i = (n + list.length) % list.length;
+      if (reduce) return paint();
+      text.classList.add('is-swapping');
+      setTimeout(() => { paint(); text.classList.remove('is-swapping'); }, 180);
+    };
+    const rebuildDots = () => {
+      dots.replaceChildren(...list.map(() => document.createElement('span')));
+    };
+
+    $('rev-prev').addEventListener('click', () => go(i - 1));
+    $('rev-next').addEventListener('click', () => go(i + 1));
+    let x0: number | null = null;
+    card.addEventListener('touchstart', (e) => { x0 = e.touches[0].clientX; }, { passive: true });
+    card.addEventListener('touchend', (e) => {
+      if (x0 === null) return;
+      const dx = e.changedTouches[0].clientX - x0;
+      if (Math.abs(dx) > 40) go(dx < 0 ? i + 1 : i - 1);
+      x0 = null;
+    });
+
+    if (list.length) paint();
+
     fetch('/api/reviews')
       .then((r) => (r.ok ? r.json() : Promise.reject(r.status)))
       .then((d: { rating: number | null; count: number | null; reviews: Rev[] }) => {
         if (typeof d.rating === 'number') {
           const v = d.rating.toFixed(1);
-          document.getElementById('rev-rating')!.textContent = lang === 'fr' ? v.replace('.', ',') : v;
+          $('rev-rating').textContent = lang === 'fr' ? v.replace('.', ',') : v;
         }
-        if (typeof d.count === 'number') {
-          document.getElementById('rev-count')!.textContent = list.dataset.count!.replace('{n}', String(d.count));
-        }
-        const reviews = (d.reviews ?? []).filter((r) => r.text);
-        if (!reviews.length) return;
-        for (const r of reviews) {
-          const li = el('li', 'rev');
-          const n = Math.max(0, Math.min(5, Math.round(r.rating ?? 5)));
-          const stars = el('span', 'rev-stars', '★'.repeat(n) + '☆'.repeat(5 - n));
-          stars.setAttribute('aria-label', `${n}/5`);
-          li.append(stars, el('p', 'rev-text', r.text));
-          const meta = el('p', 'rev-meta');
-          const author = r.authorUri ? (el('a', 'rev-author', r.author) as HTMLAnchorElement) : el('span', 'rev-author', r.author);
-          if (r.authorUri) {
-            (author as HTMLAnchorElement).href = r.authorUri;
-            (author as HTMLAnchorElement).target = '_blank';
-            (author as HTMLAnchorElement).rel = 'noopener noreferrer';
-          }
-          meta.append(author, el('span', '', `${list.dataset.source} · ${ago(r.publishTime)}`));
-          li.append(meta);
-          list.append(li);
-        }
-        list.hidden = false;
+        if (typeof d.count === 'number') $('rev-count').textContent = card.dataset.count!.replace('{n}', String(d.count));
+        const fresh = (d.reviews ?? []).filter((r) => r.text);
+        if (!fresh.length) return;
+        const same = fresh.length === list.length && fresh.every((r, k) => r.text === list[k]?.text);
+        if (same) return;
+        list = fresh;
+        i = 0;
+        rebuildDots();
+        paint();
+        card.hidden = false;
       })
       .catch(() => {});
   }

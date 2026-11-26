@@ -95,6 +95,10 @@ export const ui = {
     'reviews.rating.aria': '5 out of 5 stars',
     'reviews.cta': 'See all reviews on Google',
     'reviews.source': 'Google review',
+    'reviews.read': 'Read on Google',
+    'reviews.prev': 'Previous review',
+    'reviews.next': 'Next review',
+    'reviews.photo.alt': 'A Consign locker, 67 rue de Cléry',
     'reviews.visited': 'Visited',
 
     // How it works
@@ -261,6 +265,10 @@ export const ui = {
     'reviews.rating.aria': '5 étoiles sur 5',
     'reviews.cta': 'Voir tous les avis sur Google',
     'reviews.source': 'Avis Google',
+    'reviews.read': 'Lire sur Google',
+    'reviews.prev': 'Avis précédent',
+    'reviews.next': 'Avis suivant',
+    'reviews.photo.alt': 'Un casier Consign, 67 rue de Cléry',
     'reviews.visited': 'Visité',
 
     // How it works
