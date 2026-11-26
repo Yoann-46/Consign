@@ -1,0 +1,86 @@
+---
+/**
+ * Legal page shell. Sections whose facts we don't have yet carry `todo`:
+ * they render a visible "to complete" note. Pages stay noindex until the
+ * content is validated (see Layout `noindex`).
+ */
+interface Section {
+  h: string;
+  p?: string[];
+  list?: string[];
+  todo?: string;
+}
+interface Props {
+  title: string;
+  updated: string;
+  intro?: string;
+  sections: Section[];
+  todoLabel: string;
+}
+const { title, updated, intro, sections, todoLabel } = Astro.props;
+---
+
+<article class="legal container-x">
+  <header class="legal-head">
+    <h1 class="heading-display legal-title">{title}</h1>
+    <p class="legal-updated">{updated}</p>
+    {intro && <p class="legal-intro">{intro}</p>}
+  </header>
+  {sections.map((s) => (
+    <section class="legal-section">
+      <h2>{s.h}</h2>
+      {s.p?.map((x) => <p set:html={x} />)}
+      {s.list && <ul>{s.list.map((x) => <li set:html={x} />)}</ul>}
+      {s.todo && <p class="legal-todo"><strong>{todoLabel}</strong> {s.todo}</p>}
+    </section>
+  ))}
+</article>
+
+<style>
+  .legal {
+    max-width: 780px;
+    padding-block: clamp(3rem, 7vw, 5.5rem);
+  }
+  .legal-title {
+    font-size: clamp(2.2rem, 5vw, 3.5rem);
+    margin: 0;
+  }
+  .legal-updated {
+    margin: 0.75rem 0 0;
+    color: var(--color-ink-soft);
+    font-size: 0.92rem;
+  }
+  .legal-intro {
+    margin: 1.5rem 0 0;
+    font-size: 1.1rem;
+    color: var(--color-ink-soft);
+  }
+  .legal-section { margin-top: 2.5rem; }
+  .legal-section h2 {
+    font-size: 1.3rem;
+    font-weight: 800;
+    letter-spacing: -0.015em;
+    margin: 0 0 0.75rem;
+  }
+  .legal-section p,
+  .legal-section li {
+    line-height: 1.65;
+    max-width: 68ch;
+  }
+  .legal-section p { margin: 0 0 0.75rem; }
+  .legal-section ul { padding-left: 1.2rem; margin: 0 0 0.75rem; }
+  .legal-section li { margin-bottom: 0.35rem; }
+  .legal-section :global(a) {
+    color: var(--color-ink);
+    font-weight: 600;
+    text-underline-offset: 3px;
+  }
+  .legal-todo {
+    padding: 0.75rem 1rem;
+    border: 1.5px dashed var(--color-coral-dark);
+    border-radius: 12px;
+    background: var(--color-coral-soft);
+    color: var(--color-ink);
+    font-size: 0.95rem;
+  }
+</style>

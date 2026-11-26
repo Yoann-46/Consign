@@ -1,169 +1,189 @@
 ---
+import { localizedPath } from '../i18n/ui';
+import { DIRECTIONS_URL } from '../lib/site';
+
 const fr = (Astro.currentLocale ?? 'en') === 'fr';
 
 const txt = {
-  eyebrow:     fr ? 'En direct'                                     : 'Live',
-  title:       fr ? 'Disponibilité'                                 : 'Availability',
-  titleAccent: fr ? 'en temps réel.'                                : 'right now.',
-  subtitle:    fr ? 'Vérifiez le nombre de casiers libres avant de venir.' : 'Check how many lockers are free before heading over.',
-  loading:     fr ? 'Chargement…'                                   : 'Loading…',
-  updatedAt:   fr ? 'Mis à jour à'                                  : 'Updated at',
+  title:    fr ? 'Disponibilité'                                        : 'Availability',
+  accent:   fr ? 'en direct.'                                           : 'right now.',
+  subtitle: fr ? 'Combien de casiers sont libres au 67 rue de Cléry, avant de venir.' : 'How many lockers are free at 67 rue de Cléry, before you head over.',
+  loading:  fr ? 'Chargement de la disponibilité…'                      : 'Loading availability…',
+  free:     fr ? '{n} casiers libres'                           : '{n} lockers free',
+  free1:    fr ? '1 casier libre'                               : '1 locker free',
+  none:     fr ? 'Tous les casiers sont pris pour le moment.'           : 'All lockers are taken right now.',
+  noneHint: fr ? 'Des casiers se libèrent au fil de la journée : réessayez dans un moment.' : 'Lockers free up during the day: try again in a moment.',
+  error:    fr ? 'Impossible de charger la disponibilité.'              : 'We couldn’t load availability.',
+  errorHint:fr ? 'Le service est peut-être momentanément indisponible. Les casiers restent accessibles 7h–22h, sur place.' : 'The service may be briefly unavailable. The lockers are still open 7am–10pm, on site.',
+  retry:    fr ? 'Réessayer'                                            : 'Try again',
+  updated:  fr ? 'Mis à jour à'                                         : 'Updated at',
+  auto:     fr ? 'Actualisation automatique toutes les 30 s.'           : 'Refreshes every 30 s.',
+  directions: fr ? 'Itinéraire'                                         : 'Directions',
+  prices:   fr ? 'Voir les tarifs'                                      : 'See prices',
 };
 ---
 
 <section class="section lk-section">
   <div class="container-x">
+    <header class="lk-header">
+      <h1 class="heading-display lk-title">
+        {txt.title} <span class="pill-coral">{txt.accent}</span>
+      </h1>
+      <p class="lk-subtitle">{txt.subtitle}</p>
+    </header>
 
-    <!-- ── Header ─────────────────────────────────────── -->
-    <div class="lk-header">
-      <div>
-        <p class="eyebrow eyebrow-coral">{txt.eyebrow}</p>
-        <h1 class="heading-display lk-title">
-          {txt.title}<br />
-          <span class="pill-coral">{txt.titleAccent}</span>
-        </h1>
-        <p class="lk-subtitle">{txt.subtitle}</p>
-      </div>
-
-      <div class="lk-live-badge">
-        <span class="lk-pulse" aria-hidden="true"></span>
-        <span id="lk-last-updated">{txt.loading}</span>
+    <div
+      id="lk-status"
+      class="lk-status"
+      data-state="loading"
+      aria-live="polite"
+      data-i18n={JSON.stringify(txt)}
+      data-lang={fr ? 'fr' : 'en'}
+    >
+      <p class="lk-main" id="lk-main">
+        <span class="lk-spinner" aria-hidden="true"></span>
+        <span id="lk-main-text">{txt.loading}</span>
+      </p>
+      <p class="lk-hint" id="lk-hint"></p>
+      <p class="lk-meta" id="lk-meta"></p>
+      <div class="lk-actions">
+        <button type="button" class="btn btn-ghost lk-retry" id="lk-retry" hidden>{txt.retry}</button>
+        <a href={DIRECTIONS_URL} class="btn btn-primary" target="_blank" rel="noopener noreferrer">{txt.directions}</a>
+        <a href={localizedPath(fr ? 'fr' : 'en', '/pricing')} class="lk-link">{txt.prices}</a>
       </div>
     </div>
-
-    <!-- ── Summary ─────────────────────────────────────── -->
-    <div id="lk-summary" class="lk-summary" data-lang={fr ? 'fr' : 'en'} aria-live="polite" aria-atomic="true">
-      <span class="lk-summary-skeleton"></span>
-    </div>
-
   </div>
 </section>
 
 <style>
-  .lk-section {
-    position: relative;
-    overflow: hidden;
-  }
-
-  .lk-header {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 1.5rem;
-    margin-bottom: 2rem;
-  }
-
+  .lk-header { margin-bottom: 2rem; }
   .lk-title {
     font-size: clamp(2.2rem, 5vw, 3.5rem);
-    margin: 0.25em 0 0;
-    line-height: 1.05;
+    margin: 0;
+    line-height: 1.1;
   }
-
   .lk-subtitle {
-    margin: 0.75rem 0 0;
+    margin: 0.9rem 0 0;
     color: var(--color-ink-soft);
-    font-size: 1rem;
-    max-width: 42ch;
+    font-size: 1.05rem;
+    max-width: 48ch;
   }
 
-  .lk-live-badge {
+  .lk-status {
+    max-width: 720px;
+    padding: 1.5rem 1.5rem 1.35rem;
+    border: 1.5px solid var(--color-ink);
+    border-radius: 22px;
+    background: #fff;
+  }
+  .lk-main {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
-    padding: 0.55rem 1rem;
-    background: var(--color-bg-warm);
-    border: 1.5px solid var(--color-rule);
-    border-radius: 999px;
-    font-size: 0.78rem;
-    font-weight: 600;
+    gap: 0.75rem;
+    margin: 0;
+    font-size: clamp(1.35rem, 3vw, 1.75rem);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+  }
+  .lk-hint {
+    margin: 0.6rem 0 0;
     color: var(--color-ink-soft);
-    white-space: nowrap;
-    flex-shrink: 0;
-    margin-top: 0.25rem;
+    max-width: 56ch;
   }
-
-  .lk-pulse {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: #22c55e;
-    animation: lk-pulse 2s ease-in-out infinite;
+  .lk-hint:empty, .lk-meta:empty { display: none; }
+  .lk-meta {
+    margin: 0.6rem 0 0;
+    font-size: 0.9rem;
+    color: var(--color-ink-soft);
   }
-
-  @keyframes lk-pulse {
-    0%, 100% { opacity: 1; transform: scale(1); }
-    50%       { opacity: 0.45; transform: scale(0.75); }
-  }
-
-  /* ── Summary banner ────────────────────────────────── */
-  .lk-summary {
+  .lk-actions {
     display: flex;
-    align-items: center;
-    gap: 1rem;
     flex-wrap: wrap;
-    padding: 1.5rem 1.75rem;
-    background: var(--color-yellow-soft);
-    border: 1.5px solid var(--color-yellow-deep);
-    border-radius: 1rem;
+    align-items: center;
+    gap: 0.75rem 1.25rem;
+    margin-top: 1.5rem;
+  }
+  .lk-link {
     font-weight: 600;
-    min-height: 4rem;
+    color: var(--color-ink);
+    text-underline-offset: 3px;
   }
 
-  .lk-summary-skeleton {
-    display: block;
-    width: 240px;
-    height: 1em;
-    border-radius: 0.4rem;
-    background: linear-gradient(90deg,
-      var(--color-yellow-deep) 25%,
-      color-mix(in srgb, var(--color-yellow-deep) 60%, white) 50%,
-      var(--color-yellow-deep) 75%);
-    background-size: 200% 100%;
-    animation: lk-shimmer 1.4s infinite;
+  /* Status marker before the main line */
+  .lk-spinner {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    border: 2.5px solid var(--color-rule);
+    border-top-color: var(--color-ink);
+    animation: lk-spin 0.8s linear infinite;
   }
-
-  @keyframes lk-shimmer {
-    0%   { background-position: 200% 0; }
-    100% { background-position: -200% 0; }
+  [data-state='free'] .lk-spinner,
+  [data-state='none'] .lk-spinner,
+  [data-state='error'] .lk-spinner {
+    animation: none;
+    border: none;
+    width: 12px;
+    height: 12px;
   }
+  [data-state='free'] .lk-spinner { background: #16a34a; }
+  [data-state='none'] .lk-spinner { background: var(--color-coral-dark); }
+  [data-state='error'] .lk-spinner { background: var(--color-ink-faint); }
+  [data-state='error'] { border-color: var(--color-coral-dark); }
+  @keyframes lk-spin { to { transform: rotate(360deg); } }
 </style>
 
 <script>
-  interface AvailabilitySummary {
-    total: number;
-    available: number;
-    updatedAt: string;
-  }
+  const box = document.getElementById('lk-status')!;
+  const main = document.getElementById('lk-main-text')!;
+  const hint = document.getElementById('lk-hint')!;
+  const meta = document.getElementById('lk-meta')!;
+  const retry = document.getElementById('lk-retry') as HTMLButtonElement;
+  const t = JSON.parse(box.dataset.i18n!) as Record<string, string>;
 
-  async function fetchSummary(): Promise<AvailabilitySummary> {
-    const res = await fetch('/api/lockers');
-    if (!res.ok) throw new Error(`lockers API returned ${res.status}`);
-    return res.json();
-  }
+  const hhmm = (d: Date) =>
+    d.toLocaleTimeString(box.dataset.lang === 'fr' ? 'fr-FR' : 'en-GB', { hour: '2-digit', minute: '2-digit' });
 
-  function formatHHMM(date: Date): string {
-    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-  }
-
-  function render(data: AvailabilitySummary) {
-    const summary = document.getElementById('lk-summary');
-    const lastUpd = document.getElementById('lk-last-updated');
-    if (!summary) return;
-
-    const isFr = summary.dataset.lang === 'fr';
-    const countTxt = isFr
-      ? `${data.available} casier${data.available !== 1 ? 's' : ''} disponible${data.available !== 1 ? 's' : ''} sur ${data.total}`
-      : `${data.available} of ${data.total} lockers available`;
-
-    summary.innerHTML = `<span style="font-size:1.3rem">${countTxt}</span>`;
-
-    if (lastUpd) {
-      const prefix = isFr ? 'Mis à jour à' : 'Updated at';
-      lastUpd.textContent = `${prefix} ${formatHHMM(new Date())}`;
+  async function load(showLoading = false) {
+    if (showLoading) {
+      box.dataset.state = 'loading';
+      main.textContent = t.loading;
+      hint.textContent = '';
+      retry.hidden = true;
+    }
+    try {
+      const ctrl = new AbortController();
+      const timer = setTimeout(() => ctrl.abort(), 10_000);
+      const res = await fetch('/api/lockers', { signal: ctrl.signal });
+      clearTimeout(timer);
+      if (!res.ok) throw new Error(String(res.status));
+      const d = (await res.json()) as { total: number; available: number };
+      if (typeof d.available !== 'number' || typeof d.total !== 'number') throw new Error('bad payload');
+      if (d.available > 0) {
+        box.dataset.state = 'free';
+        main.textContent = (d.available === 1 ? t.free1 : t.free)
+          .replace('{n}', String(d.available))
+          .replace('{t}', String(d.total));
+        hint.textContent = '';
+      } else {
+        box.dataset.state = 'none';
+        main.textContent = t.none;
+        hint.textContent = t.noneHint;
+      }
+      meta.textContent = `${t.updated} ${hhmm(new Date())} · ${t.auto}`;
+      retry.hidden = true;
+    } catch {
+      box.dataset.state = 'error';
+      main.textContent = t.error;
+      hint.textContent = t.errorHint;
+      meta.textContent = '';
+      retry.hidden = false;
     }
   }
 
-  fetchSummary().then(render).catch(err => console.error('Failed to load lockers summary', err));
-  setInterval(() => fetchSummary().then(render).catch(err => console.error('Failed to load lockers summary', err)), 30_000);
+  retry.addEventListener('click', () => load(true));
+  load();
+  setInterval(() => { if (!document.hidden && box.dataset.state !== 'error') load(); }, 30_000);
 </script>

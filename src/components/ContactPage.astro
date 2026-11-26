@@ -34,7 +34,7 @@ const methods = [
 
 <section class="contact-hero" aria-labelledby="contact-title">
   <div class="container-x">
-    <header class="contact-header" data-contact-anim="header">
+    <header class="contact-header" data-contact-anim="header" data-reveal>
       <span class="eyebrow contact-eyebrow">{t('contact.eyebrow')}</span>
       <h1 id="contact-title" class="heading-display contact-title">
         {t('contact.title')}
@@ -42,7 +42,7 @@ const methods = [
       <p class="contact-subtitle">{t('contact.subtitle')}</p>
     </header>
 
-    <ul class="contact-methods" data-contact-anim="methods">
+    <ul class="contact-methods" data-contact-anim="methods" data-reveal>
       {methods.map((m) => (
         <li class={`method accent-${m.accent}`}>
           <a class="method-link" href={m.href} target={m.icon !== 'mail' ? '_blank' : undefined} rel="noopener noreferrer">
@@ -71,7 +71,7 @@ const methods = [
               <span class="method-value">{m.value}</span>
               <span class="method-hint">{m.hint}</span>
             </div>
-            <span class="method-arrow" aria-hidden="true">↗</span>
+            <span class="method-arrow" aria-hidden="true"><svg class="btn-icon" viewBox="0 0 24 24"><path d="M7 17 17 7M9 7h8v8" /></svg></span>
           </a>
         </li>
       ))}
@@ -102,8 +102,6 @@ const methods = [
   .contact-header {
     max-width: 740px;
     margin-bottom: clamp(2.5rem, 5vw, 4rem);
-    opacity: 0;
-    transform: translateY(20px);
   }
   .contact-eyebrow {
     color: var(--color-coral-dark);
@@ -131,8 +129,6 @@ const methods = [
     display: grid;
     grid-template-columns: 1fr;
     gap: 1rem;
-    opacity: 0;
-    transform: translateY(20px);
   }
   .method {
     /* Wrapper exists for accent CSS variable scoping */
@@ -226,21 +222,3 @@ const methods = [
 </style>
 
 
-<script>
-  import { gsap } from 'gsap';
-
-  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const targets = document.querySelectorAll<HTMLElement>('[data-contact-anim]');
-
-  if (reduce) {
-    gsap.set(targets, { opacity: 1, y: 0 });
-  } else {
-    gsap.to(targets, {
-      opacity: 1,
-      y: 0,
-      duration: 0.95,
-      ease: 'power3.out',
-      stagger: 0.15,
-    });
-  }
-</script>

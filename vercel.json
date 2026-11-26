@@ -1,5 +1,9 @@
 {
   "crons": [
     { "path": "/api/cron/snapshot-lockers", "schedule": "0 19 * * *" }
+  ],
+  "redirects": [
+    { "source": "/business", "destination": "/contact", "permanent": true },
+    { "source": "/fr/business", "destination": "/fr/contact", "permanent": true }
   ]
 }

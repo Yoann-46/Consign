@@ -1,87 +1,85 @@
 ---
 import { useTranslations } from '../i18n/ui';
+import SitePhotos from './SitePhotos.astro';
 
 const lang = Astro.currentLocale ?? 'en';
 const t = useTranslations(lang);
 
-const steps = [
-  {
-    num: '01',
-    title: t('how.step1.title'),
-    desc: t('how.step1.desc'),
-    accent: 'coral',
-    icon: 'pin',
-  },
-  {
-    num: '02',
-    title: t('how.step2.title'),
-    desc: t('how.step2.desc'),
-    accent: 'yellow',
-    icon: 'clock-check',
-  },
-  {
-    num: '03',
-    title: t('how.step3.title'),
-    desc: t('how.step3.desc'),
-    accent: 'coral',
-    icon: 'lock',
-  },
-  {
-    num: '04',
-    title: t('how.step4.title'),
-    desc: t('how.step4.desc'),
-    accent: 'yellow',
-    icon: 'compass',
-  },
-] as const;
+const steps = [1, 2, 3, 4].map((n) => ({
+  n,
+  title: t(`how.step${n}.title` as 'how.step1.title'),
+  desc: t(`how.step${n}.desc` as 'how.step1.desc'),
+}));
 ---
 
 <section class="how" id="how" aria-labelledby="how-title">
   <div class="container-x">
-    <header class="how-header" data-how-anim="header">
-      <span class="eyebrow how-eyebrow">{t('how.eyebrow')}</span>
+    <header class="how-header" data-reveal>
       <h2 id="how-title" class="heading-display how-title">
         {t('how.title')} <span class="how-title-accent">{t('how.title.accent')}</span>
       </h2>
+      <p class="how-lede">{t('how.lede')}</p>
     </header>
 
     <ol class="how-steps">
       {steps.map((s) => (
-        <li class={`step accent-${s.accent}`} data-how-anim="step">
-          <div class="step-icon" aria-hidden="true">
-            {s.icon === 'pin' && (
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M20 10c0 7-8 13-8 13s-8-6-8-13a8 8 0 0 1 16 0z" />
-                <circle cx="12" cy="10" r="3" />
+        <li class="step" data-reveal>
+          <div class="step-art" aria-hidden="true">
+            {s.n === 1 && (
+              /* Two locker doors: Medium (short) and Large (tall, selected) */
+              <svg viewBox="0 0 120 90">
+                <rect x="22" y="40" width="34" height="40" rx="4" class="ln" />
+                <circle cx="49" cy="60" r="1.8" class="dot" />
+                <rect x="64" y="10" width="34" height="70" rx="4" class="sel" />
+                <circle cx="91" cy="45" r="1.8" class="dot-ink" />
+                <path d="M14 80h92" class="ln" />
               </svg>
             )}
-            {s.icon === 'clock-check' && (
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
-                <circle cx="12" cy="12" r="9" />
-                <path d="M7.75 12.5 10.5 15.25 16.25 9.5" />
+            {s.n === 2 && (
+              /* Screen with three duration choices, the last one selected */
+              <svg viewBox="0 0 120 90">
+                <rect x="14" y="8" width="92" height="66" rx="8" class="ln" />
+                <circle cx="60" cy="26" r="8" class="ln" />
+                <path d="M60 21.5V26l3 2" class="ln" />
+                <rect x="22" y="46" width="22" height="16" rx="5" class="ln" />
+                <rect x="49" y="46" width="22" height="16" rx="5" class="ln" />
+                <rect x="76" y="46" width="22" height="16" rx="5" class="sel-y" />
+                <path d="M48 74l-4 10M72 74l4 10" class="ln" />
               </svg>
             )}
-            {s.icon === 'lock' && (
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
-                <rect x="4" y="10.5" width="16" height="10.5" rx="2.5" />
-                <path d="M7.5 10.5V7a4.5 4.5 0 0 1 9 0v3.5" />
-                <circle cx="12" cy="15.5" r="1.4" fill="currentColor" stroke="none" />
+            {s.n === 3 && (
+              /* Card tapped on the reader, contactless waves */
+              <svg viewBox="0 0 120 90">
+                <rect x="58" y="14" width="44" height="66" rx="7" class="ln" />
+                <rect x="66" y="22" width="28" height="16" rx="3" class="ln" />
+                <path d="M72 52a6 6 0 0 1 0 8M78 48a12 12 0 0 1 0 16" class="ln" />
+                <g transform="rotate(-14 34 50)">
+                  <rect x="12" y="34" width="46" height="30" rx="4" class="sel" />
+                  <path d="M12 43h46" class="ink" />
+                  <rect x="18" y="51" width="10" height="7" rx="1.5" class="ink" />
+                </g>
               </svg>
             )}
-            {s.icon === 'compass' && (
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
-                <circle cx="12" cy="12" r="9" />
-                <path d="m15.5 8.5-2 5.5-5.5 2 2-5.5 5.5-2z" />
+            {s.n === 4 && (
+              /* Phone showing a QR code, held toward the scanner */
+              <svg viewBox="0 0 120 90">
+                <rect x="20" y="10" width="40" height="72" rx="7" class="ln" />
+                <path d="M34 16h12" class="ln" />
+                <rect x="27" y="28" width="26" height="26" rx="2" class="sel-y" />
+                <path d="M31 32h6v6h-6zM43 32h6v6h-6zM31 44h6v6h-6zM43 44h2v2h-2zM47 48h2v2h-2zM43 48h2" class="ink" />
+                <path d="M72 30h8M72 30v8M100 30h-8M100 30v8M72 60h8M72 60v-8M100 60h-8M100 60v-8" class="ln" />
+                <path d="M68 45h36" class="coral" />
               </svg>
             )}
           </div>
-
-          <span class="step-num">{s.num}</span>
+          <span class="step-num">{String(s.n).padStart(2, '0')}</span>
           <h3 class="step-title">{s.title}</h3>
           <p class="step-desc">{s.desc}</p>
         </li>
       ))}
     </ol>
+
+    <SitePhotos />
   </div>
 </section>
 
@@ -91,40 +89,12 @@ const steps = [
     padding-block: clamp(4.5rem, 9vw, 8rem);
     background: var(--color-ink);
     color: var(--color-bg);
-    overflow: hidden;
-  }
-
-  /* Subtle radial accent in the background */
-  .how::before {
-    content: '';
-    position: absolute;
-    inset: -20% -20% auto auto;
-    width: 38rem;
-    height: 38rem;
-    background: radial-gradient(circle at center, color-mix(in srgb, var(--color-coral) 18%, transparent), transparent 70%);
-    filter: blur(40px);
-    pointer-events: none;
-    z-index: 0;
-  }
-
-  .container-x {
-    position: relative;
-    z-index: 1;
   }
 
   .how-header {
     margin-bottom: clamp(2.5rem, 5vw, 4rem);
     max-width: 720px;
-    opacity: 0;
-    transform: translateY(20px);
   }
-
-  .how-eyebrow {
-    color: var(--color-coral);
-    display: inline-block;
-    margin-bottom: 1rem;
-  }
-
   .how-title {
     font-size: clamp(2.5rem, 7vw, 5rem);
     margin: 0;
@@ -133,7 +103,12 @@ const steps = [
   .how-title-accent {
     color: var(--color-yellow);
     font-style: italic;
-    font-weight: 300;
+    font-weight: 400;
+  }
+  .how-lede {
+    margin: 1rem 0 0;
+    font-size: clamp(1.05rem, 2vw, 1.25rem);
+    color: color-mix(in srgb, var(--color-bg) 82%, transparent);
   }
 
   .how-steps {
@@ -141,167 +116,103 @@ const steps = [
     padding: 0;
     margin: 0;
     display: grid;
-    grid-template-columns: 1fr;
     gap: 0;
     border-top: 1px solid color-mix(in srgb, var(--color-bg) 18%, transparent);
   }
 
+  /* Mobile: illustration left, text right */
   .step {
-    /* Mobile: icon + title on same row, num right, desc full width below */
     display: grid;
-    grid-template-columns: auto 1fr auto;
+    grid-template-columns: 96px 1fr;
     grid-template-areas:
-      'icon  title  num'
-      'desc  desc   desc';
-    column-gap: 0.85rem;
-    row-gap: 0.5rem;
-    align-items: center;
-    padding: 1.25rem 0 1.5rem;
+      'art num'
+      'art title'
+      'art desc';
+    grid-template-rows: auto auto 1fr;
+    column-gap: 1.1rem;
+    row-gap: 0.3rem;
+    align-content: start;
+    padding: 1.5rem 0;
     border-bottom: 1px solid color-mix(in srgb, var(--color-bg) 18%, transparent);
-    opacity: 0;
-    transform: translateY(24px);
   }
 
-  .step-icon {
-    grid-area: icon;
-    width: 32px;
-    height: 32px;
-    color: var(--color-bg);
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
+  .step-art {
+    grid-area: art;
+    align-self: start;
+    border-radius: 14px;
+    background: color-mix(in srgb, var(--color-bg) 7%, transparent);
+    padding: 0.5rem;
   }
-  .step-icon svg {
+  .step-art svg {
+    display: block;
     width: 100%;
-    height: 100%;
+    height: auto;
+    overflow: visible;
   }
+  .step-art :is(.ln, .ink, .coral, .sel, .sel-y) {
+    fill: none;
+    stroke-width: 2.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .step-art .ln { stroke: var(--color-bg); }
+  .step-art .ink { stroke: var(--color-ink); }
+  .step-art .coral { stroke: var(--color-coral); }
+  .step-art .sel { fill: var(--color-coral); stroke: var(--color-coral); }
+  .step-art .sel-y { fill: var(--color-yellow); stroke: var(--color-yellow); }
+  .step-art .dot { fill: var(--color-bg); }
+  .step-art .dot-ink { fill: var(--color-ink); }
 
   .step-num {
     grid-area: num;
-    justify-self: end;
-    align-self: center;
-    font-size: 1.5rem;
+    font-size: 0.95rem;
     font-weight: 800;
-    letter-spacing: -0.04em;
-    line-height: 1;
+    letter-spacing: 0.02em;
+    color: var(--color-coral);
+    font-variant-numeric: tabular-nums;
   }
-  .accent-coral .step-num { color: var(--color-coral); }
-  .accent-yellow .step-num { color: var(--color-yellow); }
-
   .step-title {
     grid-area: title;
     margin: 0;
-    font-size: 1.5rem;
+    font-size: 1.3rem;
     font-weight: 800;
     letter-spacing: -0.02em;
+    line-height: 1.15;
     color: var(--color-bg);
-    line-height: 1.1;
   }
-
   .step-desc {
     grid-area: desc;
-    margin: 0;
+    margin: 0.2rem 0 0;
     max-width: 52ch;
-    color: color-mix(in srgb, var(--color-bg) 72%, transparent);
-    font-size: 0.95rem;
+    color: color-mix(in srgb, var(--color-bg) 78%, transparent);
+    font-size: 0.97rem;
     line-height: 1.5;
   }
 
-  /* Desktop — 4 columns */
+  /* Desktop: four columns, illustration on top */
   @media (min-width: 900px) {
     .how-steps {
       grid-template-columns: repeat(4, 1fr);
       border-top: none;
+      gap: clamp(1.5rem, 2.5vw, 2.5rem);
     }
     .step {
       grid-template-columns: 1fr;
       grid-template-areas:
-        'icon'
+        'art'
         'num'
         'title'
         'desc';
-      row-gap: 1.25rem;
-      /* Equal horizontal padding so content breathes around the dividers */
-      padding: 2.25rem 2.5rem 2.5rem 2.5rem;
+      grid-template-rows: auto;
+      row-gap: 0.5rem;
+      padding: 0;
       border-bottom: none;
-      border-right: 1px solid color-mix(in srgb, var(--color-bg) 18%, transparent);
-      position: relative;
     }
-    .step:first-child { padding-left: 0; }
-    .step:last-child { border-right: none; padding-right: 0; }
-    .step-num {
-      justify-self: start;
-      font-size: 3rem;
+    .step-art {
+      padding: 1.25rem 1.5rem;
+      margin-bottom: 0.9rem;
     }
-    .step-icon {
-      width: 40px;
-      height: 40px;
-    }
-    .step-title {
-      font-size: clamp(1.65rem, 3vw, 2rem);
-    }
-    .step-desc {
-      font-size: 1rem;
-    }
-  }
-
-  @media (min-width: 1100px) {
-    .step {
-      padding-block: 2.5rem 3rem;
-      padding-inline: 3rem;
-    }
-    .step:first-child { padding-left: 0; }
-    .step:last-child { padding-right: 0; }
-    .step-num {
-      font-size: 3.5rem;
-    }
+    .step-title { font-size: clamp(1.35rem, 1.9vw, 1.6rem); }
+    .step-desc { font-size: 1rem; }
   }
 </style>
-
-<script>
-  import { gsap } from 'gsap';
-  import { ScrollTrigger } from 'gsap/ScrollTrigger';
-
-  gsap.registerPlugin(ScrollTrigger);
-
-  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-  const header = document.querySelector<HTMLElement>('[data-how-anim="header"]');
-  const steps = document.querySelectorAll<HTMLElement>('[data-how-anim="step"]');
-
-  if (reduce) {
-    if (header) gsap.set(header, { opacity: 1, y: 0 });
-    gsap.set(steps, { opacity: 1, y: 0 });
-  } else {
-    // Header reveals first, slower, when the heading is well into view
-    if (header) {
-      gsap.to(header, {
-        opacity: 1,
-        y: 0,
-        duration: 1.1,
-        ease: 'power3.out',
-        scrollTrigger: {
-          trigger: header,
-          start: 'top 70%',
-          once: true,
-        },
-      });
-    }
-
-    // Steps reveal one by one, only once the steps row is well into view.
-    // Slower duration + larger stagger so the cascade is actually catchable.
-    gsap.to(steps, {
-      opacity: 1,
-      y: 0,
-      duration: 1.4,
-      ease: 'power3.out',
-      stagger: 0.28,
-      scrollTrigger: {
-        trigger: '.how-steps',
-        start: 'top 65%',
-        once: true,
-      },
-    });
-  }
-</script>

@@ -1,5 +1,6 @@
 ---
 import { useTranslations } from '../i18n/ui';
+import { PHONE_TEL, WHATSAPP_URL, EMAIL } from '../lib/site';
 
 const lang = Astro.currentLocale ?? 'en';
 const t = useTranslations(lang);
@@ -9,22 +10,22 @@ const items = [
   { q: t('faq.q2'), a: t('faq.a2') },
   { q: t('faq.q3'), a: t('faq.a3') },
   { q: t('faq.q4'), a: t('faq.a4') },
-  { q: t('faq.q5'), a: t('faq.a5') },
+  { q: t('faq.q5'), a: t('faq.a5'), contact: true },
   { q: t('faq.q6'), a: t('faq.a6') },
   { q: t('faq.q7'), a: t('faq.a7') },
+  { q: t('faq.q8'), a: t('faq.a8'), contact: true },
 ];
 ---
 
 <section class="faq" id="faq" aria-labelledby="faq-title">
   <div class="container-x faq-wrap">
-    <header class="faq-header" data-faq-anim="header">
-      <span class="eyebrow faq-eyebrow">{t('faq.eyebrow')}</span>
+    <header class="faq-header" data-faq-anim="header" data-reveal>
       <h2 id="faq-title" class="heading-display faq-title">{t('faq.title')}</h2>
     </header>
 
     <ul class="faq-list" role="list">
       {items.map((item, i) => (
-        <li class="faq-item" data-faq-anim="item">
+        <li class="faq-item" data-faq-anim="item" data-reveal>
           <button
             type="button"
             class="faq-q"
@@ -47,6 +48,13 @@ const items = [
           >
             <div class="faq-a-inner">
               <p>{item.a}</p>
+              {item.contact && (
+                <p class="faq-contact">
+                  <a href={PHONE_TEL}>{t('card.call')}</a>
+                  <a href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer">WhatsApp</a>
+                  <a href={`mailto:${EMAIL}`}>E‑mail</a>
+                </p>
+              )}
             </div>
           </div>
         </li>
@@ -62,19 +70,13 @@ const items = [
     position: relative;
   }
 
-  .faq-wrap {
-    max-width: 920px;
+  /* Aligned on the page grid like the other sections; measure kept on the list */
+  .faq-wrap > * {
+    max-width: 880px;
   }
 
   .faq-header {
     margin-bottom: clamp(2.5rem, 5vw, 3.75rem);
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  .faq-eyebrow {
-    color: var(--color-coral-dark);
-    margin-bottom: 0.85rem;
-    display: inline-block;
   }
   .faq-title {
     font-size: clamp(2.25rem, 6vw, 4.25rem);
@@ -91,8 +93,6 @@ const items = [
 
   .faq-item {
     border-bottom: 1.5px solid var(--color-ink);
-    opacity: 0;
-    transform: translateY(16px);
   }
 
   .faq-q {
@@ -114,9 +114,23 @@ const items = [
     line-height: 1.3;
     transition: color 180ms ease;
   }
-  .faq-q:hover { color: var(--color-coral); }
+  .faq-contact {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.25rem;
+    margin-top: 0.75rem;
+  }
+  .faq-contact a {
+    font-weight: 700;
+    color: var(--color-ink);
+    text-underline-offset: 3px;
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+  }
+  .faq-q:hover { color: var(--color-coral-dark); }
   .faq-q:focus-visible {
-    outline: 2px solid var(--color-coral);
+    outline: 2px solid var(--color-coral-dark);
     outline-offset: 4px;
     border-radius: 4px;
   }
@@ -143,7 +157,7 @@ const items = [
     color: var(--color-bg);
   }
   .faq-item.is-open .faq-q {
-    color: var(--color-coral);
+    color: var(--color-coral-dark);
   }
 
   .faq-a {
@@ -170,37 +184,8 @@ const items = [
 
 <script>
   import { gsap } from 'gsap';
-  import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
-  gsap.registerPlugin(ScrollTrigger);
-
-  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-  const header = document.querySelector<HTMLElement>('[data-faq-anim="header"]');
   const items = document.querySelectorAll<HTMLElement>('[data-faq-anim="item"]');
-
-  if (reduce) {
-    if (header) gsap.set(header, { opacity: 1, y: 0 });
-    gsap.set(items, { opacity: 1, y: 0 });
-  } else {
-    if (header) {
-      gsap.to(header, {
-        opacity: 1,
-        y: 0,
-        duration: 1,
-        ease: 'power3.out',
-        scrollTrigger: { trigger: header, start: 'top 80%', once: true },
-      });
-    }
-    gsap.to(items, {
-      opacity: 1,
-      y: 0,
-      duration: 0.75,
-      ease: 'power3.out',
-      stagger: 0.1,
-      scrollTrigger: { trigger: '.faq-list', start: 'top 75%', once: true },
-    });
-  }
 
   // Accordion behavior — animate height: auto via GSAP
   items.forEach((item) => {

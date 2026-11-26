@@ -1,0 +1,96 @@
+---
+import { useTranslations } from '../i18n/ui';
+import { DIRECTIONS_URL } from '../lib/site';
+
+const lang = Astro.currentLocale ?? 'en';
+const t = useTranslations(lang);
+---
+
+<section class="final" id="locations" aria-labelledby="final-title">
+  <div class="container-x final-inner">
+    <div class="final-text" data-reveal>
+      <h2 id="final-title" class="heading-display final-title">{t('final.title')}</h2>
+      <p class="final-lede">{t('final.text')}</p>
+      <a
+        href={DIRECTIONS_URL}
+        class="btn btn-primary"
+        target="_blank"
+        rel="noopener noreferrer"
+        onclick="if(window.gtag){window.gtag('event','get_directions_click',{event_category:'engagement',event_label:'final_cta'});}"
+      >
+        {t('cta.directions')}
+        <svg class="final-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17 17 7M9 7h8v8" /></svg>
+      </a>
+      <p class="final-soon">{t('final.soon')}</p>
+    </div>
+
+    <div class="final-map" data-reveal>
+      <iframe
+        title={lang === 'fr' ? 'Carte : Consign, 67 rue de Cléry, Paris' : 'Map: Consign, 67 rue de Cléry, Paris'}
+        src="https://maps.google.com/maps?q=67%20rue%20de%20Cl%C3%A9ry%2075002%20Paris&t=&z=16&ie=UTF8&iwloc=&output=embed"
+        loading="lazy"
+        referrerpolicy="no-referrer-when-downgrade"
+        allowfullscreen
+      ></iframe>
+    </div>
+  </div>
+</section>
+
+<style>
+  .final {
+    padding-block: clamp(4rem, 8vw, 7rem);
+    background: var(--color-yellow-soft);
+    border-top: 1.5px solid var(--color-ink);
+  }
+  .final-inner {
+    display: grid;
+    gap: 2rem;
+    align-items: center;
+  }
+  @media (min-width: 900px) {
+    .final-inner {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
+      gap: clamp(2.5rem, 5vw, 5rem);
+    }
+  }
+  .final-title {
+    font-size: clamp(2.25rem, 5.5vw, 4rem);
+    margin: 0 0 1rem;
+    text-wrap: balance;
+    color: var(--color-ink);
+  }
+  .final-lede {
+    margin: 0 0 1.75rem;
+    max-width: 42ch;
+    font-size: clamp(1.05rem, 1.8vw, 1.2rem);
+    line-height: 1.5;
+    color: var(--color-ink-soft);
+  }
+  .final-icon {
+    width: 1.05em;
+    height: 1.05em;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2.25;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .final-soon {
+    margin: 1.5rem 0 0;
+    font-size: 0.92rem;
+    color: var(--color-ink-soft);
+  }
+  .final-map {
+    border: 1.5px solid var(--color-ink);
+    border-radius: 22px;
+    overflow: hidden;
+    aspect-ratio: 4 / 3;
+    background: var(--color-bg-warm);
+  }
+  .final-map iframe {
+    width: 100%;
+    height: 100%;
+    border: 0;
+    display: block;
+  }
+</style>

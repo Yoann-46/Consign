@@ -1,0 +1,12 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import LegalPage from '../../components/LegalPage.astro';
+import { legal } from '../../content-legal/legal';
+
+const l = legal.fr;
+const page = l.privacy;
+---
+
+<Layout title={`${page.title} — Consign`} description={page.intro} noindex>
+  <LegalPage title={page.title} updated={page.updated} intro={page.intro} sections={page.sections as any} todoLabel={l.todoLabel} />
+</Layout>
