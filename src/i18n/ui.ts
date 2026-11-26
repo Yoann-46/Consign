@@ -29,12 +29,12 @@ export const ui = {
     'cta.seeLocker': 'See the locker',
     'card.title': 'The locker',
     'card.where': 'Inside a self-service laundromat',
-    'card.metro': 'Sentier, line 3 · 2 min walk',
+    'card.metro': 'Sentier, line 3 · 2 min walk',
     'card.hours': '7am–10pm, every day',
     'card.prices': 'Prices',
     'card.size': 'Size',
-    'card.half': "Half-day · 4 h",
-    'card.day': "Day · 24 h",
+    'card.half': "Half-day · 4 h",
+    'card.day': "Day · 24 h",
     'card.medium': 'Medium',
     'card.large': 'Large',
     'card.pay': 'Pay by card at the machine · Visa, Mastercard, Amex · no cash',
@@ -63,7 +63,7 @@ export const ui = {
     'hero.stat.uptime': '7am–10pm',
     'hero.stat.uptime.label': 'Every day',
     'hero.stat.from': "From €6",
-    'hero.stat.from.label': "Medium · 4 h",
+    'hero.stat.from.label': "Medium · 4 h",
     'hero.stat.location': 'By card',
     'hero.stat.location.label': 'Visa · MC · Amex',
 
@@ -75,7 +75,7 @@ export const ui = {
     'faq.q2': 'Is my luggage really safe?',
     'faq.a2': 'Yes. Each locker is built like a smart safe: sealed, with tamper detection. Only the QR code emailed to you opens it. The location is monitored.',
     'faq.q3': 'What sizes of luggage fit?',
-    'faq.a3': "Two sizes. Medium (45 × 55 × 33 cm): 1 carry-on suitcase. Large (45 × 55 × 85 cm): 1 checked suitcase or up to 3 carry-on suitcases. Your bags must fit without forcing the door.",
+    'faq.a3': "Two sizes. Medium (45 × 55 × 33 cm): 1 carry-on suitcase. Large (45 × 55 × 85 cm): 1 checked suitcase or up to 3 carry-on suitcases. Your bags must fit without forcing the door.",
     'faq.q4': 'How long can I leave my luggage?',
     'faq.a4': "Choose at the machine: a half-day (up to 4 hours) or a day (24 hours). The maximum rental period is 2 months.",
     'faq.q5': "What if I'm late picking up?",
@@ -102,7 +102,7 @@ export const ui = {
     'how.title.accent': "That's it.",
     'how.lede': 'Everything happens at the machine, in about 2 minutes.',
     'how.step1.title': 'Choose a size',
-    'how.step1.desc': "Medium (45 × 55 × 33 cm) for 1 carry-on suitcase, Large (45 × 55 × 85 cm) for 1 checked suitcase or up to 3 carry-ons.",
+    'how.step1.desc': "Medium (45 × 55 × 33 cm) for 1 carry-on suitcase, Large (45 × 55 × 85 cm) for 1 checked suitcase or up to 3 carry-ons.",
     'how.step2.title': 'Choose a duration',
     'how.step2.desc': "A half-day (up to 4 hours) or a day (24 hours).",
     'how.step3.title': 'Pay by card',
@@ -124,7 +124,7 @@ export const ui = {
       'Questions, lost items, partnership ideas: we read everything and reply within 24 hours.',
     'contact.method.email.label': 'Email',
     'contact.method.email.value': "contact@consignlocker.com",
-    'contact.method.email.hint': 'Reply within 24 h',
+    'contact.method.email.hint': 'Reply within 24 h',
     'contact.method.whatsapp.label': 'WhatsApp',
     'contact.method.whatsapp.value': '+33 6 14 01 04 48',
     'contact.method.whatsapp.hint': 'For urgent stuff',
@@ -151,13 +151,13 @@ export const ui = {
     'pricing.title.accent': 'transparent.',
     'pricing.subtitle': 'Choose the locker size and duration that suits your day. No hidden fees, no surprises.',
     'pricing.locker.m': 'Medium locker',
-    'pricing.locker.m.dims': '45 × 55 × 33 cm',
+    'pricing.locker.m.dims': '45 × 55 × 33 cm',
     'pricing.locker.m.fit': "1 carry-on suitcase",
     'pricing.locker.l': 'Large locker',
-    'pricing.locker.l.dims': '45 × 55 × 85 cm',
+    'pricing.locker.l.dims': '45 × 55 × 85 cm',
     'pricing.locker.l.fit': "1 checked suitcase or up to 3 carry-ons",
-    'pricing.slot.half': "Half-day · up to 4 h",
-    'pricing.slot.day': "Day · 24 h",
+    'pricing.slot.half': "Half-day · up to 4 h",
+    'pricing.slot.day': "Day · 24 h",
     'pricing.popular': 'Most popular',
     'pricing.note': "Prices include all taxes. Pay by card at the machine, no account needed.",
     'pricing.cta': 'Directions',
@@ -181,7 +181,7 @@ export const ui = {
   fr: {
     // Meta
     'meta.title': 'Consign — Paris, les mains libres.',
-    'meta.description': "Consigne à bagages au cœur de Paris, 67 rue de Cléry, ouverte 7h–22h. Casier Moyen dès 6 € jusqu’à 4 h, paiement par carte à la machine. Sans appli, sans réservation, sans queue.",
+    'meta.description': "Consigne à bagages au cœur de Paris, 67 rue de Cléry, ouverte 7h–22h. Casier Moyen dès 6 € jusqu’à 4 h, paiement par carte à la machine. Sans appli, sans réservation, sans queue.",
 
     // Nav
     'nav.how': 'Comment ça marche',
@@ -194,17 +194,17 @@ export const ui = {
     'cta.seeLocker': 'Voir le casier',
     'card.title': 'Le casier',
     'card.where': 'Dans une laverie en libre-service',
-    'card.metro': 'Sentier, ligne 3 · 2 min à pied',
+    'card.metro': 'Sentier, ligne 3 · 2 min à pied',
     'card.hours': '7h–22h, tous les jours',
     'card.prices': 'Tarifs',
     'card.size': 'Taille',
-    'card.half': "Demi-journée · 4 h",
-    'card.day': "Journée · 24 h",
+    'card.half': "Demi-journée · 4 h",
+    'card.day': "Journée · 24 h",
     'card.medium': 'Moyen',
     'card.large': 'Grand',
     'card.pay': 'Paiement par carte à la machine · Visa, Mastercard, Amex · pas d’espèces',
     'card.allPrices': 'Tous les tarifs',
-    'card.help': 'Besoin d’aide ?',
+    'card.help': 'Besoin d’aide ?',
     'card.call': 'Appeler',
     'card.live.loading': 'On compte les casiers libres…',
     'card.live.free': '{n} casiers libres en ce moment',
@@ -212,8 +212,8 @@ export const ui = {
     'card.live.none': 'Tous les casiers sont pris en ce moment',
     'card.live.error': 'Voir la disponibilité en direct',
     'final.title': 'Rendez-vous au 67 rue de Cléry.',
-    'final.text': 'Sentier, Paris 2e. Ouvert 7h–22h, tous les jours. Venez, choisissez une taille, payez par carte : 2 minutes.',
-    'final.soon': 'Plus tard : Le Marais, Quartier Latin, Montmartre, Gare du Nord.',
+    'final.text': 'Sentier, Paris 2e. Ouvert 7h–22h, tous les jours. Venez, choisissez une taille, payez par carte : 2 minutes.',
+    'final.soon': 'Plus tard : Le Marais, Quartier Latin, Montmartre, Gare du Nord.',
 
     // Hero — slogan stays EN per brand decision
     'hero.eyebrow': 'Paris · Sentier · 7h–22h',
@@ -227,29 +227,29 @@ export const ui = {
     'hero.cta.secondary': 'Comment ça marche',
     'hero.stat.uptime': '7h–22h',
     'hero.stat.uptime.label': 'Tous les jours',
-    'hero.stat.from': "Dès 6 €",
-    'hero.stat.from.label': "Moyen · 4 h",
+    'hero.stat.from': "Dès 6 €",
+    'hero.stat.from.label': "Moyen · 4 h",
     'hero.stat.location': 'Par carte',
     'hero.stat.location.label': 'Visa · MC · Amex',
 
     // FAQ
     'faq.eyebrow': 'FAQ',
     'faq.title': 'Bon à savoir.',
-    'faq.q1': 'Comment ça marche ?',
-    'faq.a1': "Venez au 67 rue de Cléry (dans une laverie en libre-service). Sur la machine, choisissez la taille du casier et la durée, puis payez par carte : le casier s’ouvre. Déposez vos bagages et fermez la porte. Vous recevez un QR code par e‑mail : scannez-le à la machine pour récupérer vos bagages. Ouvert tous les jours, 7h–22h.",
-    'faq.q2': 'Mes bagages sont-ils vraiment en sécurité ?',
-    'faq.a2': "Oui. Chaque casier est conçu comme un coffre-fort connecté : scellé, avec détection de manipulation. Seul le QR code reçu par e‑mail ouvre le vôtre. Le lieu est surveillé.",
-    'faq.q3': 'Quelles tailles de bagages acceptez-vous ?',
-    'faq.a3': "Deux tailles. Moyen (45 × 55 × 33 cm) : 1 valise cabine. Grand (45 × 55 × 85 cm) : 1 valise soute ou jusqu’à 3 valises cabine. Vos bagages doivent entrer sans forcer la porte.",
-    'faq.q4': 'Combien de temps puis-je laisser mes bagages ?',
-    'faq.a4': "Vous choisissez à la machine : une demi-journée (jusqu’à 4 heures) ou une journée (24 heures). La durée maximale de location est de 2 mois.",
-    'faq.q5': 'Que se passe-t-il si je suis en retard ?',
-    'faq.a5': "Votre casier reste fermé jusqu’à votre retour. Si une demi-journée dépasse 4 heures, elle devient une journée et la différence est débitée sur la même carte. Si une journée dépasse 24 heures, une journée supplémentaire est facturée pour chaque nouvelle période de 24 heures entamée. Le casier n’est accessible que pendant l’ouverture de la laverie, 7h–22h.",
-    'faq.q6': 'Faut-il réserver ?',
-    'faq.a6': "Non. Pas d’appli ni de réservation en ligne : venez, choisissez une taille et une durée à la machine, payez par carte. Comptez 2 minutes.",
-    'faq.q8': 'Un problème ? Qui contacter ?',
+    'faq.q1': 'Comment ça marche ?',
+    'faq.a1': "Venez au 67 rue de Cléry (dans une laverie en libre-service). Sur la machine, choisissez la taille du casier et la durée, puis payez par carte : le casier s’ouvre. Déposez vos bagages et fermez la porte. Vous recevez un QR code par e‑mail : scannez-le à la machine pour récupérer vos bagages. Ouvert tous les jours, 7h–22h.",
+    'faq.q2': 'Mes bagages sont-ils vraiment en sécurité ?',
+    'faq.a2': "Oui. Chaque casier est conçu comme un coffre-fort connecté : scellé, avec détection de manipulation. Seul le QR code reçu par e‑mail ouvre le vôtre. Le lieu est surveillé.",
+    'faq.q3': 'Quelles tailles de bagages acceptez-vous ?',
+    'faq.a3': "Deux tailles. Moyen (45 × 55 × 33 cm) : 1 valise cabine. Grand (45 × 55 × 85 cm) : 1 valise soute ou jusqu’à 3 valises cabine. Vos bagages doivent entrer sans forcer la porte.",
+    'faq.q4': 'Combien de temps puis-je laisser mes bagages ?',
+    'faq.a4': "Vous choisissez à la machine : une demi-journée (jusqu’à 4 heures) ou une journée (24 heures). La durée maximale de location est de 2 mois.",
+    'faq.q5': 'Que se passe-t-il si je suis en retard ?',
+    'faq.a5': "Votre casier reste fermé jusqu’à votre retour. Si une demi-journée dépasse 4 heures, elle devient une journée et la différence est débitée sur la même carte. Si une journée dépasse 24 heures, une journée supplémentaire est facturée pour chaque nouvelle période de 24 heures entamée. Le casier n’est accessible que pendant l’ouverture de la laverie, 7h–22h.",
+    'faq.q6': 'Faut-il réserver ?',
+    'faq.a6': "Non. Pas d’appli ni de réservation en ligne : venez, choisissez une taille et une durée à la machine, payez par carte. Comptez 2 minutes.",
+    'faq.q8': 'Un problème ? Qui contacter ?',
     'faq.a8': "Appelez-nous ou écrivez-nous sur WhatsApp au +33 6 14 01 04 48, ou par e‑mail à contact@consignlocker.com.",
-    'faq.q7': 'Quels moyens de paiement acceptez-vous ?',
+    'faq.q7': 'Quels moyens de paiement acceptez-vous ?',
     'faq.a7': "Carte bancaire et paiement sans contact directement sur la machine. Visa, Mastercard et Amex acceptés. Pas d'espèces, pas d'application nécessaire.",
 
     // Reviews
@@ -267,29 +267,29 @@ export const ui = {
     'how.title.accent': "C'est tout.",
     'how.lede': 'Tout se passe à la machine, en 2 minutes environ.',
     'how.step1.title': 'Choisir la taille',
-    'how.step1.desc': "Moyen (45 × 55 × 33 cm) pour 1 valise cabine, Grand (45 × 55 × 85 cm) pour 1 valise soute ou jusqu’à 3 valises cabine.",
+    'how.step1.desc': "Moyen (45 × 55 × 33 cm) pour 1 valise cabine, Grand (45 × 55 × 85 cm) pour 1 valise soute ou jusqu’à 3 valises cabine.",
     'how.step2.title': 'Choisir la durée',
-    'how.step2.desc': "Une demi-journée (jusqu’à 4 heures) ou une journée (24 heures).",
+    'how.step2.desc': "Une demi-journée (jusqu’à 4 heures) ou une journée (24 heures).",
     'how.step3.title': 'Payer par carte',
-    'how.step3.desc': 'Visa, Mastercard ou Amex, sans contact possible. Le casier s’ouvre : déposez vos bagages et fermez la porte.',
+    'how.step3.desc': 'Visa, Mastercard ou Amex, sans contact possible. Le casier s’ouvre : déposez vos bagages et fermez la porte.',
     'how.step4.title': 'Scanner pour récupérer',
     'how.step4.desc': "Vous recevez un QR code par e‑mail. Scannez-le à la machine pour rouvrir votre casier, pendant les heures d’ouverture (7h–22h).",
     'photos.title': 'Sur place',
     'photos.storefront': 'La laverie du 67 rue de Cléry',
-    'photos.machine': 'La machine : choisir, payer, scanner',
+    'photos.machine': 'La machine : choisir, payer, scanner',
     'photos.locker': 'Un casier Grand, valise à l’intérieur',
 
     // Contact page
     'contact.meta.title': 'Contact — Consign',
     'contact.meta.description':
-      "Questions, objets oubliés, idées de partenariat : contactez l'équipe Consign.",
+      "Questions, objets oubliés, idées de partenariat : contactez l'équipe Consign.",
     'contact.eyebrow': 'Contact',
     'contact.title': 'Contactez-nous.',
     'contact.subtitle':
-      "Questions, objets oubliés, idées de partenariat : on lit tout et on répond sous 24h.",
+      "Questions, objets oubliés, idées de partenariat : on lit tout et on répond sous 24h.",
     'contact.method.email.label': 'Email',
     'contact.method.email.value': "contact@consignlocker.com",
-    'contact.method.email.hint': 'Réponse sous 24 h',
+    'contact.method.email.hint': 'Réponse sous 24 h',
     'contact.method.whatsapp.label': 'WhatsApp',
     'contact.method.whatsapp.value': '+33 6 14 01 04 48',
     'contact.method.whatsapp.hint': 'Pour les urgences',
@@ -310,23 +310,23 @@ export const ui = {
 
     // Pricing page
     'pricing.meta.title': 'Tarifs — Consign',
-    'pricing.meta.description': "Les tarifs de la consigne à bagages à Paris. Casiers Moyen et Grand, à la demi-journée (jusqu’à 4 h) ou à la journée (24 h), toutes taxes comprises.",
+    'pricing.meta.description': "Les tarifs de la consigne à bagages à Paris. Casiers Moyen et Grand, à la demi-journée (jusqu’à 4 h) ou à la journée (24 h), toutes taxes comprises.",
     'pricing.eyebrow': 'Tarifs',
     'pricing.title': 'Simple,',
     'pricing.title.accent': 'transparent.',
     'pricing.subtitle': 'Choisissez la taille et la durée qui conviennent à votre journée. Pas de frais cachés, pas de mauvaises surprises.',
     'pricing.locker.m': 'Casier Moyen',
-    'pricing.locker.m.dims': '45 × 55 × 33 cm',
-    'pricing.locker.m.fit': "1 valise cabine",
+    'pricing.locker.m.dims': '45 × 55 × 33 cm',
+    'pricing.locker.m.fit': "1 valise cabine",
     'pricing.locker.l': 'Casier Grand',
-    'pricing.locker.l.dims': '45 × 55 × 85 cm',
-    'pricing.locker.l.fit': "1 valise soute ou jusqu’à 3 valises cabine",
-    'pricing.slot.half': "Demi-journée · jusqu’à 4 h",
-    'pricing.slot.day': "Journée · 24 h",
+    'pricing.locker.l.dims': '45 × 55 × 85 cm',
+    'pricing.locker.l.fit': "1 valise soute ou jusqu’à 3 valises cabine",
+    'pricing.slot.half': "Demi-journée · jusqu’à 4 h",
+    'pricing.slot.day': "Journée · 24 h",
     'pricing.popular': 'Le plus choisi',
     'pricing.note': "Prix toutes taxes comprises. Paiement par carte à la machine, sans compte.",
     'pricing.cta': 'Itinéraire',
-    'pricing.faq.link': 'Des questions ? Consultez la FAQ',
+    'pricing.faq.link': 'Des questions ? Consultez la FAQ',
 
     // Footer
     'footer.tagline': 'Paris, les mains libres.',
@@ -354,7 +354,7 @@ export type UIKey = keyof (typeof ui)['en'];
  *                 <h1>{t('hero.title.a')}</h1>
  */
 export function useTranslations(lang: string | undefined) {
-  const resolved: Lang = (lang === 'fr' ? 'fr' : 'en');
+  const resolved: Lang = (lang === 'fr' ? 'fr' : 'en');
   return function t(key: UIKey): string {
     return ui[resolved][key] ?? ui[defaultLang][key];
   };
@@ -365,9 +365,9 @@ export function useTranslations(lang: string | undefined) {
  * EN routes have no prefix (/, /business), FR routes are prefixed (/fr/, /fr/pro).
  */
 export function localizedPath(lang: string | undefined, path: string): string {
-  const cleanPath = path.startsWith('/') ? path : `/${path}`;
+  const cleanPath = path.startsWith('/') ? path : `/${path}`;
   if (lang === 'fr') {
-    return `/fr${cleanPath === '/' ? '' : cleanPath}`;
+    return `/fr${cleanPath === '/' ? '' : cleanPath}`;
   }
   return cleanPath;
 }

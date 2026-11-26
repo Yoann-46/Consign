@@ -26,25 +26,28 @@ const steps = [1, 2, 3, 4].map((n) => ({
         <li class="step" data-reveal>
           <div class="step-art" aria-hidden="true">
             {s.n === 1 && (
-              /* Two locker doors: Medium (short) and Large (tall, selected) */
+              /* Two suitcases: carry-on (Medium) and tall checked suitcase (Large, selected) */
               <svg viewBox="0 0 120 90">
-                <rect x="22" y="40" width="34" height="40" rx="4" class="ln" />
-                <circle cx="49" cy="60" r="1.8" class="dot" />
-                <rect x="64" y="10" width="34" height="70" rx="4" class="sel" />
-                <circle cx="91" cy="45" r="1.8" class="dot-ink" />
-                <path d="M14 80h92" class="ln" />
+                <path d="M35 44v-7h10v7" class="ln" />
+                <rect x="25" y="44" width="30" height="34" rx="5" class="ln" />
+                <path d="M35 52v18M45 52v18" class="ln" />
+                <circle cx="31" cy="83" r="2" class="ln" />
+                <circle cx="49" cy="83" r="2" class="ln" />
+                <path d="M73 18v-9h14v9" class="ln" />
+                <rect x="62" y="18" width="36" height="60" rx="6" class="sel" />
+                <path d="M74 28v40M86 28v40" class="ink" />
+                <circle cx="69" cy="83" r="2" class="ln" />
+                <circle cx="91" cy="83" r="2" class="ln" />
               </svg>
             )}
             {s.n === 2 && (
-              /* Screen with three duration choices, the last one selected */
+              /* Stopwatch with a highlighted duration sector */
               <svg viewBox="0 0 120 90">
-                <rect x="14" y="8" width="92" height="66" rx="8" class="ln" />
-                <circle cx="60" cy="26" r="8" class="ln" />
-                <path d="M60 21.5V26l3 2" class="ln" />
-                <rect x="22" y="46" width="22" height="16" rx="5" class="ln" />
-                <rect x="49" y="46" width="22" height="16" rx="5" class="ln" />
-                <rect x="76" y="46" width="22" height="16" rx="5" class="sel-y" />
-                <path d="M48 74l-4 10M72 74l4 10" class="ln" />
+                <path d="M53 10h14M60 10v8M83 22l5-5" class="ln" />
+                <path d="M60 50L60 26A24 24 0 0 1 80.78 62Z" class="sel-y" />
+                <circle cx="60" cy="50" r="30" class="ln" />
+                <path d="M60 50V30" class="ln" />
+                <circle cx="60" cy="50" r="3" class="dot" />
               </svg>
             )}
             {s.n === 3 && (
