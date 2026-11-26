@@ -1,6 +1,6 @@
 ---
 import { useTranslations } from '../i18n/ui';
-import { GOOGLE_REVIEWS_COUNT } from '../lib/site';
+import { GOOGLE_REVIEWS_COUNT, GOOGLE_PLACE_URL } from '../lib/site';
 
 const lang = Astro.currentLocale ?? 'en';
 const t = useTranslations(lang);
@@ -37,7 +37,7 @@ const t = useTranslations(lang);
 
     <div class="reviews-foot" data-rev-anim="foot" data-reveal>
       <a
-        href="https://www.google.com/maps/search/?api=1&query=Consign+67+rue+de+Cl%C3%A9ry+75002+Paris"
+        href={GOOGLE_PLACE_URL}
         class="btn btn-ghost reviews-cta"
         target="_blank"
         rel="noopener noreferrer"

@@ -1,9 +1,10 @@
 ---
 import { useTranslations, localizedPath } from '../i18n/ui';
-import { DIRECTIONS_URL } from '../lib/site';
+import { DIRECTIONS_URL, PRICES } from '../lib/site';
 
 const lang = Astro.currentLocale ?? 'en';
 const t = useTranslations(lang);
+const eur = (n: number) => (lang === 'fr' ? `${n} €` : `€${n}`);
 
 const lockers = [
   {
@@ -13,9 +14,8 @@ const lockers = [
     fit: t('pricing.locker.m.fit'),
     icon: 'bag',
     rows: [
-      { slot: t('pricing.slot.3h'), price: '€7', popular: false },
-      { slot: t('pricing.slot.4h'), price: '€9', popular: false },
-      { slot: t('pricing.slot.day'), price: '€11', popular: true },
+      { slot: t('pricing.slot.half'), price: eur(PRICES.m.half), popular: false },
+      { slot: t('pricing.slot.day'), price: eur(PRICES.m.day), popular: true },
     ],
   },
   {
@@ -25,9 +25,8 @@ const lockers = [
     fit: t('pricing.locker.l.fit'),
     icon: 'suitcase',
     rows: [
-      { slot: t('pricing.slot.3h'), price: '€9', popular: false },
-      { slot: t('pricing.slot.4h'), price: '€11', popular: false },
-      { slot: t('pricing.slot.day'), price: '€13', popular: true },
+      { slot: t('pricing.slot.half'), price: eur(PRICES.l.half), popular: false },
+      { slot: t('pricing.slot.day'), price: eur(PRICES.l.day), popular: true },
     ],
   },
 ] as const;
