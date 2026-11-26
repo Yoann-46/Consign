@@ -1,11 +1,13 @@
 ---
 import { useTranslations } from '../i18n/ui';
-import { GOOGLE_REVIEWS_COUNT, GOOGLE_PLACE_URL } from '../lib/site';
+import { GOOGLE_RATING, GOOGLE_REVIEWS_COUNT, GOOGLE_PLACE_URL } from '../lib/site';
 
 const lang = Astro.currentLocale ?? 'en';
 const t = useTranslations(lang);
 
-// Real reviews live on Google; only the aggregate rating is shown here.
+// Rating, count and up to 5 real Google reviews, loaded from /api/reviews
+// (cached a day). The static values are a fallback if the API is down.
+const fmtRating = (r: number) => (lang === 'fr' ? r.toFixed(1).replace('.', ',') : r.toFixed(1));
 ---
 
 <section class="reviews" id="reviews" aria-labelledby="reviews-title">
@@ -13,7 +15,7 @@ const t = useTranslations(lang);
     <header class="reviews-header" data-rev-anim="header" data-reveal>
       <h2 id="reviews-title" class="heading-display reviews-title">{t('reviews.title')}</h2>
 
-      <div class="reviews-rating" aria-label={t('reviews.rating.aria')}>
+      <div class="reviews-rating">
         <span class="rating-stars" aria-hidden="true">
           {Array.from({ length: 5 }).map(() => (
             <svg viewBox="0 0 24 24" fill="currentColor">
@@ -21,7 +23,7 @@ const t = useTranslations(lang);
             </svg>
           ))}
         </span>
-        <span class="rating-value">5.0</span>
+        <span class="rating-value" id="rev-rating">{fmtRating(GOOGLE_RATING)}</span>
         <span class="rating-google" aria-hidden="true">
           <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
             <path fill="#4285F4" d="M23.49 12.27c0-.79-.07-1.54-.19-2.27H12v4.51h6.45c-.28 1.45-1.13 2.68-2.4 3.5v2.91h3.87c2.26-2.08 3.57-5.15 3.57-8.65z" />
@@ -31,9 +33,18 @@ const t = useTranslations(lang);
           </svg>
           <span class="sr-only">Google</span>
         </span>
-        <span class="rating-label">{t('reviews.rating.label')} · {t('reviews.count').replace('{n}', String(GOOGLE_REVIEWS_COUNT))}</span>
+        <span class="rating-label">{t('reviews.rating.label')} · <span id="rev-count">{t('reviews.count').replace('{n}', String(GOOGLE_REVIEWS_COUNT))}</span></span>
       </div>
     </header>
+
+    <ul
+      class="reviews-list"
+      id="rev-list"
+      hidden
+      data-lang={lang}
+      data-count={t('reviews.count')}
+      data-source={t('reviews.source')}
+    ></ul>
 
     <div class="reviews-foot" data-rev-anim="foot" data-reveal>
       <a
@@ -123,6 +134,62 @@ const t = useTranslations(lang);
     font-weight: 500;
   }
 
+  /* Review cards (filled by the script below) */
+  .reviews-list {
+    list-style: none;
+    margin: 0 0 2rem;
+    padding: 0;
+    display: grid;
+    gap: 1rem;
+  }
+  @media (min-width: 700px) {
+    .reviews-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+  @media (min-width: 1100px) {
+    .reviews-list { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  }
+  .reviews-list :global(.rev) {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    padding: 1.35rem 1.4rem 1.2rem;
+    background: var(--color-bg);
+    border: 1.5px solid var(--color-ink);
+    border-radius: 18px;
+  }
+  .reviews-list :global(.rev-stars) {
+    color: var(--color-coral);
+    letter-spacing: 0.1em;
+    font-size: 0.95rem;
+  }
+  .reviews-list :global(.rev-text) {
+    margin: 0;
+    color: var(--color-ink);
+    line-height: 1.55;
+    display: -webkit-box;
+    -webkit-line-clamp: 7;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    flex-grow: 1;
+  }
+  .reviews-list :global(.rev-meta) {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.25rem 0.5rem;
+    padding-top: 0.7rem;
+    border-top: 1px solid var(--color-rule);
+    font-size: 0.85rem;
+    color: var(--color-ink-faint);
+  }
+  .reviews-list :global(.rev-author) {
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: var(--color-ink);
+    text-decoration: none;
+  }
+  .reviews-list :global(a.rev-author:hover) { text-decoration: underline; }
+
   /* Footer CTA */
   .reviews-foot {
     display: flex;
@@ -131,3 +198,58 @@ const t = useTranslations(lang);
 
 </style>
 
+
+<script>
+  type Rev = { rating: number | null; text: string; author: string; authorUri: string | null; publishTime: string | null };
+  const list = document.getElementById('rev-list') as HTMLUListElement | null;
+  if (list) {
+    const lang = list.dataset.lang === 'fr' ? 'fr' : 'en';
+    const rtf = new Intl.RelativeTimeFormat(lang, { numeric: 'auto' });
+    const ago = (iso: string | null) => {
+      if (!iso) return '';
+      const days = Math.round((Date.parse(iso) - Date.now()) / 86_400_000);
+      if (Math.abs(days) < 7) return rtf.format(days, 'day');
+      if (Math.abs(days) < 30) return rtf.format(Math.round(days / 7), 'week');
+      if (Math.abs(days) < 365) return rtf.format(Math.round(days / 30), 'month');
+      return rtf.format(Math.round(days / 365), 'year');
+    };
+    const el = (tag: string, cls: string, text?: string) => {
+      const e = document.createElement(tag);
+      e.className = cls;
+      if (text != null) e.textContent = text;
+      return e;
+    };
+    fetch('/api/reviews')
+      .then((r) => (r.ok ? r.json() : Promise.reject(r.status)))
+      .then((d: { rating: number | null; count: number | null; reviews: Rev[] }) => {
+        if (typeof d.rating === 'number') {
+          const v = d.rating.toFixed(1);
+          document.getElementById('rev-rating')!.textContent = lang === 'fr' ? v.replace('.', ',') : v;
+        }
+        if (typeof d.count === 'number') {
+          document.getElementById('rev-count')!.textContent = list.dataset.count!.replace('{n}', String(d.count));
+        }
+        const reviews = (d.reviews ?? []).filter((r) => r.text);
+        if (!reviews.length) return;
+        for (const r of reviews) {
+          const li = el('li', 'rev');
+          const n = Math.max(0, Math.min(5, Math.round(r.rating ?? 5)));
+          const stars = el('span', 'rev-stars', '★'.repeat(n) + '☆'.repeat(5 - n));
+          stars.setAttribute('aria-label', `${n}/5`);
+          li.append(stars, el('p', 'rev-text', r.text));
+          const meta = el('p', 'rev-meta');
+          const author = r.authorUri ? (el('a', 'rev-author', r.author) as HTMLAnchorElement) : el('span', 'rev-author', r.author);
+          if (r.authorUri) {
+            (author as HTMLAnchorElement).href = r.authorUri;
+            (author as HTMLAnchorElement).target = '_blank';
+            (author as HTMLAnchorElement).rel = 'noopener noreferrer';
+          }
+          meta.append(author, el('span', '', `${list.dataset.source} · ${ago(r.publishTime)}`));
+          li.append(meta);
+          list.append(li);
+        }
+        list.hidden = false;
+      })
+      .catch(() => {});
+  }
+</script>

@@ -94,6 +94,7 @@ export const ui = {
     'reviews.count': '{n} reviews',
     'reviews.rating.aria': '5 out of 5 stars',
     'reviews.cta': 'See all reviews on Google',
+    'reviews.source': 'Google review',
     'reviews.visited': 'Visited',
 
     // How it works
@@ -259,6 +260,7 @@ export const ui = {
     'reviews.count': '{n} avis',
     'reviews.rating.aria': '5 étoiles sur 5',
     'reviews.cta': 'Voir tous les avis sur Google',
+    'reviews.source': 'Avis Google',
     'reviews.visited': 'Visité',
 
     // How it works

@@ -14,7 +14,9 @@ export const PHONE_DISPLAY = '+33 6 14 01 04 48';
 export const PHONE_TEL = 'tel:+33614010448';
 export const WHATSAPP_URL = 'https://wa.me/33614010448';
 export const EMAIL = 'contact@consignlocker.com';
-export const GOOGLE_REVIEWS_COUNT = 61;
+/** Fallback values; the live ones come from /api/reviews. */
+export const GOOGLE_RATING = 4.9;
+export const GOOGLE_REVIEWS_COUNT = 64;
 /** Google Maps place page (reviews). */
 export const GOOGLE_PLACE_URL =
   'https://maps.google.com/?cid=8880977725920845078';
