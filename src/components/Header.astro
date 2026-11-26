@@ -29,7 +29,6 @@ const ha = (hash: string) => (lang === 'fr' ? '/fr' : '') + '/#' + hash;
       <a href={localizedPath(lang, '/pricing')}>{t('nav.pricing')}</a>
       <a href={ha('locations')}>{t('nav.locations')}</a>
       <a href={ha('faq')}>{t('nav.faq')}</a>
-      <a href={localizedPath(lang, '/business')}>{t('nav.business')}</a>
     </nav>
 
     <div class="header-actions">
@@ -53,7 +52,6 @@ const ha = (hash: string) => (lang === 'fr' ? '/fr' : '') + '/#' + hash;
       <a href={localizedPath(lang, '/pricing')}>{t('nav.pricing')}</a>
       <a href={ha('locations')}>{t('nav.locations')}</a>
       <a href={ha('faq')}>{t('nav.faq')}</a>
-      <a href={localizedPath(lang, '/business')}>{t('nav.business')}</a>
       <a href={localizedPath(lang, '/contact')}>{t('nav.contact')}</a>
       <div class="mobile-cta-row">
         <a href={otherLangPath} class="lang-switch">{otherLangLabel}</a>

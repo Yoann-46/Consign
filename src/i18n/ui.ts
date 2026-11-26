@@ -24,7 +24,6 @@ export const ui = {
     'nav.locations': 'Locations',
 
     'nav.faq': 'FAQ',
-    'nav.business': 'For business',
     'nav.contact': 'Contact',
     'nav.cta': 'Directions',
     'cta.directions': 'Directions',
@@ -45,8 +44,8 @@ export const ui = {
     'card.help': 'Need help?',
     'card.call': 'Call',
     'card.live.loading': 'Checking free lockers…',
-    'card.live.free': '{n} of {t} lockers free right now',
-    'card.live.free1': '1 of {t} lockers free right now',
+    'card.live.free': '{n} lockers free right now',
+    'card.live.free1': '1 locker free right now',
     'card.live.none': 'All lockers taken right now',
     'card.live.error': 'Check live availability',
     'final.title': 'See you at 67 rue de Cléry.',
@@ -70,31 +69,6 @@ export const ui = {
     'hero.stat.location': 'By card',
     'hero.stat.location.label': 'Visa · MC · Amex',
 
-    // 10 Reasons
-    'reasons.eyebrow': '10 reasons',
-    'reasons.title': '10 reasons',
-    'reasons.title.accent': 'to trust us.',
-    'reasons.r1.title': 'Open 7am – 10pm',
-    'reasons.r1.desc': 'Open every day from 7am to 10pm. Drop or pick up whenever works for you.',
-    'reasons.r2.title': 'Fully automated',
-    'reasons.r2.desc': 'No queue, no staff, no waiting.',
-    'reasons.r3.title': 'Smart safes',
-    'reasons.r3.desc': 'Sealed lockers with tamper detection. Only you unlock yours.',
-    'reasons.r4.title': 'Central Paris',
-    'reasons.r4.desc': 'Right in the Sentier, two minutes from the metro.',
-    'reasons.r5.title': 'Fair pricing',
-    'reasons.r5.desc': 'From €7 for a 3-hour slot, €11 for a full day. Choose what fits your trip.',
-    'reasons.r6.title': 'Book in seconds',
-    'reasons.r6.desc': 'Online, from your phone, no account needed.',
-    'reasons.r7.title': 'Built for travelers',
-    'reasons.r7.desc': 'Multilingual interface, instant confirmation.',
-    'reasons.r8.title': 'Pay-as-you-go',
-    'reasons.r8.desc': '3-hour slot, 4-hour slot, or full day. Pick what fits.',
-    'reasons.r9.title': 'Open when others close',
-    'reasons.r9.desc': "Late check-out? Early arrival? We're open while staffed offices are shut.",
-    'reasons.r10.title': '5★ on Google',
-    'reasons.r10.desc': 'Real reviews from real Paris travelers.',
-
     // FAQ
     'faq.eyebrow': 'FAQ',
     'faq.title': 'Good to know.',
@@ -107,35 +81,13 @@ export const ui = {
     'faq.q4': 'How long can I leave my luggage?',
     'faq.a4': 'From 3 hours to a full day. You choose the duration when you pay at the machine: 3 h, 4 h or a full day.',
     'faq.q5': "What if I'm late picking up?",
-    'faq.a5': 'Your locker stays sealed until you come back. If you go over the time you paid for, extra fees are charged when you collect your bags. Plan to be back before 10pm: after that the laundromat is closed and your locker can’t be reached until it reopens.',
+    'faq.a5': 'Your locker stays sealed until you come back. If you go over the time you paid for, the next slot is charged when you collect your bags: past 3 h, the 4-hour slot; past 4 h, the full day; past one day, an extra day, and so on. Plan to be back before 10pm: after that the laundromat is closed and your locker can’t be reached until it reopens.',
     'faq.q6': 'Do I need to book?',
     'faq.a6': "No. There’s no app and no online booking: walk in, choose a size and a duration at the machine, pay by card. It takes about 2 minutes.",
     'faq.q8': 'Something went wrong. Who do I call?',
     'faq.a8': 'Call or WhatsApp us on +33 6 14 01 04 48, or email consignlocker@gmail.com.',
     'faq.q7': 'What payment methods do you accept?',
     'faq.a7': 'Card and contactless payment directly at the machine. Visa, Mastercard and Amex accepted. No cash, no app needed.',
-
-    // Locations
-    'loc.eyebrow': 'Find us',
-    'loc.title': 'Right now:',
-    'loc.title.accent': 'the Sentier.',
-    'loc.subtitle': 'One spot today, more popping up across Paris soon.',
-    'loc.address.label': 'Address',
-    'loc.address.value': '67 rue de Cléry · 75002 Paris',
-    'loc.hours.label': 'Hours',
-    'loc.hours.value': '7am–10pm · every day',
-    'loc.metro.label': 'Metro',
-    'loc.metro.value': 'Sentier (line 3) · 2 min walk',
-    'loc.access.label': 'Access',
-    'loc.access.value': 'Inside a laundromat · self-service',
-    'loc.cta.directions': 'Get directions',
-    'loc.cta.availability': 'Check locker availability',
-    'loc.cta.notify': 'Tell me when a new spot opens',
-    'loc.coming.title': 'Coming soon to',
-    'loc.coming.1': 'Le Marais',
-    'loc.coming.2': 'Latin Quarter',
-    'loc.coming.3': 'Montmartre',
-    'loc.coming.4': 'Gare du Nord',
 
     // Reviews
     'reviews.eyebrow': 'Reviews',
@@ -193,60 +145,6 @@ export const ui = {
     'contact.form.note':
       'Submitting opens your mail client with everything pre-filled. Nothing leaves your device until you hit send.',
 
-    // Business page
-    'business.meta.title': 'For business — Consign',
-    'business.meta.description':
-      'Hotels, aparthotels, concierges, Airbnb managers: add automated luggage storage to your offer, with no staff and no infrastructure.',
-    'business.eyebrow': 'For business',
-    'business.title': 'Add a luggage room',
-    'business.title.accent': 'to your offer.',
-    'business.subtitle':
-      "Hotels, aparthotels, concierges, Airbnb managers: give your guests a place to drop their bags. We bring the locker, you collect a revenue share.",
-    'business.cta': 'Talk to us',
-    'business.cases.eyebrow': 'Built for',
-    'business.case1.title': 'Hotels',
-    'business.case1.desc':
-      "Solve early arrivals and late check-outs without staffing a luggage room.",
-    'business.case2.title': 'Aparthotels & B&Bs',
-    'business.case2.desc': 'No reception desk? No problem. Guests drop bags from 7am to 10pm.',
-    'business.case3.title': 'Airbnb managers',
-    'business.case3.desc':
-      'Skip the key handoff drama and the awkward check-in windows.',
-    'business.benefits.eyebrow': 'Why partner',
-    'business.benefits.title': 'Asset-light, brand-loud, hands-off.',
-    'business.benefit1.title': 'No equipment to buy',
-    'business.benefit1.desc':
-      "We bring the locker, the software, the support. You bring the spot.",
-    'business.benefit2.title': 'Revenue share',
-    'business.benefit2.desc': 'You earn on every locker your guests book.',
-    'business.benefit3.title': 'Co-branded',
-    'business.benefit3.desc':
-      'Your logo on the locker, your name in the confirmation email.',
-    'business.benefit4.title': '24 / 7 support',
-    'business.benefit4.desc':
-      "We handle bookings, payments and customer support. You don't lift a finger.",
-    'business.steps.eyebrow': 'How partnerships work',
-    'business.step1.title': 'Tell us your spot',
-    'business.step1.desc': 'A quick chat to check fit and assess foot traffic.',
-    'business.step2.title': 'We install',
-    'business.step2.desc':
-      "Locker delivered, connected and branded with your logo.",
-    'business.step3.title': 'Your guests book',
-    'business.step3.desc':
-      'We handle bookings, payments and customer support end-to-end.',
-    'business.step4.title': 'You collect',
-    'business.step4.desc':
-      'Revenue share paid monthly. Full dashboard included.',
-    'business.contact.title': 'Ready to talk?',
-    'business.contact.subtitle':
-      "Tell us a few details and we'll get back to you quickly, usually within the day.",
-    'business.contact.name': 'Your name',
-    'business.contact.business': 'Hotel / business name',
-    'business.contact.email': 'Your email',
-    'business.contact.spot': 'Address of the spot',
-    'business.contact.message': 'Anything we should know',
-    'business.contact.submit': 'Start the conversation',
-
     // Pricing page
     'pricing.meta.title': 'Pricing — Consign',
     'pricing.meta.description': 'Clear luggage storage prices in Paris. Medium and Large lockers, 3-hour slots, 4-hour slots, and full-day rates.',
@@ -294,7 +192,6 @@ export const ui = {
     'nav.pricing': 'Tarifs',
     'nav.locations': 'Emplacements',
     'nav.faq': 'FAQ',
-    'nav.business': 'Professionnels',
     'nav.contact': 'Contact',
     'nav.cta': 'Itinéraire',
     'cta.directions': 'Itinéraire',
@@ -315,8 +212,8 @@ export const ui = {
     'card.help': 'Besoin d’aide ?',
     'card.call': 'Appeler',
     'card.live.loading': 'On compte les casiers libres…',
-    'card.live.free': '{n} casiers libres sur {t} en ce moment',
-    'card.live.free1': '1 casier libre sur {t} en ce moment',
+    'card.live.free': '{n} casiers libres en ce moment',
+    'card.live.free1': '1 casier libre en ce moment',
     'card.live.none': 'Tous les casiers sont pris en ce moment',
     'card.live.error': 'Voir la disponibilité en direct',
     'final.title': 'Rendez-vous au 67 rue de Cléry.',
@@ -340,31 +237,6 @@ export const ui = {
     'hero.stat.location': 'Par carte',
     'hero.stat.location.label': 'Visa · MC · Amex',
 
-    // 10 Reasons
-    'reasons.eyebrow': '10 raisons',
-    'reasons.title': '10 raisons',
-    'reasons.title.accent': 'de nous confier vos bagages.',
-    'reasons.r1.title': 'Ouvert 7h – 22h',
-    'reasons.r1.desc': 'Ouvert tous les jours de 7h à 22h. Déposez ou récupérez selon votre agenda.',
-    'reasons.r2.title': '100% automatisé',
-    'reasons.r2.desc': "Pas de queue, pas de personnel, pas d'attente.",
-    'reasons.r3.title': 'Coffres connectés',
-    'reasons.r3.desc': "Casiers scellés avec détection de manipulation. Vous seul ouvrez le vôtre.",
-    'reasons.r4.title': 'Paris centre',
-    'reasons.r4.desc': 'En plein Sentier, à deux minutes du métro.',
-    'reasons.r5.title': 'Prix juste',
-    'reasons.r5.desc': "Dès 7 € pour 3h, 11 € à la journée. Choisissez selon votre programme.",
-    'reasons.r6.title': 'Réservation express',
-    'reasons.r6.desc': 'En ligne, depuis votre téléphone, sans compte.',
-    'reasons.r7.title': 'Pensé pour les voyageurs',
-    'reasons.r7.desc': 'Interface multilingue, confirmation instantanée.',
-    'reasons.r8.title': 'À la carte',
-    'reasons.r8.desc': "Tranche de 3h, 4h ou journée complète. Vous choisissez.",
-    'reasons.r9.title': 'Ouvert quand les autres ferment',
-    'reasons.r9.desc': "Check-out tardif ? Arrivée tôt ? On est ouvert quand les guichets ferment.",
-    'reasons.r10.title': '5★ sur Google',
-    'reasons.r10.desc': 'De vrais avis de vrais voyageurs parisiens.',
-
     // FAQ
     'faq.eyebrow': 'FAQ',
     'faq.title': 'Bon à savoir.',
@@ -377,35 +249,13 @@ export const ui = {
     'faq.q4': 'Combien de temps puis-je laisser mes bagages ?',
     'faq.a4': "De 3 heures à une journée complète. Vous choisissez la durée en payant à la machine : 3 h, 4 h ou la journée.",
     'faq.q5': 'Que se passe-t-il si je suis en retard ?',
-    'faq.a5': "Votre casier reste fermé jusqu’à votre retour. Si vous dépassez la durée payée, des frais complémentaires sont facturés au moment de récupérer vos bagages. Revenez avant 22h : après, la laverie est fermée et votre casier n’est plus accessible jusqu’à la réouverture.",
+    'faq.a5': "Votre casier reste fermé jusqu’à votre retour. Si vous dépassez la durée payée, la tranche suivante est facturée au moment de récupérer vos bagages : au-delà de 3 h, la tranche 4 h ; au-delà de 4 h, la journée ; au-delà d’une journée, une journée supplémentaire, et ainsi de suite. Revenez avant 22h : après, la laverie est fermée et votre casier n’est plus accessible jusqu’à la réouverture.",
     'faq.q6': 'Faut-il réserver ?',
     'faq.a6': "Non. Pas d’appli ni de réservation en ligne : venez, choisissez une taille et une durée à la machine, payez par carte. Comptez 2 minutes.",
     'faq.q8': 'Un problème ? Qui contacter ?',
     'faq.a8': 'Appelez-nous ou écrivez-nous sur WhatsApp au +33 6 14 01 04 48, ou par e‑mail à consignlocker@gmail.com.',
     'faq.q7': 'Quels moyens de paiement acceptez-vous ?',
     'faq.a7': "Carte bancaire et paiement sans contact directement sur la machine. Visa, Mastercard et Amex acceptés. Pas d'espèces, pas d'application nécessaire.",
-
-    // Locations
-    'loc.eyebrow': 'Où nous trouver',
-    'loc.title': 'Pour le moment :',
-    'loc.title.accent': 'le Sentier.',
-    'loc.subtitle': "Un emplacement aujourd'hui, d'autres bientôt partout dans Paris.",
-    'loc.address.label': 'Adresse',
-    'loc.address.value': '67 rue de Cléry · 75002 Paris',
-    'loc.hours.label': 'Horaires',
-    'loc.hours.value': '7h–22h · tous les jours',
-    'loc.metro.label': 'Métro',
-    'loc.metro.value': 'Sentier (ligne 3) · 2 min à pied',
-    'loc.access.label': 'Accès',
-    'loc.access.value': 'Dans une laverie · libre-service',
-    'loc.cta.directions': 'Itinéraire',
-    'loc.cta.availability': 'Voir la disponibilité',
-    'loc.cta.notify': "Prévenez-moi quand un nouvel emplacement ouvre",
-    'loc.coming.title': 'Bientôt à',
-    'loc.coming.1': 'Le Marais',
-    'loc.coming.2': 'Quartier Latin',
-    'loc.coming.3': 'Montmartre',
-    'loc.coming.4': 'Gare du Nord',
 
     // Reviews
     'reviews.eyebrow': 'Avis Google',
@@ -462,60 +312,6 @@ export const ui = {
     'contact.form.submit': 'Ouvrir mon mail pour envoyer',
     'contact.form.note':
       "Le bouton ouvre votre application mail avec tout pré-rempli. Rien ne quitte votre appareil tant que vous n'appuyez pas sur envoyer.",
-
-    // Business page
-    'business.meta.title': 'Professionnels — Consign',
-    'business.meta.description':
-      "Hôtels, aparthotels, conciergeries, gestionnaires Airbnb : ajoutez une consigne automatisée à votre offre, sans personnel ni infrastructure.",
-    'business.eyebrow': 'Professionnels',
-    'business.title': 'Une consigne à bagages',
-    'business.title.accent': 'dans votre offre.',
-    'business.subtitle':
-      "Hôtels, aparthotels, conciergeries, gestionnaires Airbnb : offrez à vos clients un endroit où déposer leurs bagages. On apporte le casier, vous touchez une part des revenus.",
-    'business.cta': 'Discutons',
-    'business.cases.eyebrow': 'Pensé pour',
-    'business.case1.title': 'Hôtels',
-    'business.case1.desc':
-      "Réglez les arrivées tôt et les check-outs tardifs sans devoir staffer une bagagerie.",
-    'business.case2.title': 'Aparthotels & B&B',
-    'business.case2.desc': "Pas de réception ? Pas de souci. Les clients déposent de 7h à 22h.",
-    'business.case3.title': 'Gestionnaires Airbnb',
-    'business.case3.desc':
-      "Fini les remises de clés acrobatiques et les fenêtres de check-in compliquées.",
-    'business.benefits.eyebrow': 'Pourquoi en partenaire',
-    'business.benefits.title': 'Asset-light, brand-loud, hands-off.',
-    'business.benefit1.title': "Rien à acheter",
-    'business.benefit1.desc':
-      "On apporte le casier, le logiciel, le support. Vous apportez l'emplacement.",
-    'business.benefit2.title': 'Part des revenus',
-    'business.benefit2.desc': "Vous gagnez sur chaque casier que vos clients réservent.",
-    'business.benefit3.title': 'Co-branding',
-    'business.benefit3.desc':
-      "Votre logo sur le casier, votre nom dans le mail de confirmation.",
-    'business.benefit4.title': 'Support 24h/24',
-    'business.benefit4.desc':
-      "On gère réservations, paiements et SAV. Vous n'avez rien à faire.",
-    'business.steps.eyebrow': 'Comment ça marche',
-    'business.step1.title': "Parlez-nous de votre spot",
-    'business.step1.desc': "Un échange rapide pour valider la pertinence et le trafic.",
-    'business.step2.title': 'On installe',
-    'business.step2.desc':
-      "Casier livré, connecté et brandé avec votre logo.",
-    'business.step3.title': 'Vos clients réservent',
-    'business.step3.desc':
-      "On gère réservations, paiements et SAV de bout en bout.",
-    'business.step4.title': 'Vous touchez',
-    'business.step4.desc':
-      "Part des revenus versée chaque mois. Tableau de bord inclus.",
-    'business.contact.title': 'On en parle ?',
-    'business.contact.subtitle':
-      "Donnez-nous quelques infos et on revient vite vers vous, généralement sous 24h.",
-    'business.contact.name': 'Votre nom',
-    'business.contact.business': "Nom de l'hôtel / établissement",
-    'business.contact.email': 'Votre email',
-    'business.contact.spot': "Adresse de l'emplacement",
-    'business.contact.message': 'Tout ce que vous voulez nous dire',
-    'business.contact.submit': 'Démarrer la conversation',
 
     // Pricing page
     'pricing.meta.title': 'Tarifs — Consign',
